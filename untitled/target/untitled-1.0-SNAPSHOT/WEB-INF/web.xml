@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/spring/mainApplicationContext.xml</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/ihm/*</url-pattern>
+    </filter-mapping>
+
+
+    <!-- Init servlet for Objectify -->
+    <servlet>
+        <servlet-name>initServlet</servlet-name>
+        <servlet-class>fr.untitled2.servlet.InitServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+
+    <!-- Spring -->
+    <servlet>
+        <servlet-name>appServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+        </init-param>
+    </servlet>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- Process servlet -->
+    <servlet>
+        <servlet-name>imageUpload</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.ImageUploadServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>imageProcess</servlet-name>
+        <servlet-class>fr.untitled2.servlet.process.ImageProcessServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>imageConvert</servlet-name>
+        <servlet-class>fr.untitled2.servlet.process.ImageConvertServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>cacheManager</servlet-name>
+        <servlet-class>fr.untitled2.servlet.process.CacheServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>fileServe</servlet-name>
+        <servlet-class>fr.untitled2.servlet.process.FileServeServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>mailhandler</servlet-name>
+        <servlet-class>fr.untitled2.servlet.process.ReadEmailsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>_ah_warmup</servlet-name>
+        <servlet-class>fr.untitled2.servlet.WarmupServlet</servlet-class>
+    </servlet>
+
+    <!-- Mappings -->
+    <servlet-mapping>
+        <servlet-name>imageUpload</servlet-name>
+        <url-pattern>/imageUpload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>imageProcess</servlet-name>
+        <url-pattern>/imageProcess</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>imageConvert</servlet-name>
+        <url-pattern>/imageConvert</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>cacheManager</servlet-name>
+        <url-pattern>/cacheManager</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>fileServe</servlet-name>
+        <url-pattern>/fileServe</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>mailhandler</servlet-name>
+        <url-pattern>/_ah/mail/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>_ah_warmup</servlet-name>
+        <url-pattern>/_ah/warmup</url-pattern>
+    </servlet-mapping>
+    <!-- Spring -->
+    <servlet-mapping>
+        <servlet-name>appServlet</servlet-name>
+        <url-pattern>/ihm/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/_ah/mail/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+</web-app>

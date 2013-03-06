@@ -1,0 +1,1 @@
+<div id="footer">&copy; 2013 Corentin Escoffier - contact@mypicturelog.com</div>

@@ -1,0 +1,16 @@
+<queue-entries>
+    <queue>
+        <name>default</name>
+        <rate>1/s</rate>
+    </queue>
+    <queue>
+        <name>image-queue</name>
+        <rate>1/m</rate>
+        <bucket-size>2</bucket-size>
+    </queue>
+    <queue>
+        <name>image-conversion</name>
+        <rate>1/m</rate>
+        <bucket-size>2</bucket-size>
+    </queue>
+</queue-entries>
