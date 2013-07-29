@@ -58,7 +58,7 @@
                 <a href="/ihm/logs/list?pageNumber=<%=logList.getNextPageNumber()%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="next" defaultValue="Next"/></a><%
             }
         } else { %>
-                <messages:message packageName="fr.untitled2.bundle.views.logList" key="nologmessage" defaultValue="Ach mein Gott !!! You haven't any logs at the moment, <a href='http://www.mypicturelog.com/start-using-it'>click here</a> to add some logs"/><%<%
+                <messages:message packageName="fr.untitled2.bundle.views.logList" key="nologmessage" defaultValue="Ach mein Gott !!! You haven't any logs at the moment, <a href='http://www.mypicturelog.com/start-using-it'>click here</a> to add some logs"/><%
         } %>
             </div>
         </div>

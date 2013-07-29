@@ -1,7 +1,6 @@
-package fr.untitled2.jaxb;
+package fr.untitled2.common.entities.jaxb;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -12,15 +11,15 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * Time: 6:01 PM
  * To change this template use File | Settings | File Templates.
  */
-public class LocalDateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
+public class DateTimeAdapter extends XmlAdapter<String, DateTime> {
 
     @Override
-    public LocalDateTime unmarshal(String s) throws Exception {
-        return new LocalDateTime(s);
+    public DateTime unmarshal(String s) throws Exception {
+        return new DateTime(s);
     }
 
     @Override
-    public String marshal(LocalDateTime dateTime) throws Exception {
+    public String marshal(DateTime dateTime) throws Exception {
         return dateTime.toString();
     }
 }
