@@ -32,9 +32,9 @@
                       <Insets left="10.0" />
                     </GridPane.margin>
                   </Button>
-                  <ProgressBar prefWidth="200.0" progress="0.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-                  <Label text="Handling File : " GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-                  <Button mnemonicParsing="false" text="Add Positions to my Images" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                  <ProgressBar fx:id="imagePositionProgress" prefWidth="200.0" progress="0.0" visible="false" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                  <Label fx:id="handleFileText" text="Handling File : " visible="false" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+                  <Button mnemonicParsing="false" onAction="#handleAddPositionToMyImages" text="Add Positions to my Images" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                 </children>
                 <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

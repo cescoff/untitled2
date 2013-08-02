@@ -5,14 +5,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("../main/resources/sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        Parent root = FXMLLoader.load(new PathMatchingResourcePatternResolver().getResource("classpath:sample.fxml").getURL());
+        primaryStage.setTitle("MyPictureLog");
+        primaryStage.setScene(new Scene(root, 300, 200));
 
         primaryStage.show();
     }
