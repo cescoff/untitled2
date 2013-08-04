@@ -9,9 +9,6 @@
     <modules>
         <module>untitled</module>
         <module>utils</module>
-        <module>mpl-android</module>
-        <module>common</module>
-        <module>taskexample</module>
         <module>desktop-application</module>
     </modules>
 
@@ -91,28 +88,6 @@
             <name>Spring Maven Milestone Repository</name>
             <url>http://repo.springsource.org/milestone</url>
             <snapshots><enabled>false</enabled></snapshots>
-        </repository>
-        <repository>
-            <id>googleapis</id>
-            <url>http://google-api-client-libraries.appspot.com/mavenrepo</url>
-        </repository>
-        <repository>
-            <id>google-api-services</id>
-            <url>http://mavenrepo.google-api-java-client.googlecode.com/hg</url>
-        </repository>
-        <repository>
-            <id>apache.releases.https</id>
-            <url>http://repository.apache.org/content/groups/snapshots/</url>
-        </repository>
-        <repository>
-            <id>signpost-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/signpost-snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
     </repositories>
 </project>

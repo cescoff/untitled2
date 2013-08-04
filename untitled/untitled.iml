@@ -41,7 +41,7 @@
     <orderEntry type="library" name="Maven: oauth.signpost:signpost-commonshttp4:1.2.1.2" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.objectify:objectify:4.0b1" level="project" />
     <orderEntry type="library" name="Maven: org.joda:joda-money:0.6" level="project" />
-    <orderEntry type="library" name="Maven: com.google.appengine:appengine-api-1.0-sdk:1.7.5" level="project" />
+    <orderEntry type="library" name="Maven: com.google.appengine:appengine-api-1.0-sdk:1.8.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.gwt:gwt-user:2.5.0-rc1" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.0.0.GA" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:sources:1.0.0.GA" level="project" />
@@ -51,7 +51,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: com.google.appengine:appengine-api-labs:1.7.2" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jsr107cache:jsr107cache:1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.appengine:appengine-jsr107cache:1.7.5" level="project" />
+    <orderEntry type="library" name="Maven: com.google.appengine:appengine-jsr107cache:1.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-validator-annotation-processor:4.1.0.Final" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-validator:4.1.0.Final" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
@@ -86,8 +86,8 @@
     <orderEntry type="library" name="Maven: org.apache.tomcat:servlet-api:6.0.36" level="project" />
     <orderEntry type="library" name="Maven: jstl:jstl:1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.9.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.google.appengine:appengine-testing:1.7.5" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.google.appengine:appengine-api-stubs:1.7.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.google.appengine:appengine-testing:1.8.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.google.appengine:appengine-api-stubs:1.8.2" level="project" />
   </component>
 </module>
 
