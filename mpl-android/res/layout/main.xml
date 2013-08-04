@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+        >
+<TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/Welcome"
+    android:id="@+id/Welcome"
+    android:textSize="25dp"
+        />
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_marginBottom="0px"
+            android:layout_height="100dp">
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:text="@string/ButtonLogList"
+                android:id="@+id/ButtonLogList"
+                android:src="@drawable/database"
+                android:background="#000000"
+                />
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:text="@string/ButtonSettings"
+                android:id="@+id/ButtonSettings"
+                android:src="@drawable/resume"
+                android:background="#000000"
+                />
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/video"
+                android:id="@+id/ButtonFilmTools"
+                android:background="#000000"/>
+
+    </LinearLayout>
+
+    <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/PointCountLabel"
+                    android:id="@+id/PointCountLabel"
+                    android:enabled="true"
+                    android:textSize="20dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/PointCount"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/TimeZoneLabel"
+                    android:id="@+id/TimeZoneLabel"
+                    android:layout_column="0"
+                    android:textSize="20dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/TimeZone"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/LogNameLabel"
+                    android:id="@+id/LogNameLabel"
+                    android:layout_column="0"
+                    android:textSize="20dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LogName"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/LastLatitudeLabel"
+                    android:id="@+id/LastLatitudeLabel"
+                    android:layout_column="0"
+                    android:textSize="20dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LastLatitude"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/LastLongitudeLabel"
+                    android:id="@+id/LastLongitudeLabel"
+                    android:layout_column="0"
+                    android:textSize="20dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LastLongitude"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/LastPointDateLabel"
+                    android:id="@+id/LastPointDateLabel"
+                    android:layout_column="0"
+                    android:textSize="20dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LastPointDate"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
+
+    </TableLayout>
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="0">
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:text="@string/ImageButtonLogStopStart"
+                android:id="@+id/ImageButtonLogStopStart"
+                android:src="@drawable/disc"
+                android:background="#000000"
+                android:layout_column="0"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="@string/ButtonLogStopStart"
+                android:id="@+id/ButtonLogStopStart"
+                android:background="#000000"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp"/>
+    </LinearLayout>
+
+</LinearLayout>
+

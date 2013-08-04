@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="fr.untitled2.android"
+          android:versionCode="1"
+          android:versionName="1.0">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true" android:persistent="true">
+        <activity android:name=".Main"
+                  android:label="@string/app_name"
+                  android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".LogList"
+                  android:label="@string/app_name"
+                  android:launchMode="singleInstance">
+        </activity>
+        <activity android:name=".Settings"
+                  android:label="@string/app_name"
+                  android:launchMode="singleInstance">
+        </activity>
+        <activity
+                android:name=".Connect"
+                android:label="@string/app_name"
+                android:launchMode="singleInstance">
+        </activity>
+        <activity
+                android:name=".FilmTool"
+                android:label="@string/app_name"
+                android:launchMode="singleInstance">
+        </activity>
+        <service
+             android:name=".service.LogRecorder"
+             android:icon="@drawable/icon"
+             android:label="MyPictureLog"></service>
+        <service
+                android:name=".service.LogSynchronizer"
+                android:icon="@drawable/icon"
+                android:label="MyPictureLogSynchronizer"></service>
+    </application>
+    <uses-sdk android:minSdkVersion="4" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+</manifest>
