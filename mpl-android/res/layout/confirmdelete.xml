@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/DeleteQuestion"
+            android:id="@+id/DeleteQuestion"
+            android:textSize="20dp"
+            android:layout_gravity="center"/>
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/DeleteYesImageButton"
+                android:id="@+id/DeleteYesImageButton"
+                android:background="#000000"
+                android:src="@drawable/check_mark"
+                android:layout_gravity="center"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DeleteYesButton"
+                android:textSize="30dp"
+                android:background="#000000"
+                android:textColor="#FFFFFF"
+                android:id="@+id/DeleteYesButton"
+                android:layout_gravity="center"/>
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/DeleteNoImageButton"
+                android:background="#000000"
+                android:id="@+id/DeleteNoImageButton"
+                android:layout_gravity="center"
+                android:src="@drawable/close"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:textColor="#FFFFFF"
+                android:background="#000000"
+                android:text="@string/DeleteNoButton"
+                android:id="@+id/DeleteNoButton"
+                android:layout_gravity="center"/>
+
+    </LinearLayout>
+</LinearLayout>

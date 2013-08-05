@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_marginBottom="0px"
+            android:layout_height="100dp">
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:text="@string/ButtonHome"
+                android:id="@+id/ButtonHome"
+                android:src="@drawable/house"
+                android:background="#000000"/>
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:text="@string/ButtonSettings"
+                android:id="@+id/ButtonSettings"
+                android:src="@drawable/resume"
+                android:background="#000000"/>
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/video"
+                android:id="@+id/ButtonFilmTools"
+                android:background="#000000"/>
+
+    </LinearLayout>
+
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/LogListView"
+            android:layout_gravity="center"/>
+</LinearLayout>

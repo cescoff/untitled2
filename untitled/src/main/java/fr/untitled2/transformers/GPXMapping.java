@@ -1,11 +1,10 @@
 package fr.untitled2.transformers;
 
 import com.google.common.collect.Lists;
-import fr.untitled2.jaxb.DateTimeAdapter;
-import fr.untitled2.jaxb.LocalDateTimeAdapter;
+import fr.untitled2.common.entities.jaxb.DateTimeAdapter;
+import fr.untitled2.common.entities.jaxb.LocalDateTimeAdapter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

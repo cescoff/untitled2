@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/ButtonHome"
+                android:src="@drawable/house"
+                android:background="#000000"/>
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/ButtonLogList"
+                android:src="@drawable/database"
+                android:background="#000000"/>
+
+        <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/resume"
+                android:id="@+id/ButtonSettings"
+                android:background="#000000"/>
+
+    </LinearLayout>
+
+
+
+    <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:orientation="vertical"
+            android:layout_gravity="center">
+
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enter film id"
+                    android:background="#000000"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20dp"
+                    android:id="@+id/FilmIdText"
+                    android:layout_column="0"
+                    android:layout_span="3"
+                    android:inputType="text"
+                    android:imeOptions="actionSend"/>
+        </TableRow>
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="50dp"
+                    android:id="@+id/CounterText"
+                    android:layout_column="0"
+                    android:layout_gravity="center"
+                    android:layout_span="3"/>
+        </TableRow>
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            <ImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:id="@+id/DecreaseCounterButton"
+                    android:background="#000000"
+                    android:src="@drawable/skip_backward"
+                    android:layout_column="0"/>
+
+            <ImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="#000000"
+                    android:src="@drawable/skip_forward"
+                    android:id="@+id/IncreaseCounterButton"
+                    android:layout_column="2"/>
+        </TableRow>
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            <ImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="#000000"
+                    android:src="@drawable/up_arrow"
+                    android:id="@+id/UploadButton"
+                    android:layout_column="0"
+                    android:layout_gravity="center"
+                    android:layout_span="3"/>
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

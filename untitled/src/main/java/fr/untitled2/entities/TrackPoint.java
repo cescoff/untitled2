@@ -1,8 +1,7 @@
 package fr.untitled2.entities;
 
-import fr.untitled2.jaxb.DateTimeAdapter;
-import fr.untitled2.jaxb.LocalDateTimeAdapter;
-import org.joda.time.DateTime;
+import fr.untitled2.common.entities.jaxb.DateTimeAdapter;
+import fr.untitled2.common.entities.jaxb.LocalDateTimeAdapter;
 import org.joda.time.LocalDateTime;
 
 import javax.xml.bind.annotation.XmlAccessType;

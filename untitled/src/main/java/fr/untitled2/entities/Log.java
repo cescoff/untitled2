@@ -4,11 +4,10 @@ import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.*;
-import fr.untitled2.jaxb.DateTimeAdapter;
-import fr.untitled2.jaxb.LocalDateTimeAdapter;
+import fr.untitled2.common.entities.jaxb.DateTimeAdapter;
+import fr.untitled2.common.entities.jaxb.LocalDateTimeAdapter;
 import fr.untitled2.utils.JSonUtils;
 import fr.untitled2.utils.SignUtils;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import javax.xml.bind.annotation.*;
