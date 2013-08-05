@@ -10,6 +10,8 @@
         <module>untitled</module>
         <module>utils</module>
         <module>desktop-application</module>
+        <!--module>mpl-android</module-->
+        <module>common</module>
     </modules>
 
   <dependencies>

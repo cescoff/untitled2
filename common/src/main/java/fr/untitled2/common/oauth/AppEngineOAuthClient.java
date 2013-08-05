@@ -20,6 +20,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -28,6 +32,8 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.LocalDateTime;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -158,6 +164,18 @@ public class AppEngineOAuthClient {
         } else throw new IOException("LogRecording has not been saved");
     }
 
+    public void uploadImage(File file) throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
+        HttpPost httpPost = new HttpPost(appUrl + "/api/imageUpload?fileName=" + file.getName());
+
+        consumer.sign(httpPost);
+        httpPost.setEntity(new ByteArrayEntity(IOUtils.toByteArray(new FileInputStream(file))));
+        HttpClient httpClient = getClient();
+        HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpPost);
+        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+            if (!"OK".equals(IOUtils.toString(httpResponse.getEntity().getContent()))) throw new IOException("Image has not been saved");
+        } else throw new IOException("Image has not been saved");
+    }
+
     public void pushFilmCounter(FilmCounter filmCounter) throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         if (CollectionUtils.isEmpty(filmCounter.getPauses())) throw new IOException("No records contained in log recording");
         HttpPost httpPost = new HttpPost(appUrl + "/api/filmCounterUpload");
@@ -190,12 +208,25 @@ public class AppEngineOAuthClient {
     private HttpClient getClient() {
         String proxyHost = System.getProperty("http.proxyHost");
         String proxyPort = System.getProperty("http.proxyPort");
+
+        String proxyUser = System.getProperty("http.proxyUser");
+        String proxyUserPassword = System.getProperty("http.proxyPassword");
+
         HttpClient httpClient = new DefaultHttpClient();
         if (StringUtils.isNotEmpty(proxyHost)) {
             if (StringUtils.isEmpty(proxyPort)) proxyPort = "80";
             HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort));
+
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
+
+        if (StringUtils.isNotEmpty(proxyUser) && StringUtils.isNotEmpty(proxyUserPassword)) {
+            DefaultHttpClient defaultHttpClient = (DefaultHttpClient) httpClient;
+            CredentialsProvider credsProvider = defaultHttpClient.getCredentialsProvider();
+            credsProvider.setCredentials(new AuthScope(proxyHost, Integer.parseInt(proxyPort)), new UsernamePasswordCredentials(proxyUser, proxyUserPassword));
+            defaultHttpClient.setCredentialsProvider(credsProvider);
+        }
+
         return httpClient;
     }
 

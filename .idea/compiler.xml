@@ -42,9 +42,7 @@
         <processorPath useClasspath="true" />
         <module name="common" />
         <module name="desktop-application" />
-        <module name="mpl-android" />
         <module name="mpl-app" />
-        <module name="taskexample" />
         <module name="untitled" />
         <module name="utils" />
       </profile>
