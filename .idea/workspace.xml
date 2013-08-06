@@ -8,30 +8,97 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bfb01dc5-e02f-4d53-97ed-1538944cd259" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_findbugs_jsr305_1_3_7.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_8.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__it_tidalwave_imageio_jrawio_all_1_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_oltu_oauth2_org_apache_oltu_oauth2_common_0_31.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_jettison_jettison_1_2.xml" />
-      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_oltu_oltu_oauth2_client_0_31_SNAPSHOT.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/desktop-application/src/main/java/fr/untitled2/desktop/ImageLocationTask.java" afterPath="$PROJECT_DIR$/desktop-application/src/main/java/fr/untitled2/desktop/ImageLocationTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/desktop-application/src/main/java/fr/untitled2/desktop/ImageUploadTask.java" afterPath="$PROJECT_DIR$/desktop-application/src/main/java/fr/untitled2/desktop/ImageUploadTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/desktop-application/src/main/java/fr/untitled2/desktop/Main.java" afterPath="$PROJECT_DIR$/desktop-application/src/main/java/fr/untitled2/desktop/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_config_1_1_0_BUILD_SNAPSHOT.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_config_1_1_0_BUILD_SNAPSHOT.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_core_1_1_0_BUILD_SNAPSHOT.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_core_1_1_0_BUILD_SNAPSHOT.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_facebook_1_1_0_BUILD_SNAPSHOT.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_facebook_1_1_0_BUILD_SNAPSHOT.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_facebook_web_1_1_0_BUILD_SNAPSHOT.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_facebook_web_1_1_0_BUILD_SNAPSHOT.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_twitter_1_1_0_BUILD_SNAPSHOT.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_twitter_1_1_0_BUILD_SNAPSHOT.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_web_1_1_0_BUILD_SNAPSHOT.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_social_spring_social_web_1_1_0_BUILD_SNAPSHOT.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/untitled/src/test/java/fr/untitled2/utils/TestJson.java" afterPath="$PROJECT_DIR$/untitled/src/test/java/fr/untitled2/utils/TestJson.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/desktop-application/desktop-application.iml" afterPath="$PROJECT_DIR$/desktop-application/desktop-application.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/desktop-application/src/main/resources/main.fxml" afterPath="$PROJECT_DIR$/desktop-application/src/main/resources/main.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/desktop-application/pom.xml" afterPath="$PROJECT_DIR$/desktop-application/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/untitled/pom.xml" afterPath="$PROJECT_DIR$/untitled/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/untitled/untitled.iml" afterPath="$PROJECT_DIR$/untitled/untitled.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\.name" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\ant.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\codeStyleSettings.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\compiler.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\copyright\profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\encodings.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__aopalliance_aopalliance_1_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_beust_jcommander_1_30.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_fasterxml_jackson_core_jackson_annotations_2_2_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_fasterxml_jackson_core_jackson_core_2_0_6.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_fasterxml_jackson_core_jackson_databind_2_0_6.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_appengine_appengine_api_1_0_sdk_1_8_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_appengine_appengine_api_labs_1_7_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_appengine_appengine_api_stubs_1_8_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_appengine_appengine_jsr107cache_1_8_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_appengine_appengine_testing_1_8_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_code_findbugs_jsr305_1_3_7.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_guava_guava_14_0_rc1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_google_gwt_gwt_user_2_5_0_rc1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_googlecode_json_simple_json_simple_1_1_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_googlecode_objectify_objectify_4_0b1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__com_oracle_javafx_2_2_3.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__commons_codec_commons_codec_1_7.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__commons_codec_commons_codec_1_8.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__commons_fileupload_commons_fileupload_1_2_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__commons_io_commons_io_2_4.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__commons_lang_commons_lang_2_6.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__commons_logging_commons_logging_1_1_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__it_tidalwave_imageio_jrawio_all_1_5_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__javax_inject_javax_inject_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__javax_servlet_servlet_api_2_5.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__javax_validation_validation_api_1_0_0_GA.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__javax_validation_validation_api_sources_1_0_0_GA.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__joda_time_joda_time_2_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__joda_time_joda_time_jsptags_1_1_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__jstl_jstl_1_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__junit_junit_4_10.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__net_sf_jsr107cache_jsr107cache_1_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__oauth_signpost_signpost_commonshttp4_1_2_1_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__oauth_signpost_signpost_core_1_2_1_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_commons_commons_exec_1_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_httpcomponents_httpclient_4_2_3.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_httpcomponents_httpcore_4_2_3.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_httpcomponents_httpmime_4_2_3.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_oltu_oauth2_org_apache_oltu_oauth2_common_0_31.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_sanselan_sanselan_0_97_incubator.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_tomcat_el_api_6_0_36.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_tomcat_jsp_api_6_0_36.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_apache_tomcat_servlet_api_6_0_36.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_codehaus_jackson_jackson_core_asl_1_9_12.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_codehaus_jackson_jackson_core_lgpl_1_9_12.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_codehaus_jackson_jackson_mapper_asl_1_9_12.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_codehaus_jackson_jackson_mapper_lgpl_1_9_12.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_codehaus_jackson_jackson_xc_1_9_12.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_codehaus_jettison_jettison_1_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_hamcrest_hamcrest_core_1_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_hibernate_hibernate_validator_4_1_0_Final.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_hibernate_hibernate_validator_annotation_processor_4_1_0_Final.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_javatuples_javatuples_1_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_joda_joda_money_0_6.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_json_json_20090211.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_mockito_mockito_all_1_9_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_slf4j_slf4j_api_1_7_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_slf4j_slf4j_jdk14_1_7_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_security_spring_security_acl_3_1_3_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_security_spring_security_config_3_1_3_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_security_spring_security_core_3_1_3_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_security_spring_security_crypto_3_1_4_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_security_spring_security_taglibs_3_1_3_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_security_spring_security_web_3_1_3_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_social_spring_social_config_1_1_0_BUILD_SNAPSHOT.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_social_spring_social_core_1_1_0_BUILD_SNAPSHOT.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_social_spring_social_facebook_1_1_0_BUILD_SNAPSHOT.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_social_spring_social_facebook_web_1_1_0_BUILD_SNAPSHOT.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_social_spring_social_twitter_1_1_0_BUILD_SNAPSHOT.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_social_spring_social_web_1_1_0_BUILD_SNAPSHOT.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_aop_3_2_1_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_beans_3_2_1_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_context_3_2_1_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_core_3_2_1_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_expression_3_2_1_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_jdbc_3_0_7_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_tx_3_0_7_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_web_3_2_1_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\libraries\Maven__org_springframework_spring_webmvc_3_2_1_RELEASE.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\misc.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\modules.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\scopes\scope_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\uiDesigner.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\vcs.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\Donnees\PERSO\escoffier_c\untitled\untitled2\.idea\workspace.xml" afterPath="" />
     </list>
     <ignored path="untitled2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -1041,7 +1108,11 @@
       <created>1375719519804</created>
       <updated>1375719519804</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Upload dans client lourd">
+      <created>1375804361678</created>
+      <updated>1375804361678</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="ToolWindowManager">
