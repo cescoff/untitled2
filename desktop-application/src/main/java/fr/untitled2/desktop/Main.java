@@ -38,6 +38,10 @@ public class Main extends Application {
 
     private ProgressBar imagePositionProgressBar;
 
+    private Label handleFileUploadText;
+
+    private ProgressBar imagePositionAndUploadProgress;
+
     @Override
     public void start(final Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(new PathMatchingResourcePatternResolver().getResource("classpath:main.fxml").getURL());
@@ -48,10 +52,13 @@ public class Main extends Application {
         primaryStage.show();
 
         Button imageLocationBrowseButton = (Button) root.lookup("#imageLocationBrowseButton");
+        Button imageLocationAndUploadBrowseButton = (Button) root.lookup("#imageLocationAndUploadBrowseButton");
 
         handleFileTextField = (Label) root.lookup("#handleFileText");
         imagePositionProgressBar = (ProgressBar) root.lookup("#imagePositionProgress");
 
+        handleFileUploadText = (Label) root.lookup("#handleFileUploadText");
+        imagePositionAndUploadProgress = (ProgressBar) root.lookup("#imagePositionAndUploadProgress");
 
         final ImageLocationTask imageLocationTask = new ImageLocationTask(1.0);
         if (imageLocationBrowseButton != null) {
@@ -66,8 +73,21 @@ public class Main extends Application {
             });
         }
 
+        final ImageUploadTask imageUploadTask = new ImageUploadTask(1.0);
+        if (imageLocationAndUploadBrowseButton != null) {
+            imageLocationAndUploadBrowseButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    final DirectoryChooser directoryChooser = new DirectoryChooser();
+                    directoryChooser.setInitialDirectory(SystemUtils.getUserDir());
+
+                    imageUploadTask.setImageDir(directoryChooser.showDialog(primaryStage));
+                }
+            });
+        }
+
         Button handleAddPositionToMyImagesButton = (Button) root.lookup("#handleAddPositionToMyImagesButton");
-        final Main main = this;
+
         handleAddPositionToMyImagesButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent actionEvent) {
@@ -78,6 +98,24 @@ public class Main extends Application {
                 handleFileTextField.textProperty().bind(imageLocationTask.messageProperty());
                 try {
                     new Thread(imageLocationTask).start();
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        });
+
+        Button handleAddPositionAndUploadMyImagesButton = (Button) root.lookup("#handleAddPositionAndUploadMyImagesButton");
+
+        handleAddPositionAndUploadMyImagesButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent actionEvent) {
+                if (imageUploadTask.getImageDir() == null) return;
+                imagePositionAndUploadProgress.setVisible(true);
+                imagePositionAndUploadProgress.progressProperty().bind(imageUploadTask.progressProperty());
+                handleFileUploadText.setVisible(true);
+                handleFileUploadText.textProperty().bind(imageUploadTask.messageProperty());
+                try {
+                    new Thread(imageUploadTask).start();
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

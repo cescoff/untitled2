@@ -62,29 +62,15 @@ public class ImageLocationTask extends Task<Double> {
     protected Double call() throws Exception {
         double progress = 0.1;
 
-        updateProgress(progress, maxProgress);
+        updateProgress(progress / maxProgress, maxProgress);
         updateMessage("Starting...");
 
         if (!imageDir.isDirectory()) {
             return 0.0;
         }
 
-        File configFile = new File(SystemUtils.USER_HOME, Main.configuration_file_name);
-        if (!configFile.exists()) {
-            return 0.0;
-        }
-        Configuration configuration = null;
         try {
-            configuration = JAXBUtils.unmarshal(Configuration.class, configFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            return 0.0;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0.0;
-        }
-        try {
-            process(configuration, progress);
+            process(getConfiguration(), progress);
         } catch (OAuthExpectationFailedException e) {
             e.printStackTrace();
         } catch (OAuthCommunicationException e) {
@@ -109,7 +95,7 @@ public class ImageLocationTask extends Task<Double> {
         UserPreferences userPreferences = appEngineOAuthClient.getUserPreferences();
         progress += 0.1;
 
-        updateProgress(progress, maxProgress);
+        updateProgress(progress / maxProgress, maxProgress);
 
         if (userPreferences == null) {
             updateMessage("User preferences are not set up yet. Please connect first to http://application.mypicturelog.com/ihm/");
@@ -146,8 +132,8 @@ public class ImageLocationTask extends Task<Double> {
             }
             progress+=progressForImage;
 
-            updateProgress(progress, maxProgress);
-            updateMessage("Finished !!");
+            updateProgress(progress / maxProgress, maxProgress);
+            if (maxProgress <= 1.0) updateMessage("Finished !!");
         }
     }
 
@@ -229,6 +215,22 @@ public class ImageLocationTask extends Task<Double> {
 
     public void setImageDir(File imageDir) {
         this.imageDir = imageDir;
+    }
+
+    protected Configuration getConfiguration() {
+        File configFile = new File(SystemUtils.USER_HOME, Main.configuration_file_name);
+        if (!configFile.exists()) {
+            return null;
+        }
+        try {
+            return JAXBUtils.unmarshal(Configuration.class, configFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

@@ -49,6 +49,11 @@
             <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
             <scope>system</scope>
         </dependency>
+        <dependency>
+            <groupId>it.tidalwave.imageio</groupId>
+            <artifactId>jrawio-all</artifactId>
+            <version>1.5.0</version>
+        </dependency>
     </dependencies>
 
 

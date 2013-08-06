@@ -28,9 +28,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.oltu</groupId>
-            <artifactId>oltu-oauth2-client</artifactId>
-            <version>0.31-SNAPSHOT</version>
+            <groupId>org.apache.oltu.oauth2</groupId>
+            <artifactId>org.apache.oltu.oauth2.common</artifactId>
+            <version>0.31</version>
         </dependency>
 
 
