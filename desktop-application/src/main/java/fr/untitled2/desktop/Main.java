@@ -15,6 +15,7 @@ public class Main extends Application {
         primaryStage.setTitle("MyPictureLog");
         primaryStage.setScene(new Scene(root, 300, 200));
 
+
         primaryStage.show();
     }
 
