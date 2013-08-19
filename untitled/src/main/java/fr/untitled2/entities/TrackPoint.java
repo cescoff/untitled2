@@ -63,4 +63,27 @@ public class TrackPoint {
         this.pointDate = pointDate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TrackPoint that = (TrackPoint) o;
+
+        if (altitude != null ? !altitude.equals(that.altitude) : that.altitude != null) return false;
+        if (latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) return false;
+        if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
+        if (pointDate != null ? !pointDate.equals(that.pointDate) : that.pointDate != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = latitude != null ? latitude.hashCode() : 0;
+        result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
+        result = 31 * result + (altitude != null ? altitude.hashCode() : 0);
+        result = 31 * result + (pointDate != null ? pointDate.hashCode() : 0);
+        return result;
+    }
 }

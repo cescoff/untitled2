@@ -43,7 +43,16 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+    <servlet>
+        <servlet-name>logStatisticsUpdater</servlet-name>
+        <servlet-class>fr.untitled2.servlet.LogStatisticsGeneratorServlet</servlet-class>
+    </servlet>
+
     <!-- Process servlet -->
+    <servlet>
+        <servlet-name>logPersistence</servlet-name>
+        <servlet-class>fr.untitled2.servlet.process.LogPersistenceServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>imageUpload</servlet-name>
         <servlet-class>fr.untitled2.servlet.api.ImageUploadServlet</servlet-class>
@@ -102,6 +111,11 @@
         <servlet-class>fr.untitled2.servlet.WarmupServlet</servlet-class>
     </servlet>
 
+    <servlet-mapping>
+        <servlet-name>logStatisticsUpdater</servlet-name>
+        <url-pattern>/logStatisticsUpdater</url-pattern>
+    </servlet-mapping>
+
     <!-- Mappings -->
     <servlet-mapping>
         <servlet-name>imageUpload</servlet-name>
@@ -122,6 +136,10 @@
     <servlet-mapping>
         <servlet-name>fileServe</servlet-name>
         <url-pattern>/fileServe</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>logPersistence</servlet-name>
+        <url-pattern>/logPersistence</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>mailhandler</servlet-name>

@@ -23,6 +23,8 @@ public class InitServlet extends HttpServlet {
         ObjectifyService.register(PictureMap.class);
         ObjectifyService.register(UserConnection.class);
         ObjectifyService.register(FilmCounter.class);
+        ObjectifyService.register(LogStatistics.class);
+        ObjectifyService.register(LogPersistenceJob.class);
     }
 
 }

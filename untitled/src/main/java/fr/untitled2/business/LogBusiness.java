@@ -4,12 +4,18 @@ import com.google.appengine.labs.repackaged.com.google.common.collect.Iterables;
 import com.google.appengine.labs.repackaged.com.google.common.collect.Lists;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import fr.untitled2.business.beans.LogList;
 import fr.untitled2.entities.Log;
+import fr.untitled2.entities.LogStatistics;
+import fr.untitled2.entities.TrackPoint;
 import fr.untitled2.entities.User;
 import fr.untitled2.utils.CollectionUtils;
+import fr.untitled2.utils.DistanceUtils;
 import org.apache.commons.lang.StringUtils;
+import org.javatuples.Pair;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -17,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,4 +70,80 @@ public class LogBusiness {
         }
         return null;
     }
+
+    public void persistLog(User user, Log log) {
+        Log currentRegisteringLog = getLogInProgress(user, log);
+
+        if (currentRegisteringLog != null) {
+            Set<TrackPoint> existingTrackPoints = Sets.newHashSet(currentRegisteringLog.getTrackPoints());
+            for (TrackPoint trackPoint : log.getTrackPoints()) {
+                if (!existingTrackPoints.contains(trackPoint)) {
+                    currentRegisteringLog.getTrackPoints().add(trackPoint);
+                }
+            }
+            Key<Log> logKey = ObjectifyService.ofy().save().entity(currentRegisteringLog).now();
+            LogStatistics logStatistics = getLogStatistics(logKey, currentRegisteringLog);
+            ObjectifyService.ofy().save().entity(logStatistics).now();
+        } else {
+            log.setValidated(true);
+            Key<Log> logKey = ObjectifyService.ofy().save().entity(log).now();
+            LogStatistics logStatistics = getLogStatistics(logKey, log);
+            ObjectifyService.ofy().save().entity(logStatistics).now();
+        }
+
+    }
+
+    public void updateLogStatistics(Log log) {
+        LogStatistics logStatistics = getLogStatistics(Key.create(Log.class, log.getInternalId()), log);
+        ObjectifyService.ofy().save().entity(logStatistics).now();
+    }
+
+    private LogStatistics getLogStatistics(Key<Log> logKey, Log log) {
+        LogStatistics logStatistics = new LogStatistics();
+        logStatistics.setLogKey(logKey.getString());
+        logStatistics.setPointCount(log.getTrackPoints().size());
+
+        double distance = 0D;
+
+        List<TrackPoint> sortedTrackPoints = Ordering.natural().onResultOf(new Function<TrackPoint, LocalDateTime>() {
+            @Override
+            public LocalDateTime apply(TrackPoint trackPoint) {
+                return trackPoint.getPointDate();
+            }
+        }).sortedCopy(log.getTrackPoints());
+
+        if (CollectionUtils.isNotEmpty(sortedTrackPoints) && sortedTrackPoints.size() > 1) {
+            TrackPoint trackStart = sortedTrackPoints.get(0);
+            LocalDateTime start = trackStart.getPointDate();
+            LocalDateTime end = trackStart.getPointDate();
+            for (int index = 1; index < sortedTrackPoints.size(); index++) {
+                distance += DistanceUtils.getDistance(Pair.with(trackStart.getLatitude(), trackStart.getLongitude()), Pair.with(sortedTrackPoints.get(index).getLatitude(), sortedTrackPoints.get(index).getLongitude()));
+                trackStart = sortedTrackPoints.get(index);
+                end = trackStart.getPointDate();
+            }
+            logStatistics.setStart(start);
+            logStatistics.setEnd(end);
+        }
+        logStatistics.setDistance(distance);
+
+        return logStatistics;
+    }
+
+    private Log getLogInProgress(User user, Log log) {
+        int pageNumber = 0;
+
+        LogList logList = null;
+
+        do {
+            logList = getLogList(pageNumber, user);
+
+            for (Log existingLog : logList.getLogs()) {
+                if (existingLog.getStartTime().equals(log.getStartTime()) && existingLog.getTimeZoneId().equals(log.getTimeZoneId())) return existingLog;
+            }
+
+            pageNumber++;
+        } while (logList.getNextPageNumber() != 0);
+        return null;
+    }
+
 }

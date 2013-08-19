@@ -43,7 +43,16 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+    <servlet>
+        <servlet-name>logStatisticsUpdater</servlet-name>
+        <servlet-class>fr.untitled2.servlet.LogStatisticsGeneratorServlet</servlet-class>
+    </servlet>
+
     <!-- Process servlet -->
+    <servlet>
+        <servlet-name>logPersistence</servlet-name>
+        <servlet-class>fr.untitled2.servlet.process.LogPersistenceServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>imageUpload</servlet-name>
         <servlet-class>fr.untitled2.servlet.api.ImageUploadServlet</servlet-class>
@@ -68,10 +77,44 @@
         <servlet-name>mailhandler</servlet-name>
         <servlet-class>fr.untitled2.servlet.process.ReadEmailsServlet</servlet-class>
     </servlet>
+
+    <!-- API Servlet -->
+    <servlet>
+        <servlet-name>ApiPing</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.PingServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ApiFilmCounterUpload</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.FilmCounterUploadServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ApiUserInfos</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.UserInfosServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ApiLogUpload</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.LogUploadServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetUserPreferences</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.GetUserPreferencesServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetLog</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.GetLogServlet</servlet-class>
+    </servlet>
+
+    <!-- Warmup -->
+
     <servlet>
         <servlet-name>_ah_warmup</servlet-name>
         <servlet-class>fr.untitled2.servlet.WarmupServlet</servlet-class>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>logStatisticsUpdater</servlet-name>
+        <url-pattern>/logStatisticsUpdater</url-pattern>
+    </servlet-mapping>
 
     <!-- Mappings -->
     <servlet-mapping>
@@ -95,12 +138,42 @@
         <url-pattern>/fileServe</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>logPersistence</servlet-name>
+        <url-pattern>/logPersistence</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>mailhandler</servlet-name>
         <url-pattern>/_ah/mail/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>_ah_warmup</servlet-name>
         <url-pattern>/_ah/warmup</url-pattern>
+    </servlet-mapping>
+
+    <!-- API -->
+    <servlet-mapping>
+        <servlet-name>ApiUserInfos</servlet-name>
+        <url-pattern>/api/userInfos</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ApiLogUpload</servlet-name>
+        <url-pattern>/api/logUpload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ApiPing</servlet-name>
+        <url-pattern>/api/ping</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ApiFilmCounterUpload</servlet-name>
+        <url-pattern>/api/filmCounterUpload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetUserPreferences</servlet-name>
+        <url-pattern>/api/getUserPreferences</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetLog</servlet-name>
+        <url-pattern>/api/getLog</url-pattern>
     </servlet-mapping>
     <!-- Spring -->
     <servlet-mapping>
