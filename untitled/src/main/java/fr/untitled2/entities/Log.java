@@ -146,7 +146,7 @@ public class Log {
         } catch (Throwable t) {
             throw new IllegalStateException("Enable to generate json for trackpoints", t);
         }
-        this.internalId = SignUtils.calculateSha1Digest(realUser.getUserId() + name + startTime + endTime);
+        this.internalId = SignUtils.calculateSha1Digest(realUser.getUserId() + name + startTime);
     }
 
     @OnLoad

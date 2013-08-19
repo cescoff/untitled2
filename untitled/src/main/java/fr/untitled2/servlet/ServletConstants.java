@@ -40,9 +40,13 @@ public class ServletConstants {
 
     public static String image_queue_name = "image-queue";
 
+    public static String log_persistence_queue_name = "log-persistence";
+
     public static String image_conversion_queue_name = "image-conversion";
 
     public static String image_key_processor_parameter = "imageKey";
+
+    public static String log_peristence_job_key = "logPersistenceJobKey";
 
     public static String user_id_parameter = "userId";
 

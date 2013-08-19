@@ -13,4 +13,9 @@
         <rate>1/m</rate>
         <bucket-size>2</bucket-size>
     </queue>
+    <queue>
+        <name>log-persistence</name>
+        <rate>1/m</rate>
+        <bucket-size>2</bucket-size>
+    </queue>
 </queue-entries>
