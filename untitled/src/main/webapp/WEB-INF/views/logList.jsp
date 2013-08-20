@@ -40,7 +40,7 @@
                         <td><userdate:userdatetimeformat value="logStartDate" /></td>
                         <td><userdate:userdatetimeformat value="logEndDate" /></td>
                         <td><%=log.getTimeZoneId()%></td>
-                        <td><%=log.getTrackPoints().size()%> <messages:message packageName="fr.untitled2.bundle.views.logList" key="trackpoints" defaultValue="trackpoints"/></td>
+                        <td><%=log.getPointCount()%> <messages:message packageName="fr.untitled2.bundle.views.logList" key="trackpoints" defaultValue="trackpoints"/></td>
                         <td><%
             if (log.isValidated()) { %>
                             <font color="green"><messages:message packageName="fr.untitled2.bundle.views.logList" key="valid" defaultValue="valid"/></font><%

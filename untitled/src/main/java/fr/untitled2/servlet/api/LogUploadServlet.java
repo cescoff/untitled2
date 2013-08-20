@@ -70,22 +70,13 @@ public class LogUploadServlet extends HttpServlet {
         String json = IOUtils.toString(req.getInputStream());
         LogRecording logRecording = JSonUtils.readJson(LogRecording.class, json);
 
-        GSFileOptions.GSFileOptionsBuilder gsFileOptionsBuilder = new GSFileOptions.GSFileOptionsBuilder().setBucket("logRecordings").setKey(DateTime.now().getYear() + "/" + DateTime.now().getMonthOfYear() + "/" + DateTime.now().getDayOfMonth() + "/" + user.getEmail()).setMimeType("text/json");
-        FileService fileService = FileServiceFactory.getFileService();
-        AppEngineFile appEngineFile = fileService.createNewGSFile(gsFileOptionsBuilder.build());
-
-        FileWriteChannel fileWriteChannel = fileService.openWriteChannel(appEngineFile, true);
-
         try {
-            OutputStream outputStream = Channels.newOutputStream(fileWriteChannel);
-            JSonUtils.writeJson(logRecording, outputStream);
-            outputStream.close();
             LogPersistenceJob logPersistenceJob = new LogPersistenceJob();
             logPersistenceJob.setKey(SignUtils.calculateSha1Digest(user.getEmail() + logRecording.getName()));
-            logPersistenceJob.setFilePath(appEngineFile.getFullPath());
+            logPersistenceJob.setLogRecording(logRecording);
             logPersistenceJob.setUserKey(Key.create(User.class, user.getUserId()));
             Key<LogPersistenceJob> logPersistenceJobKey = ObjectifyService.ofy().save().entity(logPersistenceJob).now();
-            //
+
             Queue queue = QueueFactory.getQueue(ServletConstants.log_persistence_queue_name);
 
             TaskOptions taskOptions = TaskOptions.Builder.withUrl("/logPersistence").param(ServletConstants.log_peristence_job_key, logPersistenceJobKey.getString());
@@ -94,8 +85,6 @@ public class LogUploadServlet extends HttpServlet {
         } catch (Throwable t) {
             logger.error("Impossible de persister un LogRecording", t);
             return;
-        } finally {
-            fileWriteChannel.closeFinally();
         }
 
 
