@@ -24,25 +24,19 @@ import java.io.IOException;
  */
 public class LogStatisticsGeneratorServlet extends HttpServlet {
 
-    private static LogBusiness logBusiness = new LogBusiness();
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String logKey = req.getParameter("logKey");
         if (StringUtils.isNotEmpty(logKey)) {
             Log log = ObjectifyService.ofy().load().key(Key.create(Log.class, logKey)).get();
-            logBusiness.updateLogStatistics(log);
+            log.setTrackPoints(log.getTrackPoints());
+            ObjectifyService.ofy().save().entity(log).now();
         } else {
-            int pageNumber = 0;
-            LogList logList;
-            User user = getUser();
-
-            do {
-                logList = logBusiness.getLogList(pageNumber, user);
-                for (Log log : logList.getLogs()) {
-                    logBusiness.updateLogStatistics(log);
-                }
-            } while (logList.getNextPageNumber() > 0);
+            Iterable<Log> trips = ObjectifyService.ofy().load().type(Log.class).filter("user", getUser());
+            for (Log trip : trips) {
+                trip.setTrackPoints(trip.getTrackPoints());
+                ObjectifyService.ofy().save().entity(trip).now();
+            }
 
         }
     }

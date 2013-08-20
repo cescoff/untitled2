@@ -52,22 +52,7 @@ public class LogPersistenceServlet extends HttpServlet {
 
             logger.info("User chargé : '" + user + "'");
 
-            AppEngineFile appEngineFile = new AppEngineFile(logPersistenceJob.getFilePath());
-            FileService fileService = FileServiceFactory.getFileService();
-            FileReadChannel fileReadChannel = fileService.openReadChannel(appEngineFile, false);
-
-            InputStream inputStream = Channels.newInputStream(fileReadChannel);
-
-            LogRecording logRecording = null;
-
-            try {
-                logRecording = JSonUtils.readJson(LogRecording.class, inputStream);
-            } catch (Throwable t) {
-                logger.error("Impossible de charger le fichier '" + logPersistenceJob.getFilePath() + "'");
-            } finally {
-                inputStream.close();
-                fileReadChannel.close();
-            }
+            LogRecording logRecording = logPersistenceJob.getLogRecording();
 
             logger.info("LogRecording Chargé : " + logRecording);
 
@@ -90,7 +75,6 @@ public class LogPersistenceServlet extends HttpServlet {
             }
 
             logBusiness.persistLog(user, log);
-            fileService.delete(appEngineFile);
             ObjectifyService.ofy().delete().entity(logPersistenceJob);
         } catch (Throwable t) {
             logger.error("Un erreur s'est produite lors du traitement du fichier '" + logPersistenceJobKey + "'", t);
