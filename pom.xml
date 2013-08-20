@@ -9,9 +9,9 @@
     <modules>
         <module>untitled</module>
         <module>utils</module>
-        <module>desktop-application</module>
         <module>common</module>
         <module>mpl-android</module>
+
     </modules>
 
   <dependencies>

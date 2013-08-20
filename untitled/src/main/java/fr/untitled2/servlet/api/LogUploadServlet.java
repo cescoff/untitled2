@@ -70,7 +70,7 @@ public class LogUploadServlet extends HttpServlet {
         String json = IOUtils.toString(req.getInputStream());
         LogRecording logRecording = JSonUtils.readJson(LogRecording.class, json);
 
-        GSFileOptions.GSFileOptionsBuilder gsFileOptionsBuilder = new GSFileOptions.GSFileOptionsBuilder().setBucket("logRecordings").setKey(DateTime.now().getYear() + "/" + DateTime.now().getMonthOfYear() + "/" + DateTime.now().getDayOfMonth() + "/" + user.getEmail()).setMimeType("text/json");
+        GSFileOptions.GSFileOptionsBuilder gsFileOptionsBuilder = new GSFileOptions.GSFileOptionsBuilder().setBucket("logrecordings").setKey(DateTime.now().getYear() + "/" + DateTime.now().getMonthOfYear() + "/" + DateTime.now().getDayOfMonth() + "/" + SignUtils.calculateSha1Digest(user.getEmail())).setMimeType("text/json");
         FileService fileService = FileServiceFactory.getFileService();
         AppEngineFile appEngineFile = fileService.createNewGSFile(gsFileOptionsBuilder.build());
 

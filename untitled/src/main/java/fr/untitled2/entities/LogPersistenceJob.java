@@ -2,6 +2,7 @@ package fr.untitled2.entities;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,6 +14,7 @@ import com.googlecode.objectify.annotation.Entity;
 @Entity
 public class LogPersistenceJob {
 
+    @Id
     private String key;
 
     private Key<User> userKey;
