@@ -1,10 +1,53 @@
-wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=cc51945f5c378ff83668bd52c429e068e4549f9d
+http://application.mypicturelog.com/logPersistence?logPersistenceJobKey=0a4f669c4caa21e820e87e632b4d756e21007f86
+http://application.mypicturelog.com/logPersistence?logPersistenceJobKey=c7a14fe82ffd3be7cb113af6ad32d67099d56f1f
+
+
+http://application.mypicturelog.com/ihm/logs/map?logKey=d41c26aa6b515c282421c30ab868b2b3d2e64e64
+
+
+
+
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=1a7e108accdc7031dee4ac21b27cd2f3b631e834
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=7a9611282ce419c6d3cf705ca05141387b7cddf9
+        wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=d41c26aa6b515c282421c30ab868b2b3d2e64e64
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=e7faf49a6fa76274884b332a877e0df1bcc86a0c
+
+
+
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=d6525871eff8d260cf12144469183c80b2257317
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=d76fb0909649ea55b16462e3d6a1d812ca7c3adf
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=dca9a571e8b220c54c4c13b0639095c30a63eb8b
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=e31f52d6d20eb81149b2c01745b0255a79e76551
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=e7faf49a6fa76274884b332a877e0df1bcc86a0c
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=ea4ed46aade62d971b2b743378a2105fe4ad436e
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=ec307fba17e86e034c249545800698cc1b037c23
 wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=f4ca51f9e0120dc49cceef8aad976cd8f1d1efe6
-wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=9ff1045d20ecd3d5b71e11aa424516fc401e3178
-wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=2a900d544981dac3f53a5c41194dc8d50cbeebba
-wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=98ad30bc71b08f7e84deb682c95fd0fd8b9bf36c
-wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=c90427e42239f26929806212c7701e35c73092f3
-wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=7b0a59510743a74d5d4716b5c1e94e11d723d49c
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=f608fae9848394bf271f86bd59b72cbc0cffc6b6
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=f90254893e82f8e281d944e4e61fbaa023f0f61c
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=faa3d6c13c85b8fdcea352347f5b2c0f4015100c
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=fc37921a3c8b24a92da4dbf9ae7e45a99586389b
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=fcad7e4454312e3e1a450d3371e434aabc93d255
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=fde006a134d962b8fd251c2c9cbe231ba6d62320
+
+
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=f608fae9848394bf271f86bd59b72cbc0cffc6b6
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=ec307fba17e86e034c249545800698cc1b037c23
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=e7faf49a6fa76274884b332a877e0df1bcc86a0c
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=d41c26aa6b515c282421c30ab868b2b3d2e64e64
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=f90254893e82f8e281d944e4e61fbaa023f0f61c
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=fcad7e4454312e3e1a450d3371e434aabc93d255
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=ea4ed46aade62d971b2b743378a2105fe4ad436e
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=fde006a134d962b8fd251c2c9cbe231ba6d62320
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=faa3d6c13c85b8fdcea352347f5b2c0f4015100c
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=cc51945f5c378ff83668bd52c429e068e4549f9d
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=fc37921a3c8b24a92da4dbf9ae7e45a99586389b
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=f4ca51f9e0120dc49cceef8aad976cd8f1d1efe6
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=7a9611282ce419c6d3cf705ca05141387b7cddf9
+wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=1a7e108accdc7031dee4ac21b27cd2f3b631e834
+
+
+
+
 wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=61592eb1826ce5723c19cc13da66a0a4db900586
 wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=6fbc948c3d8a94a6dc3415737255bc7670c89b35
 wget http://application.mypicturelog.com/logStatisticsUpdater?logKey=97cbe10a1f08be985c318be53e0e8daae41ba7b0

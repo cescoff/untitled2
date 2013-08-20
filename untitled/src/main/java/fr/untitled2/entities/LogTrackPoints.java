@@ -89,6 +89,7 @@ public class LogTrackPoints {
                     Base64InputStream base64InputStream = new Base64InputStream(byteArrayInputStream);
                     GZIPInputStream gzipInputStream = new GZIPInputStream(base64InputStream);
                     TrackPointsHolder trackPointsHolder = JSonUtils.readJson(TrackPointsHolder.class, gzipInputStream);
+                    this.trackPoints = trackPointsHolder.getTrackPoints();
                 } else {
                     TrackPointsHolder trackPointsHolder = JSonUtils.readJson(TrackPointsHolder.class, json);
                     this.trackPoints = trackPointsHolder.getTrackPoints();

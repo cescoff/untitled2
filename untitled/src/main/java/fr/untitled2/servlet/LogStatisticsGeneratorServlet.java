@@ -26,16 +26,15 @@ public class LogStatisticsGeneratorServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        LogBusiness logBusiness = new LogBusiness();
         String logKey = req.getParameter("logKey");
         if (StringUtils.isNotEmpty(logKey)) {
             Log log = ObjectifyService.ofy().load().key(Key.create(Log.class, logKey)).get();
-            log.setTrackPoints(log.getTrackPoints());
-            ObjectifyService.ofy().save().entity(log).now();
+            logBusiness.updateLogStatistics(log);
         } else {
             Iterable<Log> trips = ObjectifyService.ofy().load().type(Log.class).filter("user", getUser());
             for (Log trip : trips) {
-                trip.setTrackPoints(trip.getTrackPoints());
-                ObjectifyService.ofy().save().entity(trip).now();
+                logBusiness.updateLogStatistics(trip);
             }
 
         }
