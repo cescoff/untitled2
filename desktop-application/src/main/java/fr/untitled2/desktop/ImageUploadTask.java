@@ -45,12 +45,12 @@ public class ImageUploadTask extends ImageLocationTask {
             try {
                 appEngineOAuthClient.uploadImage(imageFile);
                 progress += remainingPercentage;
+                updateProgress(progress / (2.0 * maxProgress), 2.0 * maxProgress);
                 updateMessage("Uploaded : " + imageFile.getName());
             } catch (Throwable t) {
                 updateMessage("An error has occured on file " + imageFile.getName());
                 t.printStackTrace();
             }
-            updateProgress(progress / (2.0 * maxProgress), 2.0 * maxProgress);
         }
 
         return 1.0;

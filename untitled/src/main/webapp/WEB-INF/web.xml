@@ -175,10 +175,6 @@
         <servlet-name>GetLog</servlet-name>
         <url-pattern>/api/getLog</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ApiImageUpload</servlet-name>
-        <url-pattern>/api/imageUpload</url-pattern>
-    </servlet-mapping>
     <!-- Spring -->
     <servlet-mapping>
         <servlet-name>appServlet</servlet-name>
