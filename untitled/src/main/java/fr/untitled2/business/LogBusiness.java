@@ -57,7 +57,8 @@ public class LogBusiness {
         List<List<Log>> pages = Lists.partition(Lists.newArrayList(Ordering.natural().reverse().onResultOf(new Function<Log, LocalDateTime>() {
             @Override
             public LocalDateTime apply(Log trip) {
-                return trip.getStartTime();
+                if (trip.getStartTime() != null) return trip.getStartTime();
+                else return LocalDateTime.now();
             }
         }).sortedCopy(trips)), 20);
 
@@ -71,7 +72,7 @@ public class LogBusiness {
         return null;
     }
 
-    public void persistLog(User user, Log log) {
+    public Key<Log> persistLog(User user, Log log) {
         Log currentRegisteringLog = getLogInProgress(user, log);
 
         if (currentRegisteringLog != null) {
@@ -84,11 +85,14 @@ public class LogBusiness {
             Key<Log> logKey = ObjectifyService.ofy().save().entity(currentRegisteringLog).now();
             LogStatistics logStatistics = getLogStatistics(currentRegisteringLog);
             ObjectifyService.ofy().save().entity(logStatistics).now();
+            return logKey;
         } else {
             log.setValidated(true);
+            log.setUser(user);
             Key<Log> logKey = ObjectifyService.ofy().save().entity(log).now();
             LogStatistics logStatistics = getLogStatistics(log);
             ObjectifyService.ofy().save().entity(logStatistics).now();
+            return logKey;
         }
 
     }
@@ -138,7 +142,7 @@ public class LogBusiness {
             logList = getLogList(pageNumber, user);
 
             for (Log existingLog : logList.getLogs()) {
-                if (existingLog.getStartTime().equals(log.getStartTime()) && existingLog.getTimeZoneId().equals(log.getTimeZoneId())) return existingLog;
+                if (existingLog.getStartTime() != null && existingLog.getStartTime().equals(log.getStartTime()) && existingLog.getTimeZoneId().equals(log.getTimeZoneId())) return existingLog;
             }
 
             pageNumber++;
