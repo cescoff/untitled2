@@ -49,8 +49,8 @@ public class LogBusiness {
                 } else {
                     result.setTimeZoneId(timeZoneId);
                 }
-                result.setStartTime(result.getStartTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
-                result.setEndTime(result.getEndTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
+                if (result.getStartTime() != null) result.setStartTime(result.getStartTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
+                if (result.getEndTime() != null) result.setEndTime(result.getEndTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
                 return result;
             }
         });
@@ -82,25 +82,25 @@ public class LogBusiness {
                 }
             }
             Key<Log> logKey = ObjectifyService.ofy().save().entity(currentRegisteringLog).now();
-            LogStatistics logStatistics = getLogStatistics(logKey, currentRegisteringLog);
+            LogStatistics logStatistics = getLogStatistics(currentRegisteringLog);
             ObjectifyService.ofy().save().entity(logStatistics).now();
         } else {
             log.setValidated(true);
             Key<Log> logKey = ObjectifyService.ofy().save().entity(log).now();
-            LogStatistics logStatistics = getLogStatistics(logKey, log);
+            LogStatistics logStatistics = getLogStatistics(log);
             ObjectifyService.ofy().save().entity(logStatistics).now();
         }
 
     }
 
     public void updateLogStatistics(Log log) {
-        LogStatistics logStatistics = getLogStatistics(Key.create(Log.class, log.getInternalId()), log);
+        LogStatistics logStatistics = getLogStatistics(log);
         ObjectifyService.ofy().save().entity(logStatistics).now();
     }
 
-    private LogStatistics getLogStatistics(Key<Log> logKey, Log log) {
+    private LogStatistics getLogStatistics(Log log) {
         LogStatistics logStatistics = new LogStatistics();
-        logStatistics.setLogKey(logKey.getString());
+        logStatistics.setLogKey(log.getInternalId());
         logStatistics.setPointCount(log.getTrackPoints().size());
 
         double distance = 0D;

@@ -40,6 +40,11 @@ public class LogPersistenceServlet extends HttpServlet {
     private static final LogBusiness logBusiness = new LogBusiness();
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String logPersistenceJobKey = req.getParameter(ServletConstants.log_peristence_job_key);
         try {

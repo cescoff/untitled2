@@ -74,12 +74,12 @@ public class LogUploadServlet extends HttpServlet {
             LogPersistenceJob logPersistenceJob = new LogPersistenceJob();
             logPersistenceJob.setKey(SignUtils.calculateSha1Digest(user.getEmail() + logRecording.getName()));
             logPersistenceJob.setLogRecording(logRecording);
-            logPersistenceJob.setUserKey(Key.create(User.class, user.getUserId()));
+            logPersistenceJob.setUserKey(Key.create(User.class, applicationUser.getUserId()));
             Key<LogPersistenceJob> logPersistenceJobKey = ObjectifyService.ofy().save().entity(logPersistenceJob).now();
 
             Queue queue = QueueFactory.getQueue(ServletConstants.log_persistence_queue_name);
 
-            TaskOptions taskOptions = TaskOptions.Builder.withUrl("/logPersistence").param(ServletConstants.log_peristence_job_key, logPersistenceJobKey.getString());
+            TaskOptions taskOptions = TaskOptions.Builder.withUrl("/logPersistence").param(ServletConstants.log_peristence_job_key, logPersistenceJobKey.getName());
             queue.add(taskOptions);
 
         } catch (Throwable t) {

@@ -2,10 +2,7 @@ package fr.untitled2.entities;
 
 import com.beust.jcommander.internal.Lists;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Ignore;
-import com.googlecode.objectify.annotation.OnLoad;
-import com.googlecode.objectify.annotation.OnSave;
+import com.googlecode.objectify.annotation.*;
 import fr.untitled2.common.entities.LogRecording;
 import fr.untitled2.utils.JSonUtils;
 import org.apache.commons.codec.binary.Base64InputStream;
@@ -29,6 +26,7 @@ import java.util.zip.GZIPOutputStream;
 @Entity
 public class LogPersistenceJob {
 
+    @Id
     private String key;
 
     private Key<User> userKey;

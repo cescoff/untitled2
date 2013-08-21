@@ -3,6 +3,7 @@ package fr.untitled2.entities;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Translate;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -22,8 +23,10 @@ public class LogStatistics {
 
     private double distance;
 
+    @Translate(LocalDateTimeTranslatorFactory.class)
     private LocalDateTime start;
 
+    @Translate(LocalDateTimeTranslatorFactory.class)
     private LocalDateTime end;
 
     public String getLogKey() {

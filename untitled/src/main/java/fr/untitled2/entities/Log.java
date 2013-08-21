@@ -92,12 +92,13 @@ public class Log {
 
     public Collection<TrackPoint> getTrackPoints() {
         if (CollectionUtils.isNotEmpty(trackPoints)) return trackPoints;
+        if (StringUtils.isEmpty(internalId)) internalId = calculateInternalId();
         LogTrackPoints logTrackPoints = ObjectifyService.ofy().load().key(Key.create(LogTrackPoints.class, internalId)).get();
         if (logTrackPoints != null) {
             this.trackPoints = logTrackPoints.getTrackPoints();
             return logTrackPoints.getTrackPoints();
         } else {
-            return Collections.EMPTY_LIST;
+            return Lists.newArrayList();
         }
     }
 
@@ -163,6 +164,7 @@ public class Log {
     @OnSave
     public void prepersist() {
         if (StringUtils.isEmpty(internalId)) this.internalId = calculateInternalId();
+        setTrackPoints(this.trackPoints);
     }
 
     @OnLoad
@@ -173,10 +175,16 @@ public class Log {
                 this.trackPoints = trackPointsHolder.getTrackPoints();
             }
             LogStatistics logStatistics = ObjectifyService.ofy().load().key(Key.create(LogStatistics.class, internalId)).get();
-            this.distance = logStatistics.getDistance();
-            this.startTime = logStatistics.getStart();
-            this.endTime = logStatistics.getEnd();
-            this.pointCount = logStatistics.getPointCount();
+            if (logStatistics != null) {
+                this.distance = logStatistics.getDistance();
+                this.startTime = logStatistics.getStart();
+                this.endTime = logStatistics.getEnd();
+                this.pointCount = logStatistics.getPointCount();
+            } else {
+                startTime = new LocalDateTime().withYear(1980);
+                endTime = new LocalDateTime().withYear(1980);
+            }
+
         } catch (Throwable t) {
             throw new IllegalStateException("Enable to read json trackpoints", t);
         }
