@@ -162,6 +162,8 @@ public class Log {
         result.user = this.user;
         result.validated = this.validated;
         result.trackPoints.addAll(this.trackPoints);
+        result.distance = this.distance;
+        result.pointCount = this.pointCount;
         return result;
     }
 
@@ -185,8 +187,8 @@ public class Log {
                 this.endTime = logStatistics.getEnd();
                 this.pointCount = logStatistics.getPointCount();
             } else {
-                startTime = new LocalDateTime().withYear(1980);
-                endTime = new LocalDateTime().withYear(1980);
+                startTime = LocalDateTime.now().withYear(1980);
+                endTime = LocalDateTime.now().withYear(1980);
             }
 
         } catch (Throwable t) {
