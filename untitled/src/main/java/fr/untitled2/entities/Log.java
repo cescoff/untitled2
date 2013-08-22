@@ -93,13 +93,14 @@ public class Log {
     public Collection<TrackPoint> getTrackPoints() {
         if (CollectionUtils.isNotEmpty(trackPoints)) return trackPoints;
         if (StringUtils.isEmpty(internalId)) internalId = calculateInternalId();
-        LogTrackPoints logTrackPoints = ObjectifyService.ofy().load().key(Key.create(LogTrackPoints.class, internalId)).get();
-        if (logTrackPoints != null) {
-            this.trackPoints = logTrackPoints.getTrackPoints();
-            return logTrackPoints.getTrackPoints();
-        } else {
-            return Lists.newArrayList();
+        if (StringUtils.isNotEmpty(internalId)) {
+            LogTrackPoints logTrackPoints = ObjectifyService.ofy().load().key(Key.create(LogTrackPoints.class, internalId)).get();
+            if (logTrackPoints != null) {
+                this.trackPoints = logTrackPoints.getTrackPoints();
+                return logTrackPoints.getTrackPoints();
+            }
         }
+        return Lists.newArrayList();
     }
 
     public void setTrackPoints(Collection<TrackPoint> trackPoints) {
@@ -192,7 +193,8 @@ public class Log {
     }
 
     private String calculateInternalId() {
-        return SignUtils.calculateSha1Digest(realUser.getUserId() + name + startTime);
+        if (realUser != null) return SignUtils.calculateSha1Digest(realUser.getUserId() + name + startTime);
+        else return null;
     }
 
 }
