@@ -23,7 +23,7 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="common" />
-        <module name="mpl-android" />
+        <module name="desktop-application" />
         <module name="untitled" />
         <module name="utils" />
       </profile>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.oltu:oltu-oauth2-common:0.31-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/oltu/oltu-oauth2-common/0.31-SNAPSHOT/oltu-oauth2-common-0.31-20130321.182120-18.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/oltu/oltu-oauth2-common/0.31-SNAPSHOT/oltu-oauth2-common-0.31-20130321.182120-18-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/oltu/oltu-oauth2-common/0.31-SNAPSHOT/oltu-oauth2-common-0.31-20130321.182120-18-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

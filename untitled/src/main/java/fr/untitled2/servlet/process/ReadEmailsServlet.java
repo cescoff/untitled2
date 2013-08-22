@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+import fr.untitled2.business.LogBusiness;
 import fr.untitled2.entities.PendingLog;
 import fr.untitled2.entities.TrackPoint;
 import fr.untitled2.entities.Log;
@@ -196,13 +197,15 @@ public class ReadEmailsServlet extends HttpServlet {
                 }
                 try {
                     log.setTimeZoneId(user.getTimeZoneId());
-                    Key<Log> key = PersistenceUtils.persistTrip(log, user);
+                    LogBusiness logBusiness = new LogBusiness();
+
+                    Key<Log> key = logBusiness.persistLog(user, log);
                     PendingLog pendingLog = new PendingLog();
                     pendingLog.setTrip(log, key);
 
                     PersistenceUtils.persist(pendingLog);
                     notifyUser(emailAddress, getValidationMessageBody(pendingLog));
-                    logger.debug("Le log a ete persiste (" + emailAddress + ")");
+                    logger.info("Le log a ete persiste (" + emailAddress + ")");
                 } catch (Throwable t) {
                     logger.error("Impossible de persister le log de l'utilisateur '" + emailAddress + "'", t);
                     notifyError(emailAddress, "File attachement format is incorrect", "Impossible de persister le log de l'utilisateur '" + emailAddress + "'", t);
