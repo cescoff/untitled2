@@ -15,6 +15,7 @@ import fr.untitled2.entities.User;
 import fr.untitled2.servlet.ServletConstants;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.JSonUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,11 @@ public class LogPersistenceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String logPersistenceJobKey = req.getParameter(ServletConstants.log_peristence_job_key);
+        if (StringUtils.isEmpty(logPersistenceJobKey)) {
+            logger.error("Clef de persitence job vide, non supporté");
+            return;
+        }
+        logger.info("Voici la clef de log persistence '" + logPersistenceJobKey + "'");
         try {
 
             LogPersistenceJob logPersistenceJob = ObjectifyService.ofy().load().key(Key.create(LogPersistenceJob.class, logPersistenceJobKey)).get();
