@@ -1,7 +1,6 @@
 package fr.untitled2.utils;
 
 import fr.untitled2.common.entities.LogRecording;
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.junit.Test;
@@ -43,15 +42,6 @@ public class TestJson {
         logRecording.getRecords().add(logRecord2);
 
         System.out.println(JSonUtils.writeJson(logRecording));
-
-    }
-
-    public void testOAuth() throws Exception {
-        OAuthClientRequest request = OAuthClientRequest
-                .authorizationLocation("https://graph.facebook.com/oauth/authorize")
-                .setClientId("your-facebook-application-client-id")
-                .setRedirectURI("http://www.example.com/redirect")
-                .buildQueryMessage();
 
     }
 
