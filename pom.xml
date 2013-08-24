@@ -90,4 +90,12 @@
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
     </repositories>
-</project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <version>1.8.2</version>
+            </plugin>
+        </plugins>
+    </build></project>

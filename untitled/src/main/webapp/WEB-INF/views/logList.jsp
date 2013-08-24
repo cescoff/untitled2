@@ -26,10 +26,10 @@
                 <table>
                     <tr>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="logname" defaultValue="Log Name"/></td>
-                        <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="logstart" defaultValue="Log start"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="logend" defaultValue="Log end"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="timezone" defaultValue="Time Zone"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="logpoints" defaultValue="Log points"/></td>
+                        <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="distance" defaultValue="Distance"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="status" defaultValue="Status"/></td>
                     </tr><%
             for (Log log: logs) {
@@ -37,10 +37,10 @@
                 pageContext.setAttribute("logEndDate", log.getEndTime()); %>
                     <tr>
                         <td><a href="/ihm/logs/map?logKey=<%=log.getInternalId()%>"><%=log.getName()%></a></td>
-                        <td><userdate:userdatetimeformat value="logStartDate" /></td>
                         <td><userdate:userdatetimeformat value="logEndDate" /></td>
                         <td><%=log.getTimeZoneId()%></td>
                         <td><%=log.getPointCount()%> <messages:message packageName="fr.untitled2.bundle.views.logList" key="trackpoints" defaultValue="trackpoints"/></td>
+                        <td><%=new Double(log.getDistance() / 1000).intValue()%> <messages:message packageName="fr.untitled2.bundle.views.logList" key="kilometer" defaultValue="km"/></td>
                         <td><%
             if (log.isValidated()) { %>
                             <font color="green"><messages:message packageName="fr.untitled2.bundle.views.logList" key="valid" defaultValue="valid"/></font><%
