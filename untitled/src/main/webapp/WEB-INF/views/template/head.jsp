@@ -1,8 +1,8 @@
 <head>
     <!-- JQueryFileUpload -->
     <link type="text/css" rel="stylesheet" href="/stylesheets/jqueryfileupload/jquery.fileupload-ui.css" />
-    <link rel="stylesheet" href="/resources/stylesheets/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="/resources/stylesheets/bootstrap/bootstrap-image-gallery.min.css">
+    <link rel="stylesheet" href="/stylesheets/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/bootstrap/bootstrap-image-gallery.min.css">
     <!-- End JQueryFileUpload -->
     <link type="text/css" rel="stylesheet" href="/stylesheets/basic.css" />
     <link type="text/css" rel="stylesheet" href="/stylesheets/images/galleriffic-2.css" />

@@ -120,7 +120,7 @@
 <jsp:include page="template/footer.jsp" />
         <script src="/resources/jqueryfileupload/vendor/jquery.ui.widget.js"></script>
         <!-- The Templates plugin is included to render the upload/download listings -->
-        <script src="/resources/blueimp/tmpl.min.js"></script>
+        <script src="/resources/blueimp/tmpl.js"></script>
         <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
         <script src="/resources/blueimp/load-image.min.js"></script>
         <!-- The Canvas to Blob plugin is included for image resizing functionality -->
