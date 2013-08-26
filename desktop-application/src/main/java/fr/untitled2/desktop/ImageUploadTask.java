@@ -43,7 +43,8 @@ public class ImageUploadTask extends ImageLocationTask {
         for (File imageFile : imageFiles) {
             if (isNefFile(imageFile)) imageFile = convertIntoJPEG(imageFile);
             try {
-                appEngineOAuthClient.uploadImage(imageFile);
+                //TODO reprendre le code deleté par Git
+//                appEngineOAuthClient.uploadImage(imageFile);
                 progress += remainingPercentage;
                 updateProgress(progress / (2.0 * maxProgress), 2.0 * maxProgress);
                 updateMessage("Uploaded : " + imageFile.getName());

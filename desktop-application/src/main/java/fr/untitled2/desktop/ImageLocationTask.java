@@ -192,10 +192,31 @@ public class ImageLocationTask extends Task<Double> {
                     String commandLine = "/usr/bin/exiftool";
 
                     CommandLine cmdLine = CommandLine.parse(commandLine);
-                    cmdLine.addArgument("-exif:gpslatitude=" + latitude);
-                    cmdLine.addArgument("-exif:gpslongitude=" + longitude);
-                    cmdLine.addArgument("-xmp:gpslatitude=" + latitude);
-                    cmdLine.addArgument("-xmp:gpslongitude=" + longitude);
+                    if (latitude < 0.0) {
+                        cmdLine.addArgument("-exif:gpslatitude=" + Math.abs(latitude));
+                        cmdLine.addArgument("-exif:gpslatituderef=S");
+                    } else {
+                        cmdLine.addArgument("-exif:gpslatitude=" + latitude);
+                        cmdLine.addArgument("-exif:gpslatituderef=N");
+                    }
+                    if (longitude < 0.0) {
+                        cmdLine.addArgument("-exif:gpslongitude=" + Math.abs(longitude) + "W");
+                        cmdLine.addArgument("-exif:gpslongituderef=W");
+                    } else {
+                        cmdLine.addArgument("-exif:gpslongitude=" + longitude);
+                        cmdLine.addArgument("-exif:gpslongituderef=E");
+                    }
+
+                    if (latitude < 0.0) {
+                        cmdLine.addArgument("-xmp:gpslatitude=" + latitude);
+                    } else {
+                        cmdLine.addArgument("-xmp:gpslatitude=" + latitude);
+                    }
+                    if (longitude < 0.0) {
+                        cmdLine.addArgument("-xmp:gpslongitude=" + longitude);
+                    } else {
+                        cmdLine.addArgument("-xmp:gpslongitude=" + longitude);
+                    }
                     cmdLine.addArgument(StringUtils.replace(tempFile.getPath(), " ", "\\ "), true);
 
                     DefaultExecutor executor = new DefaultExecutor();

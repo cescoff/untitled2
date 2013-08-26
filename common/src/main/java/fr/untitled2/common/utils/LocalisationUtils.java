@@ -27,8 +27,22 @@ public class LocalisationUtils {
                 if ((localDateTime.isAfter(startSeg.getDateTime()) || localDateTime.equals(startSeg.getDateTime())) && localDateTime.isBefore(endSeg.getDateTime())) {
                     double vectorMultiplier = (localDateTime.toDateTime().getMillis() - localDateTime.toDateTime().getMillis()) / (endSeg.getDateTime().toDateTime().getMillis() - startSeg.getDateTime().toDateTime().getMillis());
 
-                    double latitude = Math.abs((1 - vectorMultiplier) * endSeg.getLatitude() - vectorMultiplier * startSeg.getLatitude());
-                    double longitude = Math.abs((1 - vectorMultiplier) * endSeg.getLongitude() - vectorMultiplier * startSeg.getLongitude());
+                    double latitude = 0.0;
+                    double longitude = 0.0;
+
+                    if (startSeg.getLatitude() >= 0.0) {
+                        latitude = Math.abs((1 - vectorMultiplier) * endSeg.getLatitude() - vectorMultiplier * startSeg.getLatitude());
+                    }
+                    if (startSeg.getLongitude() >= 0.0) {
+                        longitude = Math.abs((1 - vectorMultiplier) * endSeg.getLongitude() - vectorMultiplier * startSeg.getLongitude());
+                    }
+
+                    if (startSeg.getLatitude() < 0.0) {
+                        latitude = -1.0 * (Math.abs((1 - vectorMultiplier) * endSeg.getLatitude() - vectorMultiplier * startSeg.getLatitude()));
+                    }
+                    if (startSeg.getLongitude() < 0.0) {
+                        longitude = - 1.0 * (Math.abs((1 - vectorMultiplier) * startSeg.getLongitude() - vectorMultiplier * endSeg.getLongitude()));
+                    }
 
                     return new Triplet<Double, Double, String>(latitude, longitude, logRecording.getDateTimeZone());
                 }
