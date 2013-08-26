@@ -24,7 +24,7 @@ $(function() {
 
     $('#fileupload').fileupload('option', {
         url: 'add',
-        maxFileSize: 100000000,
+        maxFileSize: 200000000,
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png|nef)$/i,
         process: [
             {
