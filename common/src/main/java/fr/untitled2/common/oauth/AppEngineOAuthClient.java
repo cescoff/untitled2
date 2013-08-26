@@ -20,6 +20,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -190,12 +193,25 @@ public class AppEngineOAuthClient {
     private HttpClient getClient() {
         String proxyHost = System.getProperty("http.proxyHost");
         String proxyPort = System.getProperty("http.proxyPort");
+
+        String proxyUser = System.getProperty("http.proxyUser");
+        String proxyUserPassword = System.getProperty("http.proxyPassword");
+
         HttpClient httpClient = new DefaultHttpClient();
         if (StringUtils.isNotEmpty(proxyHost)) {
             if (StringUtils.isEmpty(proxyPort)) proxyPort = "80";
             HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort));
+
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
+
+        if (StringUtils.isNotEmpty(proxyUser) && StringUtils.isNotEmpty(proxyUserPassword)) {
+            DefaultHttpClient defaultHttpClient = (DefaultHttpClient) httpClient;
+            CredentialsProvider credsProvider = defaultHttpClient.getCredentialsProvider();
+            credsProvider.setCredentials(new AuthScope(proxyHost, Integer.parseInt(proxyPort)), new UsernamePasswordCredentials(proxyUser, proxyUserPassword));
+            defaultHttpClient.setCredentialsProvider(credsProvider);
+        }
+
         return httpClient;
     }
 
