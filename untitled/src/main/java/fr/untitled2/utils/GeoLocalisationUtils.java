@@ -43,8 +43,14 @@ public class GeoLocalisationUtils {
 
                     double vectorMultiplier = (image.getDateTaken().toDateTime().getMillis() - startSeg.getPointDate().toDateTime().getMillis()) / (endSeg.getPointDate().toDateTime().getMillis() - startSeg.getPointDate().toDateTime().getMillis());
 
-                    image.setLatitude(Math.abs((1 - vectorMultiplier) * endSeg.getLatitude() - vectorMultiplier * startSeg.getLatitude()));
-                    image.setLongitude(Math.abs((1 - vectorMultiplier) * endSeg.getLongitude() - vectorMultiplier * startSeg.getLongitude()));
+                    double latitude = Math.abs((1 - vectorMultiplier) * endSeg.getLatitude() - vectorMultiplier * startSeg.getLatitude());
+                    double longitude = Math.abs((1 - vectorMultiplier) * endSeg.getLongitude() - vectorMultiplier * startSeg.getLongitude());
+
+                    if (startSeg.getLatitude() < 0) latitude = -1.0 * latitude;
+                    if (startSeg.getLongitude() < 0) longitude = -1.0 * longitude;
+
+                    image.setLatitude(latitude);
+                    image.setLongitude(longitude);
                     image.setTimeZoneId(log.getTimeZoneId());
                     return;
                 }
