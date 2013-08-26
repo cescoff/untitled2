@@ -24,13 +24,13 @@ $(function() {
 
     $('#fileupload').fileupload('option', {
         url: 'add',
-        maxFileSize: 10000000,
+        maxFileSize: 200000000,
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png|nef)$/i,
         process: [
             {
                 action: 'load',
                 fileTypes: /^image\/(gif|jpeg|png|nef)$/,
-                maxFileSize: 20000000 // 20MB
+                maxFileSize: 200000000 // 20MB
             },
             {
                 action: 'save'
