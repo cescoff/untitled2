@@ -54,7 +54,10 @@
             } %>
                 </table><%
             if (logList.getPageNumber() > 0) {%>
-                <a href="/ihm/logs/list?pageNumber=<%=logList.getPageNumber() - 1%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="previous" defaultValue="Previous"/></a>&nbsp;|&nbsp;<%
+                <a href="/ihm/logs/list?pageNumber=<%=logList.getPageNumber() - 1%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="previous" defaultValue="Previous"/></a><%
+                if (logList.getPageNumber() < logList.getNextPageNumber()) { %>
+                    &nbsp;|&nbsp;<%
+                }
             }
             if (logList.getPageNumber() < logList.getNextPageNumber()) { %>
                 <a href="/ihm/logs/list?pageNumber=<%=logList.getNextPageNumber()%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="next" defaultValue="Next"/></a><%
