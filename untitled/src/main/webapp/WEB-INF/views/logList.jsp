@@ -49,7 +49,7 @@
                             <a href="/ihm/logs/validate-log?logKey=<%=log.getInternalId()%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="validate" defaultValue="validate"/></a><%
             }%>
                         </td>
-                        <td><a href="/ihm/logs/delete-log?logKey=<%=log.getInternalId()%>"><img src="/images/black/trash.png" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="delete" defaultValue="Delete"/>"/></a></td>
+                        <td><a href="/ihm/logs/delete-log?logKey=<%=log.getInternalId()%>"><img src="/images/icons/black/trash.png" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="delete" defaultValue="Delete"/>"/></a></td>
                     </tr><%
             } %>
                 </table><%
