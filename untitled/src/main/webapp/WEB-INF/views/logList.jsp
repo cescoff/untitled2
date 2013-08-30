@@ -30,7 +30,7 @@
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="timezone" defaultValue="Time Zone"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="logpoints" defaultValue="Log points"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="distance" defaultValue="Distance"/></td>
-                        <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="status" defaultValue="Status"/></td>
+                        <td class="caption"><img src="/images/icons/black/check_mark.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="status" defaultValue="Status"/>"/></td>
                         <td class="caption"><img src="/images/icons/black/trash.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="delete" defaultValue="Delete"/>"/></td>
                     </tr><%
             for (Log log: logs) {
@@ -44,9 +44,9 @@
                         <td><%=new Double(log.getDistance() / 1000).intValue()%> <messages:message packageName="fr.untitled2.bundle.views.logList" key="kilometer" defaultValue="km"/></td>
                         <td><%
             if (log.isValidated()) { %>
-                            <font color="green"><messages:message packageName="fr.untitled2.bundle.views.logList" key="valid" defaultValue="valid"/></font><%
+                            <img src="/images/icons/black/sunny.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="valid" defaultValue="valid"/>"/><%
             } else { %>
-                            <a href="/ihm/logs/validate-log?logKey=<%=log.getInternalId()%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="validate" defaultValue="validate"/></a><%
+                            <a href="/ihm/logs/validate-log?logKey=<%=log.getInternalId()%>"><img src="/images/icons/black/check_mark.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="validate" defaultValue="validate"/>"/></a><%
             }%>
                         </td>
                         <td><a href="/ihm/logs/delete-log?logKey=<%=log.getInternalId()%>"><img src="/images/icons/black/trash.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="delete" defaultValue="Delete"/>"/></a></td>
@@ -54,13 +54,10 @@
             } %>
                 </table><%
             if (logList.getPageNumber() > 0) {%>
-                <a href="/ihm/logs/list?pageNumber=<%=logList.getPageNumber() - 1%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="previous" defaultValue="Previous"/></a><%
-                if (logList.getPageNumber() < logList.getNextPageNumber()) { %>
-                    &nbsp;|&nbsp;<%
-                }
+                <a href="/ihm/logs/list?pageNumber=<%=logList.getPageNumber() - 1%>"><img src="/images/icons/black/rewind.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="previous" defaultValue="Previous"/>"/></a><%
             }
             if (logList.getPageNumber() < logList.getNextPageNumber()) { %>
-                <a href="/ihm/logs/list?pageNumber=<%=logList.getNextPageNumber()%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="next" defaultValue="Next"/></a><%
+                <a href="/ihm/logs/list?pageNumber=<%=logList.getNextPageNumber()%>"><img src="/images/icons/black/fast_forward.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.views.logList" key="next" defaultValue="Next"/>"/></a><%
             }
         } else { %>
                 <messages:message packageName="fr.untitled2.bundle.views.logList" key="nologmessage" defaultValue="Ach mein Gott !!! You haven't any logs at the moment, <a href='http://www.mypicturelog.com/start-using-it'>click here</a> to add some logs"/><%
