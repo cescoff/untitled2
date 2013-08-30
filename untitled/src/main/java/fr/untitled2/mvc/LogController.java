@@ -105,6 +105,16 @@ public class LogController extends AuthenticatedController implements Serializab
         return MVCConstants.log_list_view;
     }
 
+    @RequestMapping(value = "/logs/delete-log", method = RequestMethod.GET)
+    public String deleteLog(@RequestParam("logKey") String logKey, Model model) {
+        Objectify objectify = ObjectifyService.ofy();
+        Log logToBeDeleted = objectify.load().key(Key.create(Log.class, logKey)).get();
+        logBusiness.deleteLog(logToBeDeleted);
+
+        list("0", model);
+        return MVCConstants.log_list_view;
+    }
+
     @RequestMapping(value = "/logs/map", method = RequestMethod.GET)
     public String logMap(@RequestParam("logKey") String logKey, Model model) {
         Log log = ObjectifyService.ofy().load().key(Key.create(Log.class, logKey)).get();

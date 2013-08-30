@@ -31,6 +31,7 @@
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="logpoints" defaultValue="Log points"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="distance" defaultValue="Distance"/></td>
                         <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="status" defaultValue="Status"/></td>
+                        <td class="caption"><messages:message packageName="fr.untitled2.bundle.views.logList" key="delete" defaultValue="Delete"/></td>
                     </tr><%
             for (Log log: logs) {
                 pageContext.setAttribute("logStartDate", log.getStartTime());
@@ -48,6 +49,7 @@
                             <a href="/ihm/logs/validate-log?logKey=<%=log.getInternalId()%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="validate" defaultValue="validate"/></a><%
             }%>
                         </td>
+                        <td><a href="/ihm/logs/delete-log?logKey=<%=log.getInternalId()%>"><messages:message packageName="fr.untitled2.bundle.views.logList" key="delete" defaultValue="Delete"/></a></td>
                     </tr><%
             } %>
                 </table><%

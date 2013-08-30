@@ -176,6 +176,7 @@ public class Log {
     @OnLoad
     public void postload() {
         try {
+            // TODO Remove it : dead code
             if (StringUtils.isNotEmpty(jsonPoints)) {
                 TrackPointsHolder trackPointsHolder = JSonUtils.readJson(TrackPointsHolder.class, jsonPoints);
                 this.trackPoints = trackPointsHolder.getTrackPoints();
@@ -202,4 +203,42 @@ public class Log {
         return null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Log log = (Log) o;
+
+        if (Double.compare(log.distance, distance) != 0) return false;
+        if (pointCount != log.pointCount) return false;
+        if (validated != log.validated) return false;
+        if (endTime != null ? !endTime.equals(log.endTime) : log.endTime != null) return false;
+        if (internalId != null ? !internalId.equals(log.internalId) : log.internalId != null) return false;
+        if (name != null ? !name.equals(log.name) : log.name != null) return false;
+        if (realUser != null ? !realUser.equals(log.realUser) : log.realUser != null) return false;
+        if (startTime != null ? !startTime.equals(log.startTime) : log.startTime != null) return false;
+        if (timeZoneId != null ? !timeZoneId.equals(log.timeZoneId) : log.timeZoneId != null) return false;
+        if (user != null ? !user.equals(log.user) : log.user != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = internalId != null ? internalId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (validated ? 1 : 0);
+        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
+        result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
+        temp = Double.doubleToLongBits(distance);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + pointCount;
+        result = 31 * result + (timeZoneId != null ? timeZoneId.hashCode() : 0);
+        result = 31 * result + (realUser != null ? realUser.hashCode() : 0);
+        return result;
+    }
 }

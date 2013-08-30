@@ -8,10 +8,7 @@ import com.google.common.collect.Sets;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import fr.untitled2.business.beans.LogList;
-import fr.untitled2.entities.Log;
-import fr.untitled2.entities.LogStatistics;
-import fr.untitled2.entities.TrackPoint;
-import fr.untitled2.entities.User;
+import fr.untitled2.entities.*;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.DistanceUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -76,18 +74,20 @@ public class LogBusiness {
         Log currentRegisteringLog = getLogInProgress(user, log);
 
         if (currentRegisteringLog != null) {
-            Set<TrackPoint> existingTrackPoints = Sets.newHashSet(currentRegisteringLog.getTrackPoints());
+            Collection<TrackPoint> existingTrackPoints = Sets.newHashSet(currentRegisteringLog.getTrackPoints());
+            if (CollectionUtils.isEmpty(existingTrackPoints)) logger.error("Aucun track points dans la log '" + currentRegisteringLog.getInternalId() + "'");
             for (TrackPoint trackPoint : log.getTrackPoints()) {
                 if (!existingTrackPoints.contains(trackPoint)) {
+                    logger.info("Les points '" + existingTrackPoints + "' ne contiennent pas le point (" + trackPoint + ")");
                     currentRegisteringLog.getTrackPoints().add(trackPoint);
-                }
+                } else logger.info("Le point (" + trackPoint + ") existe dejà");
             }
             Key<Log> logKey = ObjectifyService.ofy().save().entity(currentRegisteringLog).now();
             LogStatistics logStatistics = getLogStatistics(currentRegisteringLog);
             ObjectifyService.ofy().save().entity(logStatistics).now();
             return logKey;
         } else {
-            log.setValidated(true);
+            logger.info("Nouveau log à persister");
             log.setUser(user);
             Key<Log> logKey = ObjectifyService.ofy().save().entity(log).now();
             LogStatistics logStatistics = getLogStatistics(log);
@@ -100,6 +100,14 @@ public class LogBusiness {
     public void updateLogStatistics(Log log) {
         LogStatistics logStatistics = getLogStatistics(log);
         ObjectifyService.ofy().save().entity(logStatistics).now();
+    }
+
+    public void deleteLog(Log log) {
+        LogStatistics logStatistics = getLogStatistics(log);
+        LogTrackPoints logTrackPoints = ObjectifyService.ofy().load().key(Key.create(LogTrackPoints.class, log.getInternalId())).get();
+        ObjectifyService.ofy().delete().entity(log).now();
+        ObjectifyService.ofy().delete().entity(logTrackPoints).now();
+        ObjectifyService.ofy().delete().entity(logStatistics).now();
     }
 
     private LogStatistics getLogStatistics(Log log) {
@@ -149,5 +157,7 @@ public class LogBusiness {
         } while (logList.getNextPageNumber() != 0);
         return null;
     }
+
+
 
 }

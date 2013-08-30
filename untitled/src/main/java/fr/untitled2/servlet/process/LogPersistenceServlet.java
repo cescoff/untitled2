@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,9 +71,10 @@ public class LogPersistenceServlet extends HttpServlet {
             Log log = new Log();
             log.setTimeZoneId(logRecording.getDateTimeZone());
             log.setName(logRecording.getName());
+            List<LogRecording.LogRecord> logRecords = LogRecording.DATE_ORDERING.sortedCopy(logRecording.getRecords());
             if (CollectionUtils.isNotEmpty(logRecording.getRecords())) {
-                log.setStartTime(LogRecording.DATE_ORDERING.sortedCopy(logRecording.getRecords()).get(0).getDateTime());
-                log.setEndTime(LogRecording.DATE_ORDERING.reverse().sortedCopy(logRecording.getRecords()).get(0).getDateTime());
+                log.setStartTime(logRecords.get(0).getDateTime());
+                log.setEndTime(logRecords.get(logRecords.size() - 1).getDateTime());
             }
             log.setUser(user);
             log.setValidated(true);

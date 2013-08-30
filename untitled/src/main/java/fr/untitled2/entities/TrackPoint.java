@@ -86,4 +86,14 @@ public class TrackPoint {
         result = 31 * result + (pointDate != null ? pointDate.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "TrackPoint{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", altitude=" + altitude +
+                ", pointDate=" + pointDate +
+                '}';
+    }
 }
