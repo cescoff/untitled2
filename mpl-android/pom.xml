@@ -55,6 +55,12 @@
             <version>5</version>
             <type>apklib</type>
         </dependency>
+        <dependency>
+            <groupId>com.google.android.gms</groupId>
+            <artifactId>google-play-services</artifactId>
+            <version>5</version>
+            <type>jar</type>
+        </dependency>
         <!-- Exclusions -->
 
         <dependency>
@@ -136,8 +142,8 @@
                     <sdk>
                         <!-- platform or api level (api level 4 = platform 1.6)-->
                         <platform>17</platform>
-                        <path>/Users/corentinescoffier/Developpement/adt-bundle-mac-x86_64-20130219/sdk</path>
-
+                        <!--path>/Users/corentinescoffier/Developpement/adt-bundle-mac-x86_64-20130219/sdk</path-->
+                        <path>C:\Donnees\PERSO\escoffier_c\adt-bundle-windows-x86-20130729\sdk</path>
                     </sdk>
                 </configuration>
             </plugin>
