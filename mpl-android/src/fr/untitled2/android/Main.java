@@ -13,6 +13,7 @@ import com.google.common.base.Throwables;
 import fr.untitled2.android.service.LogRecorder;
 import fr.untitled2.android.i18n.I18nConstants;
 import fr.untitled2.android.service.LogSynchronizer;
+import fr.untitled2.android.service.LogUploader;
 import fr.untitled2.android.settings.Preferences;
 import fr.untitled2.android.sqlilite.DbHelper;
 import fr.untitled2.android.utils.PreferencesUtils;
@@ -33,10 +34,6 @@ public class Main extends Activity {
 
     private DbHelper dbHelper;
 
-    private IBinder synchroServiceBinder;
-
-    private ServiceConnection synchroServiceConnection;
-
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +49,10 @@ public class Main extends Activity {
             this.dbHelper = new DbHelper(getApplicationContext(), preferences);
             if (preferences.isAuto() && !dbHelper.hasCurrentLog()) {
                 startLogService();
-                startSynchroService();
+            }
+
+            if (preferences.isAuto()) {
+                LogUploader.getInstance(dbHelper, preferences).start(this);
             }
 
         } catch (Throwable t) {
@@ -63,11 +63,13 @@ public class Main extends Activity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        this.preferences = getPreferences();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        this.preferences = getPreferences();
     }
 
     @Override
@@ -88,6 +90,7 @@ public class Main extends Activity {
         } catch (Throwable t) {
             Log.e(getLocalClassName(), Throwables.getStackTraceAsString(t));
         }
+        this.preferences = getPreferences();
     }
 
     private Preferences getPreferences() {
@@ -225,23 +228,6 @@ public class Main extends Activity {
         dbHelper.createNewLogInProgress();
         startService(serviceIntent);
         initHomeView();
-    }
-
-    private void startSynchroService() {
-        Intent synchroJobIntent = new Intent(getApplicationContext(), LogSynchronizer.class);
-
-        synchroServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                synchroServiceBinder = service;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                synchroServiceBinder = null;
-            }
-        };
-        bindService(synchroJobIntent, synchroServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void stopLogService() {
