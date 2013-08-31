@@ -12,6 +12,7 @@ import fr.untitled2.common.oauth.AppEngineOAuthClient;
 import fr.untitled2.utils.DistanceUtils;
 import org.javatuples.Pair;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 
 import java.util.concurrent.Executors;
@@ -86,23 +87,28 @@ public class LogUploader {
 
                             Optional<UploadProcessStatus> uploadProcessStatusOptional = dbHelper.getLastUploadStatus();
 
+                            AppEngineOAuthClient appEngineOAuthClient = new AppEngineOAuthClient(preferences.getOauth2Key(), preferences.getOauthSecret());
                             if (isLastUploadTooFarOrTooOld(uploadProcessStatusOptional, lastLogRecord)) {
-                                AppEngineOAuthClient appEngineOAuthClient = new AppEngineOAuthClient(preferences.getOauth2Key(), preferences.getOauthSecret());
                                 appEngineOAuthClient.pushLogRecording(logRecording);
                                 dbHelper.notifyUploadDone(DateTime.now(), lastLogRecord.getLatitude(), lastLogRecord.getLongitude());
-                                if (isItTimeToCreateANewLog(uploadProcessStatusOptional)) {
+                                if (isItTimeToCreateANewLog(logRecording.getStartPointDate())) {
                                     dbHelper.markLogRecordingAsSynchronizedWithCloud(logRecording.getId());
                                     dbHelper.createNewLogInProgress();
                                 }
                             }
+                            for (LogRecording logRecordingToBeUploaded : dbHelper.getLogRecordingToBeSentToCloud()) {
+                                appEngineOAuthClient.pushLogRecording(logRecording);
+                                dbHelper.markLogRecordingAsSynchronizedWithCloud(logRecordingToBeUploaded.getId());
+                            }
+
                         }
                     }
                 } else {
-                    Optional<UploadProcessStatus> uploadProcessStatusOptional = dbHelper.getLastUploadStatus();
-                    if (isItTimeToCreateANewLog(uploadProcessStatusOptional)) {
-                        Optional<LogRecording> logRecordingOptional = dbHelper.getCurrentLog();
-                        if (logRecordingOptional.isPresent()) {
+                    Optional<LogRecording> logRecordingOptional = dbHelper.getCurrentLog();
+                    if (logRecordingOptional.isPresent()) {
+                        if (isItTimeToCreateANewLog(logRecordingOptional.get().getStartPointDate())) {
                             dbHelper.markLogasToBeSent(logRecordingOptional.get().getId());
+                            dbHelper.createNewLogInProgress();
                         }
                     }
                 }
@@ -112,9 +118,8 @@ public class LogUploader {
 
         }
 
-        private boolean isItTimeToCreateANewLog(Optional<UploadProcessStatus> uploadProcessStatusOptional) {
-            if (!uploadProcessStatusOptional.isPresent()) return false;
-            return uploadProcessStatusOptional.get().getLastUploadDate().getHourOfDay() < preferences.getAutoModeSyncHourOfDay() && DateTime.now().getHourOfDay() >= preferences.getAutoModeSyncHourOfDay();
+        private boolean isItTimeToCreateANewLog(LocalDateTime currentLogStart) {
+            return currentLogStart.isBefore(getChangeLogDateTime());
         }
 
         private boolean isLastUploadTooFarOrTooOld(Optional<UploadProcessStatus> uploadProcessStatusOptional, LogRecording.LogRecord lastLogRecord) {
@@ -125,6 +130,12 @@ public class LogUploader {
                             || DistanceUtils.getDistance(
                             Pair.with(uploadProcessStatusOptional.get().getLastPointLatitude(), uploadProcessStatusOptional.get().getLastPointLongitude()),
                             Pair.with(lastLogRecord.getLatitude(), lastLogRecord.getLongitude())) > preferences.getMinDistance());
+        }
+
+        private LocalDateTime getChangeLogDateTime() {
+            LocalDateTime result = LocalDateTime.now().withHourOfDay(preferences.getAutoModeSyncHourOfDay()).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
+            if (DateTime.now().getHourOfDay() < preferences.getAutoModeSyncHourOfDay()) result = result.minusDays(1);
+            return result;
         }
 
     }

@@ -73,12 +73,13 @@ public class LogBusiness {
     public Key<Log> persistLog(User user, Log log) {
         Log currentRegisteringLog = getLogInProgress(user, log);
 
+        LocalDateTime logEnd = currentRegisteringLog.getEndTime();
+
         if (currentRegisteringLog != null) {
-            Collection<TrackPoint> existingTrackPoints = Sets.newHashSet(currentRegisteringLog.getTrackPoints());
-            if (CollectionUtils.isEmpty(existingTrackPoints)) logger.error("Aucun track points dans la log '" + currentRegisteringLog.getInternalId() + "'");
+
             for (TrackPoint trackPoint : log.getTrackPoints()) {
-                if (!existingTrackPoints.contains(trackPoint)) {
-                    logger.info("Les points '" + existingTrackPoints + "' ne contiennent pas le point (" + trackPoint + ")");
+                if (trackPoint.getPointDate().isAfter(logEnd)) {
+                    logger.info("Les points existants ne contiennent pas le point (" + trackPoint + ")");
                     currentRegisteringLog.getTrackPoints().add(trackPoint);
                 } else logger.info("Le point (" + trackPoint + ") existe dejà");
             }
