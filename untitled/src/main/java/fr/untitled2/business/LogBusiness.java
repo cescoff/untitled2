@@ -47,8 +47,22 @@ public class LogBusiness {
                 } else {
                     result.setTimeZoneId(timeZoneId);
                 }
-                if (result.getStartTime() != null) result.setStartTime(result.getStartTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
-                if (result.getEndTime() != null) result.setEndTime(result.getEndTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
+
+                if (result.getStartTime().isAfter(LocalDateTime.now().minusHours(24).toDateTime(DateTimeZone.UTC).toLocalDateTime())) {
+                    LogStatistics logStatistics = getLogStatistics(log);
+
+                    if (logStatistics != null) {
+                        if (logStatistics.getStart() != null) result.setStartTime(logStatistics.getStart().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
+                        if (logStatistics.getEnd() != null) result.setEndTime(logStatistics.getEnd().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
+                        result.setDistance(logStatistics.getDistance());
+                        result.setPointCount(logStatistics.getPointCount());
+                    }
+
+                } else {
+                    if (result.getStartTime() != null) result.setStartTime(result.getStartTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
+                    if (result.getEndTime() != null) result.setEndTime(result.getEndTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(timeZoneId)).toLocalDateTime());
+                }
+
                 return result;
             }
         });
@@ -71,24 +85,32 @@ public class LogBusiness {
     }
 
     public Key<Log> persistLog(User user, Log log) {
+        logger.info("Debut de la persistence");
         Log currentRegisteringLog = getLogInProgress(user, log);
 
-        LocalDateTime logEnd = currentRegisteringLog.getEndTime();
-
         if (currentRegisteringLog != null) {
+            LogStatistics logStatistics = getLogStatistics(currentRegisteringLog);
+
+            LocalDateTime logEnd = logStatistics.getEnd();
+
+            Collection<TrackPoint> existingTrackPoints = currentRegisteringLog.getTrackPoints();
+
+            if (CollectionUtils.isEmpty(existingTrackPoints)) logger.info("Aucun point n'existe pour le log '" + currentRegisteringLog.getInternalId() + "'");
+            else logger.info("Il existe '" + existingTrackPoints.size() + " points deja enregistres");
 
             for (TrackPoint trackPoint : log.getTrackPoints()) {
-                if (trackPoint.getPointDate().isAfter(logEnd)) {
+                if (logEnd == null || trackPoint.getPointDate().isAfter(logEnd)) {
                     logger.info("Les points existants ne contiennent pas le point (" + trackPoint + ")");
                     currentRegisteringLog.getTrackPoints().add(trackPoint);
-                } else logger.info("Le point (" + trackPoint + ") existe dejà");
+                }
             }
+
             Key<Log> logKey = ObjectifyService.ofy().save().entity(currentRegisteringLog).now();
-            LogStatistics logStatistics = getLogStatistics(currentRegisteringLog);
+            logStatistics = getLogStatistics(currentRegisteringLog);
             ObjectifyService.ofy().save().entity(logStatistics).now();
             return logKey;
         } else {
-            logger.info("Nouveau log à persister");
+            logger.info("Nouveau log à persister (" + log.getStartTime() + ")");
             log.setUser(user);
             Key<Log> logKey = ObjectifyService.ofy().save().entity(log).now();
             LogStatistics logStatistics = getLogStatistics(log);
@@ -112,7 +134,9 @@ public class LogBusiness {
     }
 
     private LogStatistics getLogStatistics(Log log) {
-        LogStatistics logStatistics = new LogStatistics();
+
+        LogStatistics logStatistics = ObjectifyService.ofy().load().key(Key.create(LogStatistics.class, log.getInternalId())).get();
+        if (logStatistics == null) logStatistics = new LogStatistics();
         logStatistics.setLogKey(log.getInternalId());
         logStatistics.setPointCount(log.getTrackPoints().size());
 
@@ -143,19 +167,16 @@ public class LogBusiness {
     }
 
     private Log getLogInProgress(User user, Log log) {
-        int pageNumber = 0;
+        for (Log existingLog : ObjectifyService.ofy().load().type(Log.class).filter("user", user)) {
+            LogStatistics logStatistics = getLogStatistics(existingLog);
 
-        LogList logList = null;
-
-        do {
-            logList = getLogList(pageNumber, user);
-
-            for (Log existingLog : logList.getLogs()) {
-                if (existingLog.getStartTime() != null && existingLog.getStartTime().equals(log.getStartTime()) && existingLog.getTimeZoneId().equals(log.getTimeZoneId())) return existingLog;
+            if (logStatistics != null && logStatistics.getStart() != null && logStatistics.getStart().equals(log.getStartTime()) && existingLog.getTimeZoneId().equals(log.getTimeZoneId())) {
+                existingLog.setStartTime(logStatistics.getStart());
+                existingLog.setEndTime(logStatistics.getEnd());
+                return existingLog;
             }
+        }
 
-            pageNumber++;
-        } while (logList.getNextPageNumber() != 0);
         return null;
     }
 

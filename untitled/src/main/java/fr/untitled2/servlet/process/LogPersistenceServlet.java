@@ -1,5 +1,6 @@
 package fr.untitled2.servlet.process;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileReadChannel;
 import com.google.appengine.api.files.FileService;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -66,7 +68,8 @@ public class LogPersistenceServlet extends HttpServlet {
 
             LogRecording logRecording = logPersistenceJob.getLogRecording();
 
-            logger.info("LogRecording Chargé : " + logRecording);
+            if (logRecording.getRecords() != null) logger.info("LogRecording Chargé : " + logRecording.getRecords().size());
+            else logger.info("LogRecording Chargé : " + logRecording.getRecords());
 
             Log log = new Log();
             log.setTimeZoneId(logRecording.getDateTimeZone());
@@ -76,7 +79,7 @@ public class LogPersistenceServlet extends HttpServlet {
                 log.setStartTime(logRecords.get(0).getDateTime());
                 log.setEndTime(logRecords.get(logRecords.size() - 1).getDateTime());
             }
-            log.setUser(user);
+
             log.setValidated(true);
 
             for (LogRecording.LogRecord logRecord : logRecording.getRecords()) {

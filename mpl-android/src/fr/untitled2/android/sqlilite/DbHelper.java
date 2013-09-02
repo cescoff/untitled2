@@ -193,7 +193,7 @@ public class DbHelper extends SQLiteOpenHelper {
         Collection<LogRecording> result = Lists.newArrayList();
         Cursor cursor = getReadableDatabase().query(LOG_TABLE_NAME, new String[]{COLUMN_ID, COLUMN_TIME_ZONE, COLUMN_NAME, COLUMN_POINT_COUNT, COLUMN_DISTANCE, COLUMN_LAST_POINT_DATE, COLUMN_LAST_POINT_LATITUDE, COLUMN_LAST_POINT_LONGITUDE, COLUMN_POINTS_FILE}, COLUMN_STATUS + "=?", new String[]{LogStatus.to_be_sent_to_cloud.toString()}, null, null, null);
         cursor.moveToFirst();
-        while (cursor.isAfterLast()) {
+        while (!cursor.isAfterLast()) {
             result.add(getLogRecordingFromCursor(cursor));
             cursor.moveToNext();
         }

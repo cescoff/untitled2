@@ -3,12 +3,14 @@ package fr.untitled2.android.service;
 import android.app.Activity;
 import android.util.Log;
 import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 import fr.untitled2.android.entities.UploadProcessStatus;
 import fr.untitled2.android.settings.Preferences;
 import fr.untitled2.android.sqlilite.DbHelper;
 import fr.untitled2.android.utils.NetUtils;
 import fr.untitled2.common.entities.LogRecording;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
+import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.DistanceUtils;
 import org.javatuples.Pair;
 import org.joda.time.DateTime;
@@ -57,7 +59,7 @@ public class LogUploader {
     }
 
     public void stop() {
-        uploadHandle.cancel(true);
+        if (uploadHandle != null) uploadHandle.cancel(true);
         dbHelper.markUploadProcessAsStopped();
     }
 
@@ -94,6 +96,11 @@ public class LogUploader {
                                 if (isItTimeToCreateANewLog(logRecording.getStartPointDate())) {
                                     dbHelper.markLogRecordingAsSynchronizedWithCloud(logRecording.getId());
                                     dbHelper.createNewLogInProgress();
+                                    if (CollectionUtils.isNotEmpty(logRecording.getRecords())) {
+                                        LogRecording.LogRecord logRecord = LogRecording.DATE_ORDERING.reverse().sortedCopy(logRecording.getRecords()).get(0);
+                                        logRecord.setDateTime(LocalDateTime.now());
+                                        dbHelper.addRecordToCurrentLog(logRecord);
+                                    }
                                 }
                             }
                             for (LogRecording logRecordingToBeUploaded : dbHelper.getLogRecordingToBeSentToCloud()) {
@@ -109,17 +116,23 @@ public class LogUploader {
                         if (isItTimeToCreateANewLog(logRecordingOptional.get().getStartPointDate())) {
                             dbHelper.markLogasToBeSent(logRecordingOptional.get().getId());
                             dbHelper.createNewLogInProgress();
+                            if (CollectionUtils.isNotEmpty(logRecordingOptional.get().getRecords())) {
+                                LogRecording.LogRecord logRecord = LogRecording.DATE_ORDERING.reverse().sortedCopy(logRecordingOptional.get().getRecords()).get(0);
+                                logRecord.setDateTime(LocalDateTime.now());
+                                dbHelper.addRecordToCurrentLog(logRecord);
+                            }
                         }
                     }
                 }
             } catch (Throwable t) {
+                String stackTrace = Throwables.getStackTraceAsString(t);
                 Log.e(getClass().getName(), "An error has occured while uplaoding logrecording", t);
             }
 
         }
 
         private boolean isItTimeToCreateANewLog(LocalDateTime currentLogStart) {
-            return currentLogStart.isBefore(getChangeLogDateTime());
+            return !getChangeLogDateTime().toLocalDate().equals(currentLogStart.toLocalDate());
         }
 
         private boolean isLastUploadTooFarOrTooOld(Optional<UploadProcessStatus> uploadProcessStatusOptional, LogRecording.LogRecord lastLogRecord) {
@@ -127,7 +140,7 @@ public class LogUploader {
             return uploadProcessStatusOptional.isPresent()
                     && (
                     new Period(uploadProcessStatusOptional.get().getLastUploadDate(), DateTime.now()).toStandardDuration().getMillis() > preferences.getFrequency()
-                            || DistanceUtils.getDistance(
+                            && DistanceUtils.getDistance(
                             Pair.with(uploadProcessStatusOptional.get().getLastPointLatitude(), uploadProcessStatusOptional.get().getLastPointLongitude()),
                             Pair.with(lastLogRecord.getLatitude(), lastLogRecord.getLongitude())) > preferences.getMinDistance());
         }

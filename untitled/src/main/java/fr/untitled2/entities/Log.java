@@ -10,6 +10,8 @@ import fr.untitled2.utils.JSonUtils;
 import fr.untitled2.utils.SignUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -25,6 +27,8 @@ import java.util.Collections;
  */
 @Entity @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD)
 public class Log {
+
+    private static Logger logger = LoggerFactory.getLogger(Log.class);
 
     @Id
     private String internalId;
@@ -59,9 +63,6 @@ public class Log {
     @Ignore
     private User realUser;
 
-    @XmlTransient
-    private String jsonPoints;
-
     public String getInternalId() {
         return internalId;
     }
@@ -91,7 +92,9 @@ public class Log {
     }
 
     public Collection<TrackPoint> getTrackPoints() {
-        if (CollectionUtils.isNotEmpty(trackPoints)) return trackPoints;
+        if (CollectionUtils.isNotEmpty(trackPoints)) {
+            return trackPoints;
+        }
         if (StringUtils.isEmpty(internalId)) internalId = calculateInternalId();
         if (StringUtils.isNotEmpty(internalId)) {
             LogTrackPoints logTrackPoints = ObjectifyService.ofy().load().key(Key.create(LogTrackPoints.class, internalId)).get();
@@ -104,19 +107,23 @@ public class Log {
         return this.trackPoints;
     }
 
-    public void setTrackPoints(Collection<TrackPoint> trackPoints) {
+    public void setTrackPoints(Collection<TrackPoint> newTrackPoints) {
         LogTrackPoints logTrackPoints = null;
 
-        if (StringUtils.isNotEmpty(internalId)) ObjectifyService.ofy().load().key(Key.create(LogTrackPoints.class, internalId)).get();
+        if (newTrackPoints != null) logger.info("setTrackPoints[trackPoints]:" + newTrackPoints.size());
+
+        if (StringUtils.isNotEmpty(internalId)) logTrackPoints = ObjectifyService.ofy().load().key(Key.create(LogTrackPoints.class, internalId)).get();
         if (logTrackPoints == null) {
             logTrackPoints = new LogTrackPoints();
             if (StringUtils.isNotEmpty(internalId)) logTrackPoints.setLogId(internalId);
             else logTrackPoints.setLogId(calculateInternalId());
+        } else if (logTrackPoints.getTrackPoints() != null) {
+            logger.info("setTrackPoints[logTrackPoints.getTrackPoints().size()]:" + logTrackPoints.getTrackPoints().size());
         }
-        logTrackPoints.setTrackPoints(trackPoints);
+        logTrackPoints.setTrackPoints(newTrackPoints);
+        logger.info("setTrackPoints[logTrackPoints.getTrackPoints().size()2]:" + logTrackPoints.getTrackPoints().size());
         ObjectifyService.ofy().save().entity(logTrackPoints).now();
-        this.jsonPoints = null;
-        this.trackPoints = trackPoints;
+        this.trackPoints = newTrackPoints;
     }
 
     public User getUser() {
@@ -148,6 +155,14 @@ public class Log {
         return distance;
     }
 
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void setPointCount(int pointCount) {
+        this.pointCount = pointCount;
+    }
+
     public int getPointCount() {
         return pointCount;
     }
@@ -161,7 +176,7 @@ public class Log {
         result.internalId = this.internalId;
         result.user = this.user;
         result.validated = this.validated;
-        result.trackPoints.addAll(this.trackPoints);
+        result.trackPoints = this.trackPoints;
         result.distance = this.distance;
         result.pointCount = this.pointCount;
         return result;
@@ -175,12 +190,8 @@ public class Log {
 
     @OnLoad
     public void postload() {
+
         try {
-            // TODO Remove it : dead code
-            if (StringUtils.isNotEmpty(jsonPoints)) {
-                TrackPointsHolder trackPointsHolder = JSonUtils.readJson(TrackPointsHolder.class, jsonPoints);
-                this.trackPoints = trackPointsHolder.getTrackPoints();
-            }
             LogStatistics logStatistics = ObjectifyService.ofy().load().key(Key.create(LogStatistics.class, internalId)).get();
             if (logStatistics != null) {
                 this.distance = logStatistics.getDistance();

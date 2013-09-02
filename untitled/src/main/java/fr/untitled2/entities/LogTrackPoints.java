@@ -1,6 +1,7 @@
 package fr.untitled2.entities;
 
 import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Sets;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.*;
@@ -9,11 +10,14 @@ import fr.untitled2.utils.SignUtils;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -26,6 +30,8 @@ import java.util.zip.GZIPOutputStream;
  */
 @Entity
 public class LogTrackPoints {
+
+    private static Logger logger = LoggerFactory.getLogger(LogTrackPoints.class);
 
     @Id
     private String logId;
@@ -55,8 +61,10 @@ public class LogTrackPoints {
 
     @OnSave
     public void prepersist() {
+        if (trackPoints != null) logger.info("prepersist:[trackPoints.size()]" + trackPoints.size());
         TrackPointsHolder trackPointsHolder = new TrackPointsHolder();
-        trackPointsHolder.getTrackPoints().addAll(this.trackPoints);
+        trackPointsHolder.setTrackPoints(this.trackPoints);
+
         if (this.trackPoints.size() > 8500) {
             gzip = true;
             try {

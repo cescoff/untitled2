@@ -10,7 +10,9 @@ import com.google.common.base.Throwables;
 import fr.untitled2.android.i18n.I18nConstants;
 import fr.untitled2.android.service.LogRecorder;
 import fr.untitled2.android.service.LogSynchronizer;
+import fr.untitled2.android.service.LogUploader;
 import fr.untitled2.android.settings.Preferences;
+import fr.untitled2.android.sqlilite.DbHelper;
 import fr.untitled2.android.utils.PreferencesUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -26,10 +28,13 @@ public class Settings extends Activity {
 
     private String selectedTimeZoneRegion;
 
+    private DbHelper dbHelper;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.dbHelper = new DbHelper(getApplicationContext(), preferences);
         if (savedInstanceState != null && savedInstanceState.containsKey(selected_region)) selectedTimeZoneRegion = savedInstanceState.getString(selected_region);
         try {
             super.onCreate(savedInstanceState);
@@ -86,12 +91,12 @@ public class Settings extends Activity {
 
             CheckBox autoModeCheckBox = (CheckBox) findViewById(R.id.AutoModeCheckBox);
             autoModeCheckBox.setChecked(preferences.isAuto());
-            autoModeCheckBox.setOnCheckedChangeListener(OnAutoMode());
+            autoModeCheckBox.setOnCheckedChangeListener(OnAutoMode(this));
 
             Spinner autoModeSyncHourOfDaySpinner = (Spinner) findViewById(R.id.AutoModeSyncHourOfDaySpinner);
             ArrayAdapter<Integer> autoModeSyncHourOfDayAdapter = new ArrayAdapter<Integer>(getApplicationContext(), android.R.layout.simple_spinner_item, new Integer[]{0, 1, 2, 4, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23});
             autoModeSyncHourOfDaySpinner.setAdapter(autoModeSyncHourOfDayAdapter);
-            autoModeSyncHourOfDaySpinner.setOnItemSelectedListener(OnSelectSyncHourOfDay());
+            autoModeSyncHourOfDaySpinner.setOnItemSelectedListener(OnSelectSyncHourOfDay(this));
             autoModeSyncHourOfDaySpinner.setSelection(preferences.getAutoModeSyncHourOfDay());
             if (!preferences.isAuto()) autoModeSyncHourOfDaySpinner.setVisibility(View.GONE);
 
@@ -249,7 +254,7 @@ public class Settings extends Activity {
 
     }
 
-    CompoundButton.OnCheckedChangeListener OnAutoMode() {
+    CompoundButton.OnCheckedChangeListener OnAutoMode(final Activity activity) {
 
         return new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -264,10 +269,14 @@ public class Settings extends Activity {
                 if (isChecked) autoModeSyncHourOfDaySpinner.setVisibility(View.VISIBLE);
                 else autoModeSyncHourOfDaySpinner.setVisibility(View.GONE);
                 autoModeSyncHourOfDaySpinner.setSelection(preferences.getAutoModeSyncHourOfDay());
-                autoModeSyncHourOfDaySpinner.setOnItemSelectedListener(OnSelectSyncHourOfDay());
+                autoModeSyncHourOfDaySpinner.setOnItemSelectedListener(OnSelectSyncHourOfDay(activity));
 
                 preferences.setAuto(isChecked);
                 savePreferences();
+                
+                LogUploader logUploader = LogUploader.getInstance(dbHelper, preferences);
+                logUploader.stop();
+                logUploader.start(activity);
             }
         };
 
@@ -297,15 +306,15 @@ public class Settings extends Activity {
         };
 
     }
-    AdapterView.OnItemSelectedListener OnSelectSyncHourOfDay() {
+    AdapterView.OnItemSelectedListener OnSelectSyncHourOfDay(final Activity activity) {
 
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 preferences.setAutoModeSyncHourOfDay(position);
                 savePreferences();
-                Intent stopServiceIntent = new Intent(getApplicationContext(), LogSynchronizer.class);
-                stopService(stopServiceIntent);
+                LogUploader.getInstance(dbHelper, preferences).stop();
+                LogUploader.getInstance(dbHelper, preferences).start(activity);
             }
 
             @Override

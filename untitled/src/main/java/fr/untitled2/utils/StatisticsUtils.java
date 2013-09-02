@@ -86,7 +86,7 @@ public class StatisticsUtils {
             result.setMinMaxLongitude(Pair.with(minLong, maxLong));
             result.setTotalDistance(totalDistance);
             result.setCenter(Pair.with((maxLat+minLat)/ 2, (maxLong + minLong) / 2));
-        } else {
+        } else if (sortedTrackPoints.size() > 0) {
             TrackPoint onlyPoint = sortedTrackPoints.get(0);
             result.setCenter(Pair.with(onlyPoint.getLatitude(), onlyPoint.getLongitude()));
             result.setTotalDistance(0.0);

@@ -47,14 +47,17 @@ public class Main extends Activity {
             }
 
             this.dbHelper = new DbHelper(getApplicationContext(), preferences);
-            if (preferences.isAuto() && !dbHelper.hasCurrentLog()) {
-                startLogService();
-            }
 
-            if (preferences.isAuto()) {
-                LogUploader.getInstance(dbHelper, preferences).start(this);
-            }
+            if (savedInstanceState == null || !savedInstanceState.getBoolean(log_started)) {
+                if (preferences.isAuto()) {
+                    startLogService();
+                }
 
+                if (preferences.isAuto()) {
+                    LogUploader.getInstance(dbHelper, preferences).start(this);
+                }
+            }
+            initHomeView();
         } catch (Throwable t) {
             Log.e(getLocalClassName(), Throwables.getStackTraceAsString(t));
         }
@@ -80,6 +83,9 @@ public class Main extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (outState != null) {
+            outState.putBoolean(log_started, dbHelper.hasCurrentLog());
+        }
     }
 
     @Override
@@ -225,7 +231,7 @@ public class Main extends Activity {
 
     private void startLogService() {
         Intent serviceIntent = new Intent(getApplicationContext(), LogRecorder.class);
-        dbHelper.createNewLogInProgress();
+        if (!dbHelper.hasCurrentLog()) dbHelper.createNewLogInProgress();
         startService(serviceIntent);
         initHomeView();
     }

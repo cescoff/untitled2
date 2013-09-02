@@ -51,7 +51,7 @@ public class Preferences {
 
     public static String default_user_id = "unknown";
 
-    public static int default_auto_mode_sync_hour_of_day = 9;
+    public static int default_auto_mode_sync_hour_of_day = 7;
 
     public static ApplicationSettingsMode default_settings_modes = ApplicationSettingsMode.high;
 
