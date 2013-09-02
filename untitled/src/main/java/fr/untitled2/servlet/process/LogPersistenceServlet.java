@@ -4,6 +4,9 @@ import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileReadChannel;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import fr.untitled2.business.LogBusiness;
@@ -91,6 +94,10 @@ public class LogPersistenceServlet extends HttpServlet {
             ObjectifyService.ofy().delete().entity(logPersistenceJob);
         } catch (Throwable t) {
             logger.error("Un erreur s'est produite lors du traitement du fichier '" + logPersistenceJobKey + "'", t);
+            Queue queue = QueueFactory.getQueue(ServletConstants.log_persistence_queue_name);
+
+            TaskOptions taskOptions = TaskOptions.Builder.withUrl("/logPersistence").param(ServletConstants.log_peristence_job_key, logPersistenceJobKey);
+            queue.add(taskOptions);
         }
     }
 
