@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import fr.untitled2.android.entities.UploadProcessStatus;
 import fr.untitled2.android.settings.Preferences;
 import fr.untitled2.android.utils.JSonParser;
 import fr.untitled2.common.entities.FilmCounter;
@@ -46,6 +47,8 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String FILM_COUNTER_TABLE_NAME = "filmcounter";
 
+    private static final String UPLOAD_PROCESS_TABLE_NAME = "uploadprocess";
+
     private static final int DATABASE_VERSION = 1;
 
     private static final String COLUMN_ID = "_id";
@@ -69,6 +72,19 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String COLUMN_POINT_COUNT = "pointcnt";
 
     private static final String COLUMN_DISTANCE = "distance";
+
+    private static final String COLUMN_LAST_UPLOAD_DATE = "lastuploaddate";
+
+    private static final String COLUMN_UPLOAD_LAST_POINT_LATITUDE = "uploadlastpointlat";
+
+    private static final String COLUMN_UPLOAD_LAST_POINT_LONGITUDE = "uploadlastpointlon";
+
+    private static final String UPLOAD_PROCESS_TABLE_CREATE = "create table "
+            + UPLOAD_PROCESS_TABLE_NAME + "("
+                + COLUMN_ID + " integer primary key autoincrement, "
+                + COLUMN_LAST_UPLOAD_DATE + " text not null, "
+                + COLUMN_UPLOAD_LAST_POINT_LATITUDE + " text not null, "
+                + COLUMN_UPLOAD_LAST_POINT_LONGITUDE + " text not null)";
 
     private static final String LOG_TABLE_CREATE = "create table "
             + LOG_TABLE_NAME + "("
@@ -110,6 +126,12 @@ public class DbHelper extends SQLiteOpenHelper {
         } catch (Throwable t) {
             getWritableDatabase().execSQL(LOG_TABLE_CREATE);
             getWritableDatabase().execSQL(LOG_STATUS_INDEX_CREATE);
+        }
+
+        try {
+            getReadableDatabase().query(UPLOAD_PROCESS_TABLE_NAME, new String[]{COLUMN_ID}, null, null, null, null, null);
+        } catch (Throwable t) {
+            getWritableDatabase().execSQL(UPLOAD_PROCESS_TABLE_CREATE);
         }
 
         try {
@@ -287,6 +309,50 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
         return result;
+    }
+
+    public Optional<UploadProcessStatus> getLastUploadStatus() {
+        Cursor cursor = getReadableDatabase().query(UPLOAD_PROCESS_TABLE_NAME, new String[]{COLUMN_ID, COLUMN_LAST_UPLOAD_DATE, COLUMN_UPLOAD_LAST_POINT_LATITUDE, COLUMN_UPLOAD_LAST_POINT_LONGITUDE}, null, null, null, null, null);
+        cursor.moveToFirst();
+
+        if (!cursor.isAfterLast()) {
+            Long id = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
+            DateTime uploadDate = new DateTime(cursor.getString(cursor.getColumnIndex(COLUMN_LAST_UPLOAD_DATE)));
+            double latitude = Double.parseDouble(cursor.getString(cursor.getColumnIndex(COLUMN_UPLOAD_LAST_POINT_LATITUDE)));
+            double longitude = Double.parseDouble(cursor.getString(cursor.getColumnIndex(COLUMN_UPLOAD_LAST_POINT_LONGITUDE)));
+
+            return Optional.of(new UploadProcessStatus(id, uploadDate, latitude, longitude));
+        } else {
+            return Optional.absent();
+        }
+    }
+
+    public void notifyUploadDone(DateTime uploadDate, double latitude, double longitude) {
+        Cursor cursor = getReadableDatabase().query(UPLOAD_PROCESS_TABLE_NAME, new String[]{COLUMN_ID, COLUMN_LAST_UPLOAD_DATE, COLUMN_UPLOAD_LAST_POINT_LATITUDE, COLUMN_UPLOAD_LAST_POINT_LONGITUDE}, null, null, null, null, null);
+        cursor.moveToFirst();
+
+        if (cursor.isAfterLast()) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COLUMN_LAST_UPLOAD_DATE, uploadDate.toString());
+            contentValues.put(COLUMN_UPLOAD_LAST_POINT_LATITUDE, latitude);
+            contentValues.put(COLUMN_UPLOAD_LAST_POINT_LONGITUDE, longitude);
+            getWritableDatabase().insert(UPLOAD_PROCESS_TABLE_NAME, null, contentValues);
+        } else {
+            ContentValues contentValues = new ContentValues();
+            Long id = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
+            contentValues.put(COLUMN_LAST_UPLOAD_DATE, uploadDate.toString());
+            contentValues.put(COLUMN_UPLOAD_LAST_POINT_LATITUDE, latitude);
+            contentValues.put(COLUMN_UPLOAD_LAST_POINT_LONGITUDE, longitude);
+            getWritableDatabase().update(UPLOAD_PROCESS_TABLE_NAME, contentValues, COLUMN_ID + "=?", new String[]{"" + id});
+        }
+    }
+
+    public void markUploadProcessAsStopped() {
+        Optional<UploadProcessStatus> uploadProcessStatusOptional = getLastUploadStatus();
+        if (uploadProcessStatusOptional.isPresent()) {
+            long id = uploadProcessStatusOptional.get().getId();
+            getWritableDatabase().delete(UPLOAD_PROCESS_TABLE_NAME, COLUMN_ID + "=?", new String[]{"" + id});
+        }
     }
 
     private FilmCounter createNewFilmCounterInProgress() {
