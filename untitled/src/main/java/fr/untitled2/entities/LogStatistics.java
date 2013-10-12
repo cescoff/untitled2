@@ -1,6 +1,7 @@
 package fr.untitled2.entities;
 
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Translate;
@@ -14,6 +15,7 @@ import org.joda.time.LocalDateTime;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
+@Cache
 public class LogStatistics {
 
     @Id

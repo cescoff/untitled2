@@ -28,7 +28,7 @@ import java.util.zip.GZIPOutputStream;
  * Time: 11:02
  * To change this template use File | Settings | File Templates.
  */
-@Entity
+@Entity @Cache
 public class LogTrackPoints {
 
     private static Logger logger = LoggerFactory.getLogger(LogTrackPoints.class);
@@ -106,5 +106,27 @@ public class LogTrackPoints {
         } catch (Throwable t) {
             throw new IllegalStateException("Enable to read json trackpoints", t);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LogTrackPoints that = (LogTrackPoints) o;
+
+        if (gzip != that.gzip) return false;
+        if (json != null ? !json.equals(that.json) : that.json != null) return false;
+        if (logId != null ? !logId.equals(that.logId) : that.logId != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = logId != null ? logId.hashCode() : 0;
+        result = 31 * result + (gzip ? 1 : 0);
+        result = 31 * result + (json != null ? json.hashCode() : 0);
+        return result;
     }
 }

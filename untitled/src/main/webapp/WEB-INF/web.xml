@@ -80,6 +80,10 @@
 
     <!-- API Servlet -->
     <servlet>
+        <servlet-name>ServerServlet</servlet-name>
+        <servlet-class>fr.untitled2.servlet.api.ServerServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ApiPing</servlet-name>
         <servlet-class>fr.untitled2.servlet.api.PingServlet</servlet-class>
     </servlet>
@@ -151,6 +155,10 @@
     </servlet-mapping>
 
     <!-- API -->
+    <servlet-mapping>
+        <servlet-name>ServerServlet</servlet-name>
+        <url-pattern>/api/server/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ApiUserInfos</servlet-name>
         <url-pattern>/api/userInfos</url-pattern>

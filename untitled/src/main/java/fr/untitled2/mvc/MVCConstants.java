@@ -57,6 +57,13 @@ public abstract class MVCConstants {
 
     public static String log_map_view = "logMap";
 
+    /** Servers **/
+    public static String server_list_view = "serverList";
+
+    public static String server_connect_view = "serverConnect";
+
+    public static String server_details_view = "serverDetails";
+
     /** Map views **/
 
     public static String map_list_attribute = "mapList";

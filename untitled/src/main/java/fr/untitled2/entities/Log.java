@@ -25,7 +25,7 @@ import java.util.Collections;
  * Time: 5:48 PM
  * To change this template use File | Settings | File Templates.
  */
-@Entity @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD)
+@Entity @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD) @Cache
 public class Log {
 
     private static Logger logger = LoggerFactory.getLogger(Log.class);
@@ -52,7 +52,6 @@ public class Log {
     @Ignore
     private double distance;
 
-    @Ignore
     private int pointCount;
 
     private String timeZoneId;
@@ -221,14 +220,10 @@ public class Log {
 
         Log log = (Log) o;
 
-        if (Double.compare(log.distance, distance) != 0) return false;
         if (pointCount != log.pointCount) return false;
         if (validated != log.validated) return false;
-        if (endTime != null ? !endTime.equals(log.endTime) : log.endTime != null) return false;
         if (internalId != null ? !internalId.equals(log.internalId) : log.internalId != null) return false;
         if (name != null ? !name.equals(log.name) : log.name != null) return false;
-        if (realUser != null ? !realUser.equals(log.realUser) : log.realUser != null) return false;
-        if (startTime != null ? !startTime.equals(log.startTime) : log.startTime != null) return false;
         if (timeZoneId != null ? !timeZoneId.equals(log.timeZoneId) : log.timeZoneId != null) return false;
         if (user != null ? !user.equals(log.user) : log.user != null) return false;
 
@@ -237,19 +232,12 @@ public class Log {
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = internalId != null ? internalId.hashCode() : 0;
+        int result = internalId != null ? internalId.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (validated ? 1 : 0);
-        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
-        result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
-        temp = Double.doubleToLongBits(distance);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + pointCount;
         result = 31 * result + (timeZoneId != null ? timeZoneId.hashCode() : 0);
-        result = 31 * result + (realUser != null ? realUser.hashCode() : 0);
         return result;
     }
 }

@@ -26,6 +26,9 @@ public class InitServlet extends HttpServlet {
         ObjectifyService.register(LogStatistics.class);
         ObjectifyService.register(LogPersistenceJob.class);
         ObjectifyService.register(LogTrackPoints.class);
+        ObjectifyService.register(BatchServer.class);
+        ObjectifyService.register(PendingBatchServer.class);
+        ObjectifyService.register(File.class);
     }
 
 }

@@ -48,7 +48,7 @@ public class LogBusiness {
                     result.setTimeZoneId(timeZoneId);
                 }
 
-                if (result.getStartTime().isAfter(LocalDateTime.now().minusHours(24).toDateTime(DateTimeZone.UTC).toLocalDateTime())) {
+                if (result.getStartTime() == null || result.getStartTime().isAfter(LocalDateTime.now().minusHours(24).toDateTime(DateTimeZone.UTC).toLocalDateTime())) {
                     LogStatistics logStatistics = getLogStatistics(log);
 
                     if (logStatistics != null) {
@@ -107,6 +107,9 @@ public class LogBusiness {
 
             Key<Log> logKey = ObjectifyService.ofy().save().entity(currentRegisteringLog).now();
             logStatistics = getLogStatistics(currentRegisteringLog);
+            currentRegisteringLog.setPointCount(logStatistics.getPointCount());
+
+            ObjectifyService.ofy().save().entity(currentRegisteringLog).now();
             ObjectifyService.ofy().save().entity(logStatistics).now();
             return logKey;
         } else {
@@ -114,6 +117,8 @@ public class LogBusiness {
             log.setUser(user);
             Key<Log> logKey = ObjectifyService.ofy().save().entity(log).now();
             LogStatistics logStatistics = getLogStatistics(log);
+            log.setPointCount(logStatistics.getPointCount());
+            ObjectifyService.ofy().save().entity(log).now();
             ObjectifyService.ofy().save().entity(logStatistics).now();
             return logKey;
         }

@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.*;
+import java.io.File;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -19,8 +20,8 @@ import java.util.zip.GZIPOutputStream;
 public class LogPersistenceJobTest {
     @Test
     public void testGZIP() throws Exception {
-        File inputFile = new File("C:\\Donnees\\PERSO\\escoffier_c\\untitled\\untitled2\\untitled\\src\\main\\java\\fr\\untitled2\\entities\\LogPersistenceJob.java");
-        File outPutFile = new File("C:\\Documents and Settings\\escoffier_c\\Bureau\\test.txt");
+        java.io.File inputFile = new java.io.File("C:\\Donnees\\PERSO\\escoffier_c\\untitled\\untitled2\\untitled\\src\\main\\java\\fr\\untitled2\\entities\\LogPersistenceJob.java");
+        java.io.File outPutFile = new java.io.File("C:\\Documents and Settings\\escoffier_c\\Bureau\\test.txt");
 
         String fileString = toString(inputFile);
 

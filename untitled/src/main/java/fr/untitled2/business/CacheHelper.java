@@ -1,7 +1,12 @@
 package fr.untitled2.business;
 
+import com.google.common.collect.Lists;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.ObjectifyService;
 import fr.untitled2.business.beans.ImageList;
 import fr.untitled2.business.beans.LightWeightImage;
+import fr.untitled2.entities.BatchServer;
 import fr.untitled2.entities.Image;
 import fr.untitled2.entities.PictureMap;
 import fr.untitled2.entities.User;

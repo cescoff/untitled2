@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Server List</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="serverList"></div>
+        <script>
+            data = { hostIpAddress: "192.168.0.1"}
+            $.ajax({
+                type: "POST",
+                url: "/api/server/serverList",
+                data: data,
+                success: displayServerList,
+                dataType: "json"
+            });
+
+            function displayServerList(result) {
+                $("serverList").append("Success");
+            }
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib>
+    <tlibversion>1.0</tlibversion>
+    <jspversion>1.1</jspversion>
+    <shortname>servers</shortname>
+    <info>Sample taglib for Substr operation</info>
+    <uri>http://viralpatel.net/blogs/jsp/taglib/substr</uri>
+    <tag>
+        <name>servers</name>
+        <tagclass>fr.untitled2.tags.MyServerButtonTagSupport</tagclass>
+        <info>Display server messages</info>
+        <attribute>
+            <name>href</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>imgSrc</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>messageResourceBundleKey</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>packageName</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>defaultValue</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+</taglib>

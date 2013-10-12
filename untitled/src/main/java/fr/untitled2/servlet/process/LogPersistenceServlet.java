@@ -63,38 +63,40 @@ public class LogPersistenceServlet extends HttpServlet {
 
             LogPersistenceJob logPersistenceJob = ObjectifyService.ofy().load().key(Key.create(LogPersistenceJob.class, logPersistenceJobKey)).get();
 
-            logger.info("Chargement du user '" + logPersistenceJob.getUserKey() + "'");
+            if (logPersistenceJob != null) {
+                logger.info("Chargement du user '" + logPersistenceJob.getUserKey() + "'");
 
-            User user = ObjectifyService.ofy().load().key(logPersistenceJob.getUserKey()).get();
+                User user = ObjectifyService.ofy().load().key(logPersistenceJob.getUserKey()).get();
 
-            logger.info("User chargé : '" + user + "'");
+                logger.info("User chargé : '" + user + "'");
 
-            LogRecording logRecording = logPersistenceJob.getLogRecording();
+                LogRecording logRecording = logPersistenceJob.getLogRecording();
 
-            if (logRecording.getRecords() != null) logger.info("LogRecording Chargé : " + logRecording.getRecords().size());
-            else logger.info("LogRecording Chargé : " + logRecording.getRecords());
+                if (logRecording.getRecords() != null) logger.info("LogRecording Chargé : " + logRecording.getRecords().size());
+                else logger.info("LogRecording Chargé : " + logRecording.getRecords());
 
-            Log log = new Log();
-            log.setTimeZoneId(logRecording.getDateTimeZone());
-            log.setName(logRecording.getName());
-            List<LogRecording.LogRecord> logRecords = LogRecording.DATE_ORDERING.sortedCopy(logRecording.getRecords());
-            if (CollectionUtils.isNotEmpty(logRecording.getRecords())) {
-                log.setStartTime(logRecords.get(0).getDateTime());
-                log.setEndTime(logRecords.get(logRecords.size() - 1).getDateTime());
+                Log log = new Log();
+                log.setTimeZoneId(logRecording.getDateTimeZone());
+                log.setName(logRecording.getName());
+                List<LogRecording.LogRecord> logRecords = LogRecording.DATE_ORDERING.sortedCopy(logRecording.getRecords());
+                if (CollectionUtils.isNotEmpty(logRecording.getRecords())) {
+                    log.setStartTime(logRecords.get(0).getDateTime());
+                    log.setEndTime(logRecords.get(logRecords.size() - 1).getDateTime());
+                }
+
+                log.setValidated(true);
+
+                for (LogRecording.LogRecord logRecord : logRecording.getRecords()) {
+                    TrackPoint trackPoint = new TrackPoint();
+                    trackPoint.setPointDate(logRecord.getDateTime());
+                    trackPoint.setLatitude(logRecord.getLatitude());
+                    trackPoint.setLongitude(logRecord.getLongitude());
+                    log.getTrackPoints().add(trackPoint);
+                }
+
+                logBusiness.persistLog(user, log);
+                ObjectifyService.ofy().delete().entity(logPersistenceJob);
             }
-
-            log.setValidated(true);
-
-            for (LogRecording.LogRecord logRecord : logRecording.getRecords()) {
-                TrackPoint trackPoint = new TrackPoint();
-                trackPoint.setPointDate(logRecord.getDateTime());
-                trackPoint.setLatitude(logRecord.getLatitude());
-                trackPoint.setLongitude(logRecord.getLongitude());
-                log.getTrackPoints().add(trackPoint);
-            }
-
-            logBusiness.persistLog(user, log);
-            ObjectifyService.ofy().delete().entity(logPersistenceJob);
         } catch (Throwable t) {
             logger.error("Un erreur s'est produite lors du traitement du fichier '" + logPersistenceJobKey + "'", t);
             Queue queue = QueueFactory.getQueue(ServletConstants.log_persistence_queue_name);
