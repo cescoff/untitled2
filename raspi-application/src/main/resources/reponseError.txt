@@ -1,0 +1,64 @@
+2013-09-29 10:13:10 INFO  RegisterProcess:59 - Starting status process
+2013-09-29 10:13:10 INFO  RegisterProcess:91 - Server is not connected
+2013-09-29 10:13:10 INFO  RegisterProcess:93 - No service id found, it will be created soon
+2013-09-29 10:13:16 DEBUG SingleClientConnManager:195 - Get connection for route HttpRoute[{s}->https://x5-teak-clarity-4.appspot.com]
+2013-09-29 10:13:19 DEBUG RequestAddCookies:131 - CookieSpec selected: best-match
+2013-09-29 10:13:20 DEBUG DefaultHttpClient:481 - Attempt 1 to execute request
+2013-09-29 10:13:20 DEBUG DefaultClientConnection:244 - Sending request: POST /_ah/OAuthGetRequestToken HTTP/1.1
+2013-09-29 10:13:20 DEBUG wire:78 - >> "POST /_ah/OAuthGetRequestToken HTTP/1.1[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - >> "Authorization: OAuth oauth_callback="oob", oauth_consumer_key="1068597606057.apps.googleusercontent.com", oauth_nonce="-7818329931753888885", oauth_signature="QMLVlxyE9qjgbyqUBKr1AxEzxME%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1380449591", oauth_version="1.0"[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - >> "Content-Length: 0[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - >> "Host: x5-teak-clarity-4.appspot.com[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - >> "Connection: Keep-Alive[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - >> "User-Agent: Apache-HttpClient/4.0.1 (java 1.5)[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - >> "[EOL]"
+2013-09-29 10:13:20 DEBUG headers:248 - >> POST /_ah/OAuthGetRequestToken HTTP/1.1
+2013-09-29 10:13:20 DEBUG headers:251 - >> Authorization: OAuth oauth_callback="oob", oauth_consumer_key="1068597606057.apps.googleusercontent.com", oauth_nonce="-7818329931753888885", oauth_signature="QMLVlxyE9qjgbyqUBKr1AxEzxME%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1380449591", oauth_version="1.0"
+2013-09-29 10:13:20 DEBUG headers:251 - >> Content-Length: 0
+2013-09-29 10:13:20 DEBUG headers:251 - >> Host: x5-teak-clarity-4.appspot.com
+2013-09-29 10:13:20 DEBUG headers:251 - >> Connection: Keep-Alive
+2013-09-29 10:13:20 DEBUG headers:251 - >> User-Agent: Apache-HttpClient/4.0.1 (java 1.5)
+2013-09-29 10:13:20 DEBUG wire:78 - << "HTTP/1.1 400 Bad Request[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - << "Date: Sun, 29 Sep 2013 12:15:05 GMT[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - << "Content-Type: text/html; charset=UTF-8[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - << "Server: Google Frontend[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - << "Content-Length: 273[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - << "Alternate-Protocol: 443:quic[EOL]"
+2013-09-29 10:13:20 DEBUG wire:78 - << "[EOL]"
+2013-09-29 10:13:20 DEBUG DefaultClientConnection:229 - Receiving response: HTTP/1.1 400 Bad Request
+2013-09-29 10:13:20 DEBUG headers:232 - << HTTP/1.1 400 Bad Request
+2013-09-29 10:13:20 DEBUG headers:235 - << Date: Sun, 29 Sep 2013 12:15:05 GMT
+2013-09-29 10:13:20 DEBUG headers:235 - << Content-Type: text/html; charset=UTF-8
+2013-09-29 10:13:20 DEBUG headers:235 - << Server: Google Frontend
+2013-09-29 10:13:20 DEBUG headers:235 - << Content-Length: 273
+2013-09-29 10:13:20 DEBUG headers:235 - << Alternate-Protocol: 443:quic
+2013-09-29 10:13:20 DEBUG DefaultHttpClient:540 - Connection can be kept alive indefinitely
+2013-09-29 10:13:20 DEBUG wire:64 - << "[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "<html><head>[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "<meta http-equiv="content-type" content="text/html;charset=utf-8">[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "<title>400 Bad Request</title>[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "</head>[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "<body text=#000000 bgcolor=#ffffff>[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "<h1>Error: Bad Request</h1>[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "<h2>Your client has issued a malformed or illegal request.</h2>[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "<h2></h2>[\n]"
+2013-09-29 10:13:20 DEBUG wire:64 - << "</body></html>[\n]"
+2013-09-29 10:13:20 DEBUG SingleClientConnManager:250 - Releasing connection org.apache.http.impl.conn.SingleClientConnManager$ConnAdapter@e549e7
+2013-09-29 10:13:20 ERROR RegisterProcess:86 - An error has occured while registering server
+oauth.signpost.exception.OAuthCommunicationException: Communication with the service provider failed: Service provider responded in error: 400 (Bad Request)
+	at oauth.signpost.AbstractOAuthProvider.retrieveToken(AbstractOAuthProvider.java:218)
+	at oauth.signpost.AbstractOAuthProvider.retrieveRequestToken(AbstractOAuthProvider.java:74)
+	at fr.untitled2.common.oauth.AppEngineOAuthClient.getTokenValidationUrl(AppEngineOAuthClient.java:100)
+	at fr.untitled2.raspi.thread.RegisterProcess.register(RegisterProcess.java:99)
+	at fr.untitled2.raspi.thread.RegisterProcess.run(RegisterProcess.java:63)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:304)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:178)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:724)
+Caused by: oauth.signpost.exception.OAuthCommunicationException: Service provider responded in error: 400 (Bad Request)
+	at oauth.signpost.AbstractOAuthProvider.handleUnexpectedResponse(AbstractOAuthProvider.java:245)
+	at oauth.signpost.AbstractOAuthProvider.retrieveToken(AbstractOAuthProvider.java:193)
+	... 11 more

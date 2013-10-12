@@ -150,6 +150,7 @@ public class Main extends Activity {
             TextView lastLatitude = (TextView) findViewById(R.id.LastLatitude);
             TextView lastLongitude = (TextView) findViewById(R.id.LastLongitude);
             TextView lastPointDate = (TextView) findViewById(R.id.LastPointDate);
+            TextView distance = (TextView) findViewById(R.id.Distance);
 
             TextView logNameLabel = (TextView) findViewById(R.id.LogNameLabel);
             TextView timeZoneLabel = (TextView) findViewById(R.id.TimeZoneLabel);
@@ -157,6 +158,7 @@ public class Main extends Activity {
             TextView lastLatitudeLabel = (TextView) findViewById(R.id.LastLatitudeLabel);
             TextView lastLongitudeLabel = (TextView) findViewById(R.id.LastLongitudeLabel);
             TextView lastPointDateLabel = (TextView) findViewById(R.id.LastPointDateLabel);
+            TextView distanceLabel = (TextView) findViewById(R.id.DistanceLabel);
 
             logNameLabel.setText(preferences.getTranslation(I18nConstants.logstart_name) + " : ");
             timeZoneLabel.setText(preferences.getTranslation(I18nConstants.logstart_time_zone) + " : ");
@@ -164,6 +166,7 @@ public class Main extends Activity {
             lastLatitudeLabel.setText(preferences.getTranslation(I18nConstants.logstart_latitude) + " : ");
             lastLongitudeLabel.setText(preferences.getTranslation(I18nConstants.logstart_longitude) + " : ");
             lastPointDateLabel.setText(preferences.getTranslation(I18nConstants.logstart_date) + " : ");
+            distanceLabel.setText(preferences.getTranslation(I18nConstants.logstart_distance) + " : ");
 
             Optional<LogRecording> logRecordingOptional = dbHelper.getCurrentLog();
             if (isLogServiceAlive() && logRecordingOptional.isPresent()) {
@@ -194,16 +197,29 @@ public class Main extends Activity {
                     lastPointDate.setText(preferences.getDateTimeFormatter().print(lastPoint.getDateTime().toDateTime(DateTimeZone.UTC).toDateTime(DateTimeZone.forID(logRecording.getDateTimeZone()))));
                     lastPointDateLabel.setVisibility(View.VISIBLE);
                     lastPointDate.setVisibility(View.VISIBLE);
+
+                    if (logRecording.getDistance() > 0) {
+                        distance.setVisibility(View.VISIBLE);
+                        distanceLabel.setVisibility(View.VISIBLE);
+                        if (logRecording.getDistance() > 1000) distance.setText(" " + new Double(logRecording.getDistance() / 1000) + "km");
+                        else distance.setText(new Double(logRecording.getDistance()).intValue() + "m");
+                    } else {
+                        distance.setVisibility(View.GONE);
+                        distanceLabel.setVisibility(View.GONE);
+                    }
+
                 } else {
                     pointCount.setVisibility(View.GONE);
                     lastLatitude.setVisibility(View.GONE);
                     lastLongitude.setVisibility(View.GONE);
                     lastPointDate.setVisibility(View.GONE);
+                    distance.setVisibility(View.GONE);
 
                     pointCountLabel.setVisibility(View.GONE);
                     lastLatitudeLabel.setVisibility(View.GONE);
                     lastLongitudeLabel.setVisibility(View.GONE);
                     lastPointDateLabel.setVisibility(View.GONE);
+                    distanceLabel.setVisibility(View.GONE);
                 }
             } else {
                 logNameLabel.setVisibility(View.GONE);

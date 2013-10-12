@@ -37,6 +37,7 @@
     <string id="LastLongitudeLabel" name="LastLongitudeLabel">Last Longitude : </string>
     <string id="LastLongitude" name="LastLongitude"/>
     <string id="LastPointDateLabel" name="LastPointDateLabel">Last Point Date : </string>
+    <string id="DistanceLabel" name="DistanceLabel">Distance : </string>
     <string id="LastPointDate" name="LastPointDate"/>
     <string id="LogHomeButton" name="LogHomeButton">Home</string>
     <string id="LogStartNewLog" name="LogStartNewLog">Start new log</string>

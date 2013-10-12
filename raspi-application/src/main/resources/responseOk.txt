@@ -1,0 +1,39 @@
+2013-09-29 14:32:26 INFO  RegisterProcess:59 - Starting status process
+2013-09-29 14:32:26 INFO  RegisterProcess:91 - Server is not connected
+2013-09-29 14:32:26 INFO  RegisterProcess:93 - No service id found, it will be created soon
+2013-09-29 14:32:26 DEBUG SingleClientConnManager:195 - Get connection for route HttpRoute[{s}->https://x5-teak-clarity-4.appspot.com]
+2013-09-29 14:32:27 DEBUG RequestAddCookies:131 - CookieSpec selected: best-match
+2013-09-29 14:32:27 DEBUG DefaultHttpClient:481 - Attempt 1 to execute request
+2013-09-29 14:32:27 DEBUG DefaultClientConnection:244 - Sending request: POST /_ah/OAuthGetRequestToken HTTP/1.1
+2013-09-29 14:32:27 DEBUG wire:78 - >> "POST /_ah/OAuthGetRequestToken HTTP/1.1[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - >> "Authorization: OAuth oauth_callback="oob", oauth_consumer_key="1068597606057.apps.googleusercontent.com", oauth_nonce="-7360772843356785350", oauth_signature="9ZLi4bxfUnr18nz4LS0NzEeQqOU%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1380457946", oauth_version="1.0"[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - >> "Content-Length: 0[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - >> "Host: x5-teak-clarity-4.appspot.com[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - >> "Connection: Keep-Alive[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - >> "User-Agent: Apache-HttpClient/4.0.1 (java 1.5)[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - >> "[EOL]"
+2013-09-29 14:32:27 DEBUG headers:248 - >> POST /_ah/OAuthGetRequestToken HTTP/1.1
+2013-09-29 14:32:27 DEBUG headers:251 - >> Authorization: OAuth oauth_callback="oob", oauth_consumer_key="1068597606057.apps.googleusercontent.com", oauth_nonce="-7360772843356785350", oauth_signature="9ZLi4bxfUnr18nz4LS0NzEeQqOU%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1380457946", oauth_version="1.0"
+2013-09-29 14:32:27 DEBUG headers:251 - >> Content-Length: 0
+2013-09-29 14:32:27 DEBUG headers:251 - >> Host: x5-teak-clarity-4.appspot.com
+2013-09-29 14:32:27 DEBUG headers:251 - >> Connection: Keep-Alive
+2013-09-29 14:32:27 DEBUG headers:251 - >> User-Agent: Apache-HttpClient/4.0.1 (java 1.5)
+2013-09-29 14:32:27 DEBUG wire:78 - << "HTTP/1.1 200 OK[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - << "Date: Sun, 29 Sep 2013 12:32:24 GMT[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - << "Content-Type: text/html[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - << "Server: Google Frontend[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - << "Content-Length: 88[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - << "Alternate-Protocol: 443:quic[EOL]"
+2013-09-29 14:32:27 DEBUG wire:78 - << "[EOL]"
+2013-09-29 14:32:27 DEBUG DefaultClientConnection:229 - Receiving response: HTTP/1.1 200 OK
+2013-09-29 14:32:27 DEBUG headers:232 - << HTTP/1.1 200 OK
+2013-09-29 14:32:27 DEBUG headers:235 - << Date: Sun, 29 Sep 2013 12:32:24 GMT
+2013-09-29 14:32:27 DEBUG headers:235 - << Content-Type: text/html
+2013-09-29 14:32:27 DEBUG headers:235 - << Server: Google Frontend
+2013-09-29 14:32:27 DEBUG headers:235 - << Content-Length: 88
+2013-09-29 14:32:27 DEBUG headers:235 - << Alternate-Protocol: 443:quic
+2013-09-29 14:32:27 DEBUG DefaultHttpClient:540 - Connection can be kept alive indefinitely
+2013-09-29 14:32:27 DEBUG wire:78 - << "oauth_token=4%2Fpo56_nFCym0LVi_kkNhvYoQNA2Ha&oauth_token_secret=ePmg__XIWT5ekoM3IyyqeE0J"
+2013-09-29 14:32:27 DEBUG SingleClientConnManager:250 - Releasing connection org.apache.http.impl.conn.SingleClientConnManager$ConnAdapter@4d72c9d1
+2013-09-29 14:32:27 INFO  RegisterProcess:104 - Notifying the cloud of the new instance
+2013-09-29 14:32:27 ERROR RegisterProcess:86 - An error has occured while registering server

@@ -108,9 +108,10 @@ public class LogRecording implements Serializable {
     }
 
     public LocalDateTime getStartPointDate() {
-        if (records.size() == 0) return null;
-        records = DATE_ORDERING.sortedCopy(records);
-        return records.get(0).getDateTime();
+        List<LogRecord> allRecords = getRecords();
+        if (allRecords.size() == 0) return null;
+        allRecords = DATE_ORDERING.sortedCopy(allRecords);
+        return allRecords.get(0).getDateTime();
     }
 
     public LocalDateTime getEndPointDate() {

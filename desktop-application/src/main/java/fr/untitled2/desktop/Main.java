@@ -32,7 +32,7 @@ import java.net.PasswordAuthentication;
 
 public class Main extends Application {
 
-    public static final String configuration_file_name = ".myPictureLog";
+    public static final String configuration_file_name = ".myPictureLogClient.xml";
 
     private Label handleFileTextField;
 

@@ -134,10 +134,10 @@ public class LogList extends Activity {
                 // Change the icon for Windows and iPhone
                 if (recordings[position].getStatus() == DbHelper.LogStatus.to_be_sent_to_cloud) {
                     uploadButton.setImageResource(R.drawable.up_arrow);
-                    uploadButton.setOnClickListener(OnClickOnLogToUpload(recordings[position].getLogRecording()));
                 } else if (recordings[position].getStatus() == DbHelper.LogStatus.log_in_progress) uploadButton.setImageResource(R.drawable.padlock);
                 else if (recordings[position].getStatus() == DbHelper.LogStatus.in_cloud) uploadButton.setImageResource(R.drawable.cloudy);
                 else if (recordings[position].getStatus() == DbHelper.LogStatus.upload_in_progress) uploadButton.setImageResource(R.drawable.rss);
+                uploadButton.setOnClickListener(OnClickOnLogToUpload(recordings[position].getLogRecording(), recordings[position].getStatus()));
 
                 ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.LogListDeleteButton);
                 deleteButton.setImageResource(R.drawable.recycle_bin);
@@ -154,25 +154,25 @@ public class LogList extends Activity {
         return NetUtils.isConnected(this);
     }
 
-    AdapterView.OnClickListener OnClickOnLogToUpload(final LogRecording logRecording) {
+    AdapterView.OnClickListener OnClickOnLogToUpload(final LogRecording logRecording, final DbHelper.LogStatus logStatus) {
 
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getUploadAlertDialog(logRecording).show();
+                getUploadAlertDialog(logRecording, logStatus).show();
             }
         };
 
     }
 
-    private AlertDialog getUploadAlertDialog(final LogRecording logRecording) {
+    private AlertDialog getUploadAlertDialog(final LogRecording logRecording, final DbHelper.LogStatus logStatus) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle(preferences.getTranslation(I18nConstants.loglist_uploadalerttitle));
         alertDialogBuilder.setPositiveButton(preferences.getTranslation(I18nConstants.loglist_uploadyes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    AsyncTask<Long, Integer, Integer> asyncTask = UploadLog();
+                    AsyncTask<Long, Integer, Integer> asyncTask = UploadLog(logStatus);
                     asyncTask.execute(logRecording.getId());
 //                    asyncTask.get();
                     initListView();
@@ -323,7 +323,7 @@ public class LogList extends Activity {
 
     }
 
-    AsyncTask<Long, Integer, Integer> UploadLog() {
+    AsyncTask<Long, Integer, Integer> UploadLog(final DbHelper.LogStatus logStatus) {
 
         return new AsyncTask<Long, Integer, Integer>() {
             @Override
@@ -336,7 +336,7 @@ public class LogList extends Activity {
                         return 0;
                     }
                     long logRecordingId = params[0];
-                    dbHelper.markLogRecordingAsUploadInProgress(logRecordingId);
+                    if (logStatus != DbHelper.LogStatus.log_in_progress) dbHelper.markLogRecordingAsUploadInProgress(logRecordingId);
                     publishProgress(1000);
                     initListView();
                     if (!preferences.isConnected()) {
@@ -351,7 +351,7 @@ public class LogList extends Activity {
                         try {
                             appEngineOAuthClient.pushLogRecording(dbHelper.getLogRecordingFromId(logRecordingId));
                             publishProgress(8000);
-                            dbHelper.markLogRecordingAsSynchronizedWithCloud(logRecordingId);
+                            if (logStatus != DbHelper.LogStatus.log_in_progress) dbHelper.markLogRecordingAsSynchronizedWithCloud(logRecordingId);
                             publishProgress(10000);
                         } catch (Throwable throwable) {
                             publishProgress(10000);

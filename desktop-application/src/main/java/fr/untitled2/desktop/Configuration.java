@@ -19,7 +19,7 @@ public class Configuration {
     private String oAuthAccessKey;
 
     @XmlElement
-    private String oAuthAccessSecret;
+        private String oAuthAccessSecret;
 
     public String getoAuthAccessKey() {
         return oAuthAccessKey;

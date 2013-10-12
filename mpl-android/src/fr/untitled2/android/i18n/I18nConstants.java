@@ -26,6 +26,7 @@ public abstract class I18nConstants {
     public static final I18nResourceKey logstart_latitude = new I18nResourceKey(logstart_bundle_name, "log.latitude", "Latitude");
     public static final I18nResourceKey logstart_longitude = new I18nResourceKey(logstart_bundle_name, "log.longitude", "Longitude");
     public static final I18nResourceKey logstart_date = new I18nResourceKey(logstart_bundle_name, "log.date", "Date");
+    public static final I18nResourceKey logstart_distance = new I18nResourceKey(logstart_bundle_name, "log.distance", "Distance");
     public static final I18nResourceKey logstart_startnew = new I18nResourceKey(logstart_bundle_name, "log.startnew", "Start");
     public static final I18nResourceKey logstart_not_available = new I18nResourceKey(logstart_bundle_name, "log.notavailable", "Stop");
     public static final I18nResourceKey logstart_stoplog = new I18nResourceKey(logstart_bundle_name, "log.stoplog", "Stop");
