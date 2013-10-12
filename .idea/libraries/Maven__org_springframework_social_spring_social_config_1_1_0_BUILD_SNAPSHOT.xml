@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.springframework.social:spring-social-config:1.1.0.BUILD-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/social/spring-social-config/1.1.0.BUILD-SNAPSHOT/spring-social-config-1.1.0.BUILD-20130826.081521-387.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/social/spring-social-config/1.1.0.BUILD-SNAPSHOT/spring-social-config-1.1.0.BUILD-20131005.081530-424.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/social/spring-social-config/1.1.0.BUILD-SNAPSHOT/spring-social-config-1.1.0.BUILD-20130826.081521-387-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/social/spring-social-config/1.1.0.BUILD-SNAPSHOT/spring-social-config-1.1.0.BUILD-20131005.081530-424-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/social/spring-social-config/1.1.0.BUILD-SNAPSHOT/spring-social-config-1.1.0.BUILD-20130826.081521-387-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/social/spring-social-config/1.1.0.BUILD-SNAPSHOT/spring-social-config-1.1.0.BUILD-20131005.081530-424-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

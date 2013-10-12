@@ -12,6 +12,7 @@
         <module>common</module>
         <module>desktop-application</module>
         <module>mpl-android</module>
+        <module>raspi-application</module>
     </modules>
 
   <dependencies>

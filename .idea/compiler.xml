@@ -25,6 +25,7 @@
         <module name="common" />
         <module name="desktop-application" />
         <module name="mpl-android" />
+        <module name="raspi-application" />
         <module name="untitled" />
         <module name="utils" />
       </profile>
