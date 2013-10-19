@@ -3,17 +3,17 @@ package fr.untitled2.raspi.api;
 /**
  * Created with IntelliJ IDEA.
  * User: corentinescoffier
- * Date: 10/7/13
- * Time: 11:18 PM
+ * Date: 10/13/13
+ * Time: 10:07 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Batchlet<F, T> {
+public abstract class Batchlet {
 
     private BatchContext batchContext;
 
     public abstract void init() throws Exception;
 
-    public abstract T execute(F from) throws Exception;
+    public abstract boolean isThreadSafe();
 
     public BatchContext getBatchContext() {
         return batchContext;

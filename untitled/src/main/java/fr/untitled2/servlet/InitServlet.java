@@ -1,6 +1,7 @@
 package fr.untitled2.servlet;
 
 import com.googlecode.objectify.ObjectifyService;
+import fr.untitled2.common.entities.raspi.PhotoGallery;
 import fr.untitled2.entities.*;
 
 import javax.servlet.http.HttpServlet;
@@ -29,6 +30,9 @@ public class InitServlet extends HttpServlet {
         ObjectifyService.register(BatchServer.class);
         ObjectifyService.register(PendingBatchServer.class);
         ObjectifyService.register(File.class);
+        ObjectifyService.register(BatchTask.class);
+        ObjectifyService.register(Batchlet.class);
+        ObjectifyService.register(Gallery.class);
     }
 
 }

@@ -1,5 +1,6 @@
 package fr.untitled2.raspi.api;
 
+import fr.untitled2.common.entities.UserPreferences;
 import fr.untitled2.common.entities.raspi.FileRef;
 import fr.untitled2.common.entities.raspi.executables.KnownExecutables;
 import org.apache.commons.exec.CommandLine;
@@ -22,7 +23,11 @@ public interface BatchContext {
 
     public File getRemoteFile(FileRef fileRef) throws IOException;
 
+    public <T> String createNewBatchTask(T input, Class<? extends Batchlet> batchletClass) throws Exception;
+
     public File createFile(String fileName) throws IOException;
+
+    public File createTempDir() throws IOException;
 
     public <F, T> T executeRemoteCommand(String commandName, F input, Class<T> outputClass) throws Exception;
 
@@ -41,5 +46,9 @@ public interface BatchContext {
     public void logError(String message);
 
     public void logError(String message, Throwable t);
+
+    public UserPreferences getUserPreferences() throws Exception;
+
+    public String getLogs();
 
 }

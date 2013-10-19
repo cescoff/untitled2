@@ -66,7 +66,7 @@ public class GetServers extends Command<GetServerInput, ServerList, ServerList> 
         serverInfos.setCreationDate(DateTimeFormat.forPattern(user.getDateFormat()).print(batchServer.getCreationDate()));
         if (batchServer.getLastContactDate() != null) {
             serverInfos.setLastContactDateTime(DateTimeFormat.forPattern(user.getDateFormat() + " HH:mm").print(batchServer.getLastContactDate()));
-            serverInfos.setOnLine(LocalDateTime.now().minusMinutes(5).isBefore(batchServer.getLastContactDate()));
+            serverInfos.setOnLine(LocalDateTime.now().minusMinutes(15).isBefore(batchServer.getLastContactDate()));
         } else serverInfos.setOnLine(false);
 
         serverInfos.setServerName(batchServer.getHostName());

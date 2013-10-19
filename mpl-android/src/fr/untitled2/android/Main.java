@@ -228,6 +228,7 @@ public class Main extends Activity {
                 lastLatitudeLabel.setVisibility(View.GONE);
                 lastLongitudeLabel.setVisibility(View.GONE);
                 lastPointDateLabel.setVisibility(View.GONE);
+                distance.setVisibility(View.GONE);
 
                 logName.setVisibility(View.GONE);
                 timeZone.setVisibility(View.GONE);

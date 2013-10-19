@@ -2,11 +2,19 @@ package fr.untitled2.raspi.api.impl;
 
 import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Throwables;
+import fr.untitled2.common.entities.UserPreferences;
+import fr.untitled2.common.entities.raspi.BatchTaskPayload;
 import fr.untitled2.common.entities.raspi.FileRef;
+import fr.untitled2.common.entities.raspi.RegisterBatchTaskPayload;
 import fr.untitled2.common.entities.raspi.executables.KnownExecutables;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
 import fr.untitled2.raspi.api.BatchContext;
-import fr.untitled2.raspi.api.LogLevel;
+import fr.untitled2.common.entities.raspi.LogLevel;
+import fr.untitled2.raspi.api.Batchlet;
+import fr.untitled2.raspi.utils.CommandLineUtils;
+import fr.untitled2.utils.GzipUtils;
+import fr.untitled2.utils.JSonUtils;
+import fr.untitled2.utils.SignUtils;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -92,7 +100,20 @@ public class SimpleBatchContext implements BatchContext {
     }
 
     @Override
+    public <T> String createNewBatchTask(T input, Class<? extends Batchlet> batchletClass) throws Exception {
+        RegisterBatchTaskPayload registerBatchTaskPayload = new RegisterBatchTaskPayload();
+        registerBatchTaskPayload.setZippedPayload(GzipUtils.zipString(JSonUtils.writeJson(input)));
+        registerBatchTaskPayload.setBatchletClass(batchletClass.getName());
+        registerBatchTaskPayload.setServerId(CommandLineUtils.getServerConfig().getServerId());
+
+        BatchTaskPayload batchTaskPayload = appEngineOAuthClient.executeCommand(registerBatchTaskPayload, BatchTaskPayload.class, "registerBatchTask");
+
+        return batchTaskPayload.getBatchTaskId();
+    }
+
+    @Override
     public File createFile(String fileName) throws IOException {
+        if (!workDir.exists()) workDir.mkdirs();
         return new File(workDir, fileName);
     }
 
@@ -152,27 +173,37 @@ public class SimpleBatchContext implements BatchContext {
 
     @Override
     public void logTrace(String message) {
-        if (setupLogLevel.isEnabled(setupLogLevel, LogLevel.TRACE)) log(LogLevel.TRACE, message, null);
+        if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.TRACE)) log(LogLevel.TRACE, message, null);
     }
 
     @Override
     public void logDebug(String message) {
-        if (setupLogLevel.isEnabled(setupLogLevel, LogLevel.DEBUG)) log(LogLevel.DEBUG, message, null);
+        if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.DEBUG)) log(LogLevel.DEBUG, message, null);
     }
 
     @Override
     public void logInfo(String message) {
-        if (setupLogLevel.isEnabled(setupLogLevel, LogLevel.INFO)) log(LogLevel.INFO, message, null);
+        if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.INFO)) log(LogLevel.INFO, message, null);
     }
 
     @Override
     public void logError(String message) {
-        if (setupLogLevel.isEnabled(setupLogLevel, LogLevel.ERROR)) log(LogLevel.ERROR, message, null);
+        if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.ERROR)) log(LogLevel.ERROR, message, null);
     }
 
     @Override
     public void logError(String message, Throwable t) {
-        if (setupLogLevel.isEnabled(setupLogLevel, LogLevel.ERROR)) log(LogLevel.ERROR, message, t);
+        if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.ERROR)) log(LogLevel.ERROR, message, t);
+    }
+
+    private LogLevel getSetupLogLevel() {
+        if (setupLogLevel == null) return LogLevel.INFO;
+        return setupLogLevel;
+    }
+
+    @Override
+    public UserPreferences getUserPreferences() throws Exception {
+        return appEngineOAuthClient.getUserPreferences();
     }
 
     private void log(LogLevel level, String message, Throwable t) {
@@ -181,4 +212,15 @@ public class SimpleBatchContext implements BatchContext {
         log.append(messageBuilder);
     }
 
+    @Override
+    public String getLogs() {
+        return log.toString();
+    }
+
+    @Override
+    public File createTempDir() throws IOException {
+        File tempDir = new File(workDir, SignUtils.calculateSha1Digest(LocalDateTime.now().toString()));
+        if (!tempDir.exists()) tempDir.mkdirs();
+        return tempDir;
+    }
 }

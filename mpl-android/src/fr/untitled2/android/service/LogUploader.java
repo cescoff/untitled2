@@ -141,12 +141,8 @@ public class LogUploader {
             if (currentLogStart == null) return false;
             currentLogStart = currentLogStart.toDateTime(DateTimeZone.UTC).toDateTime(timeZone).toLocalDateTime();
             if (LocalDateTime.now().getHourOfDay() == preferences.getAutoModeSyncHourOfDay()) {
-                if (currentLogStart.toLocalDate().isBefore(LocalDate.now())) {
+                if (currentLogStart.isBefore(LocalDateTime.now().withHourOfDay(preferences.getAutoModeSyncHourOfDay()).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0))) {
                     return true;
-                } else {
-                    if (currentLogStart.getHourOfDay() < preferences.getAutoModeSyncHourOfDay()) {
-                        return true;
-                    }
                 }
             }
             return false;

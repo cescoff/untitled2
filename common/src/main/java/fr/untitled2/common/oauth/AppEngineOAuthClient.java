@@ -1,10 +1,12 @@
 package fr.untitled2.common.oauth;
 
+import com.beust.jcommander.internal.Lists;
 import fr.untitled2.common.entities.FilmCounter;
 import fr.untitled2.common.entities.LogRecording;
 import fr.untitled2.common.entities.UserInfos;
 import fr.untitled2.common.entities.UserPreferences;
 import fr.untitled2.common.entities.raspi.*;
+import fr.untitled2.common.io.TempFileInputStream;
 import fr.untitled2.common.json.JSonMappings;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.JSonUtils;
@@ -34,6 +36,8 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -52,7 +56,7 @@ import java.util.List;
  */
 public class AppEngineOAuthClient {
 
-    private static final long max_upload_file_size = 30 * 1024 * 1024;
+    private static final long max_upload_file_size = 2 * 1024 * 1024;
 
     private static final String FILE_ID_REQ_PARAMETER = "fileId";
 
@@ -228,7 +232,7 @@ public class AppEngineOAuthClient {
             String json = IOUtils.toString(httpResponse.getEntity().getContent());
             if (json == null) throw new IOException("No json returned");
             return JSonUtils.readJson(outputClass, json);
-        } else throw new IOException("Command has not been executed");
+        } else throw new IOException("Command has not been executed status " + httpResponse.getStatusLine().getStatusCode());
     }
 
     public ServerRegistrationConfig registerServer(ServerRegistrationConfig serverRegistrationConfig) throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
@@ -242,6 +246,21 @@ public class AppEngineOAuthClient {
             String json = IOUtils.toString(httpResponse.getEntity().getContent());
             if (json != null) {
                 return JSonUtils.readJson(ServerRegistrationConfig.class, json);
+            } else throw new IOException("Registration failed with service config status null");
+        } else throw new IOException("Registration failed");
+    }
+
+    public Collection<BatchletPayLoad> getAvailableBatchlet() throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
+        HttpGet httpGet = new HttpGet(appUrl + "/api/server/batchletManager");
+        consumer.sign(httpGet);
+
+
+        HttpClient httpClient = getClient();
+        HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpGet);
+        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+            String json = IOUtils.toString(httpResponse.getEntity().getContent());
+            if (json != null) {
+                return JSonUtils.readJson(AvailableBatchlets.class, json).getRegisterdBatchlets();
             } else throw new IOException("Registration failed with service config status null");
         } else throw new IOException("Registration failed");
     }
@@ -265,7 +284,6 @@ public class AppEngineOAuthClient {
                     result = JSonUtils.readJson(FileRef.class, json);
                 } else throw new IOException("Push file failed");
             } else throw new IOException("Push file failed");
-
             for (int index = 0; index < splitedFiles.size(); index++) {
                 httpPost = new HttpPost(appUrl + "/api/server/files/pushLarge/" + aFile.getName() + "?" + FILE_PART_POSITION_REQ_PARAMETER + "=" + index);
                 consumer.sign(httpPost);
@@ -273,7 +291,9 @@ public class AppEngineOAuthClient {
                 FileInputStream fileInputStream = new FileInputStream(splitedFiles.get(index));
                 httpPost.setEntity(new InputStreamEntity(fileInputStream, FileUtils.sizeOf(splitedFiles.get(index))));
 
+                httpClient = getClient();
                 httpResponse = httpClient.execute(commonsAppHost, httpPost);
+                FileUtils.deleteQuietly(splitedFiles.get(index));
                 if (httpResponse.getStatusLine().getStatusCode() != 200) throw new IOException("An error has occured while sending splitted file");
             }
 
@@ -297,15 +317,41 @@ public class AppEngineOAuthClient {
     }
 
     public InputStream getFile(FileRef fileRef) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException {
-        HttpGet httpGet = new HttpGet(appUrl + "/api/server/files/get?fileId=" + fileRef.getId());
+        if (fileRef.isLargeFile())  {
+            List<File> splitedFiles = Lists.newArrayList();
+            File tempDir = FileUtils.getTempDirectory();
+            if (!tempDir.exists()) tempDir.mkdirs();
+            for (int index = 0; index < fileRef.getFilePartCount(); index++) {
+                File tempFile = new File(tempDir, fileRef.getName() + "." + index);
+                HttpGet httpGet = new HttpGet(appUrl + "/api/server/files/getLarge?fileId=" + fileRef.getId() + "&" + FILE_PART_POSITION_REQ_PARAMETER + "=" + index);
 
-        consumer.sign(httpGet);
-        HttpClient httpClient = getClient();
-        HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpGet);
-        if (httpResponse.getStatusLine().getStatusCode() == 200) {
-            return httpResponse.getEntity().getContent();
+                consumer.sign(httpGet);
+                HttpClient httpClient = getClient();
+                HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpGet);
+                if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                    FileOutputStream splitFileOutputStream = new FileOutputStream(tempFile);
+                    IOUtils.copy(httpResponse.getEntity().getContent(), splitFileOutputStream);
+                    splitedFiles.add(tempFile);
+                } else {
+                    FileUtils.deleteQuietly(tempFile);
+                    FileUtils.deleteQuietly(tempDir);
+                    throw new IOException("An error has occured while downloading a file part");
+                }
+            }
+            File rebuiltFile = File.createTempFile("tempRebuilt", "mpl");
+            fr.untitled2.utils.FileUtils.rebuildSplitedFile(splitedFiles, rebuiltFile);
+            return new TempFileInputStream(rebuiltFile);
+        } else {
+            HttpGet httpGet = new HttpGet(appUrl + "/api/server/files/get?fileId=" + fileRef.getId());
+
+            consumer.sign(httpGet);
+            HttpClient httpClient = getClient();
+            HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpGet);
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                return httpResponse.getEntity().getContent();
+            }
+
         }
-
         return null;
     }
 

@@ -21,28 +21,48 @@
 			    <jsp:include page="template/banner.jsp" />
                     <div id="serverList"></div>
                     <script>
-                        data = '{"hostIpAddress":"<%=request.getRemoteAddr()%>"}'
-                        $.ajax({
-                            type: "POST",
-                            url: "/api/server/serverList",
-                            data: data,
-                            success: function (json) {
-                                html = '<table><tr><td class="caption">ServerName</td><td class="caption">CPU Cores</td><td class="caption">Online</td><td class="caption">Connected</td><td class="caption">Uptime</td></tr>';
 
-                                for (index = 0; index < json.servers.length; index++) {
-                                    html += '<tr>';
-                                    html += '<td>' + json.servers[ index ].serverName + '</td>';
-                                    html += '<td>' + json.servers[ index ].cpuCoreCount + ' cores</td>';
-                                    html += '<td>' + json.servers[ index ].onLine + '</td>';
-                                    html += '<td>' + json.servers[ index ].connected + '</td>';
-                                    html += '<td>' + json.servers[ index ].uptime + '</td>';
-                                    html += '</tr>';
-                                }
-                                html += '</table>';
-                                $("#serverList").append(html);
-                            },
-                            dataType: "json"
-                        });
+                        function displayBatchTaskList() {
+                            data = '{"serverId":"<%=request.getParameter("serverId")%>"}'
+                            $.ajax({
+                                type: "POST",
+                                url: "/api/server/getServerBatchTasks",
+                                data: data,
+                                success: function (json) {
+                                    html = '<table><tr><td class="caption">Request ServerName</td><td class="caption">Start</td><td class="caption">End</td><td class="caption">Batchlet Name</td><td class="caption">Logs</td></tr>';
+
+                                    for (index = 0; index < json.descriptions.length; index++) {
+                                        html += '<tr>';
+                                        html += '<td>' + json.descriptions[ index ].requestBatchServerName + '</td>';
+                                        html += '<td>' + json.descriptions[ index ].startDate + '</td>';
+                                        html += '<td>' + json.descriptions[ index ].endDate + '</td>';
+                                        html += '<td>' + json.descriptions[ index ].batchletName + '</td>';
+                                        html += '<td><a href="#" onClick="displayBatcletLogs(\'' + json.descriptions[ index ].batchTaskId + '\')">logs</a></td>';
+                                        html += '</tr>';
+                                    }
+                                    html += '</table>';
+                                    $("#serverList").html(html);
+                                },
+                                dataType: "json"
+                            });
+                        }
+
+                        function displayBatcletLogs(batchTaskId) {
+                            data = '{"batchTaskId":"' + batchTaskId + '"}'
+                            $.ajax({
+                                type: "POST",
+                                url: "/api/server/getBatchTaskLogs",
+                                data: data,
+                                success: function (json) {
+                                    html = '<a href="#" onClick="displayBatchTaskList()">Return to batch task list</a><br>';
+
+                                    $("#serverList").html(html + json.message);
+                                },
+                                dataType: "json"
+                            });
+                        }
+
+                        displayBatchTaskList();
                     </script>
             </div>
         </div>

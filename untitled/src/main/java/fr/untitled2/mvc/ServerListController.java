@@ -41,7 +41,7 @@ public class ServerListController extends AuthenticatedController implements Ser
                 return MVCConstants.server_details_view;
             }
         }
-        return MVCConstants.server_list_view;
+        return MVCConstants.server_details_view;
     }
 
 

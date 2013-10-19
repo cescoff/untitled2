@@ -2,6 +2,7 @@ package fr.untitled2.raspi.main;
 
 import com.beust.jcommander.JCommander;
 import fr.untitled2.raspi.ImageConverter;
+import fr.untitled2.raspi.main.parameters.RaspiMainArgs;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

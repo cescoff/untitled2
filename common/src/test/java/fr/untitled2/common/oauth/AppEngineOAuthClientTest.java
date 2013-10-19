@@ -1,8 +1,7 @@
 package fr.untitled2.common.oauth;
 
 import fr.untitled2.common.entities.UserPreferences;
-import fr.untitled2.common.entities.raspi.FileRef;
-import fr.untitled2.common.entities.raspi.ServerConfig;
+import fr.untitled2.common.entities.raspi.*;
 import fr.untitled2.utils.JAXBUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -45,6 +44,43 @@ public class AppEngineOAuthClientTest {
         FileOutputStream fileOutputStream = new FileOutputStream(newFile);
         IOUtils.copy(appEngineOAuthClient.getFile(fileRef), fileOutputStream);
         fileOutputStream.close();
+    }
+
+    @Test
+    public void testBatchTaskApi() throws Exception {
+        /*
+        "getNextBatchTask"
+        "markBatchTaskAsDone"
+        "registerBatchTask"
+        */
+
+        String batchletClassName = "fr.untitled2.raspi.batchlet.PhotoScanBatchlet";
+
+        ServerConfig serverConfig = JAXBUtils.unmarshal(ServerConfig.class, new File("/Users/corentinescoffier/.myPictureLog/serverConfig.xml"));
+        AppEngineOAuthClient appEngineOAuthClient = new AppEngineOAuthClient(serverConfig.getAccessKey(), serverConfig.getAccessSecret());
+        RegisterBatchTaskPayload registerBatchTaskPayload = new RegisterBatchTaskPayload();
+        registerBatchTaskPayload.setZippedPayload("TOTO");
+        registerBatchTaskPayload.setBatchletClass(batchletClassName);
+        registerBatchTaskPayload.setServerId(serverConfig.getServerId());
+
+
+        BatchTaskPayload batchTaskPayload = appEngineOAuthClient.executeCommand(registerBatchTaskPayload, BatchTaskPayload.class, "registerBatchTask");
+        System.out.println("REGISTERED BATCHTASK->'" + batchTaskPayload.getBatchTaskId() + "'");
+
+        BatchTaskPayload executionContext = appEngineOAuthClient.executeCommand(serverConfig, BatchTaskPayload.class, "getNextBatchTask");
+        System.out.println("EXECUTION_CONTEXT->BatchId->'" + executionContext.getBatchTaskId() + "'");
+        System.out.println("EXECUTION_CONTEXT->TaskName->'" + executionContext.getBatchletClassName() + "'");
+        System.out.println("EXECUTION_CONTEXT->PayLoad->'" + executionContext.getZippedPayload() + "'");
+
+        BatchTaskPayload executionResult = new BatchTaskPayload();
+        executionResult.setLog("LOG");
+        executionResult.setZippedPayload("TITI");
+        executionResult.setBatchTaskId(executionContext.getBatchTaskId());
+        executionResult.setSuccess(true);
+
+        SimpleResponse simpleResponse = appEngineOAuthClient.executeCommand(executionResult, SimpleResponse.class, "markBatchTaskAsDone");
+        System.out.println(simpleResponse.isState());
+
     }
 
 }

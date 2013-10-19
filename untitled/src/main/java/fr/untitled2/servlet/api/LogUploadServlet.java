@@ -22,6 +22,7 @@ import fr.untitled2.utils.JSonUtils;
 import fr.untitled2.utils.SignUtils;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ public class LogUploadServlet extends HttpServlet {
 
         try {
             LogPersistenceJob logPersistenceJob = new LogPersistenceJob();
-            logPersistenceJob.setKey(SignUtils.calculateSha1Digest(user.getEmail() + logRecording.getName()));
+            logPersistenceJob.setKey(SignUtils.calculateSha1Digest(user.getEmail() + logRecording.getName() + LocalDateTime.now()));
             logPersistenceJob.setLogRecording(logRecording);
             logPersistenceJob.setUserKey(Key.create(User.class, applicationUser.getUserId()));
             Key<LogPersistenceJob> logPersistenceJobKey = ObjectifyService.ofy().save().entity(logPersistenceJob).now();

@@ -1,4 +1,4 @@
-package fr.untitled2.raspi.main;
+package fr.untitled2.raspi.main.parameters;
 
 import com.beust.jcommander.Parameter;
 

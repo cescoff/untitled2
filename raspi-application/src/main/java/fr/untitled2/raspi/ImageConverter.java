@@ -26,7 +26,7 @@ public class ImageConverter {
         this.outputDir = outputDir;
     }
 
-    public void convertIntoJpg(int maxDimPixels) throws IOException {
+    public File convertIntoJpg(int maxDimPixels) throws IOException {
         if (!inputFile.exists()) throw new IOException("InputFile does not exist");
         if (!outputDir.exists()) throw new IOException("Output dir does not exist");
         if (!outputDir.isDirectory()) throw new IOException("Output dir is not a directory");
@@ -55,6 +55,7 @@ public class ImageConverter {
         g.dispose();
 
         ImageIO.write(newDimensionsImage, "jpg", outputFile);
+        return outputFile;
     }
 
 

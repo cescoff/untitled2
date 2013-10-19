@@ -1,4 +1,4 @@
-package fr.untitled2.raspi.api;
+package fr.untitled2.common.entities.raspi;
 
 /**
  * Created with IntelliJ IDEA.

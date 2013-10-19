@@ -4,6 +4,7 @@ import fr.untitled2.common.entities.raspi.ServerConfig;
 import fr.untitled2.common.entities.raspi.ServerRegistrationConfig;
 import fr.untitled2.common.entities.raspi.Statistics;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
+import fr.untitled2.raspi.api.BatchKernel;
 import fr.untitled2.raspi.utils.CommandLineUtils;
 import fr.untitled2.utils.JAXBUtils;
 import org.apache.commons.exec.CommandLine;
@@ -16,6 +17,8 @@ import org.javatuples.Triplet;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -133,6 +136,9 @@ public class RegisterProcess implements Runnable {
             appEngineOAuthClient = new AppEngineOAuthClient(serverConfig.getAccessKey(), serverConfig.getAccessSecret());
             appEngineOAuthClient.attachServer(serverConfig);
         }
+        Thread.sleep(10000);
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ((BatchKernel) applicationContext.getBean("kernel")).start();
     }
 
     private Triplet<Double, Double, Double> getUsageStatistics() throws IOException {

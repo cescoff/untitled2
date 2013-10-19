@@ -3,7 +3,9 @@ package fr.untitled2.raspi.main;
 import fr.untitled2.common.entities.raspi.ServerConfig;
 import fr.untitled2.common.entities.raspi.ServerRegistrationConfig;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
+import fr.untitled2.raspi.api.BatchKernel;
 import fr.untitled2.raspi.thread.RegisterProcess;
+import fr.untitled2.raspi.utils.CommandLineUtils;
 import fr.untitled2.utils.JAXBUtils;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -12,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
@@ -32,17 +36,11 @@ public class ServerMain {
 
     private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
 
-    private static final String CONFIG_FILE_NAME = "serverConfig.xml";
-
-    private static final String CONFIG_DIR_NAME = ".myPictureLog";
-
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 
     public static void main(String[] args) {
-        File configDir = new File(SystemUtils.getUserHome(), CONFIG_DIR_NAME);
-        if (!configDir.exists()) configDir.mkdir();
-        File configFile = new File(configDir, CONFIG_FILE_NAME);
+        File configFile = CommandLineUtils.getConfigFile();
         ServerConfig serverConfig = new ServerConfig();
         if (!configFile.exists()) {
             logger.info("No config file found, building a new config file");
@@ -141,7 +139,12 @@ public class ServerMain {
         }
 
         RegisterProcess registerProcess = new RegisterProcess(new AppEngineOAuthClient(), configFile);
-        scheduler.scheduleAtFixedRate(registerProcess, 0, 30, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(registerProcess, 0, 5, TimeUnit.MINUTES);
+
+        if (serverConfig.isConnected()) {
+            ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+            ((BatchKernel) applicationContext.getBean("kernel")).start();
+        }
 
     }
 

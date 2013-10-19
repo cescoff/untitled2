@@ -15,6 +15,8 @@ import fr.untitled2.entities.BatchServer;
 import fr.untitled2.entities.File;
 import fr.untitled2.entities.User;
 import fr.untitled2.servlet.api.command.*;
+import fr.untitled2.servlet.api.command.batchlet.GetBatchTaskLogs;
+import fr.untitled2.servlet.api.command.batchlet.GetServerBatchTasks;
 import fr.untitled2.utils.JSonUtils;
 import fr.untitled2.utils.SignUtils;
 import org.apache.commons.io.IOUtils;
@@ -70,28 +72,19 @@ public class ServerServlet extends HttpServlet {
         commands.put("attacheServer", new AttachServer());
         commands.put("serverList", new GetServers());
         commands.put("pushVerificationCode", new PushVerificationCode());
+        commands.put("getNextBatchTask", new GetNextBatchTask());
+        commands.put("markBatchTaskAsDone", new MarkBatchTaskAsDone());
+        commands.put("registerBatchTask", new RegisterBatchTask());
+        commands.put("batchletManager", new BatchletManager());
+        commands.put("getPhotoGallery", new GetPhotoGallery());
+        commands.put("pushPhotoGallery", new PushPhotoGallery());
+        commands.put("addPhotoGallery", new AddPhotoGallery());
+        commands.put("getBatchTaskLogs", new GetBatchTaskLogs());
+        commands.put("getServerBatchTasks", new GetServerBatchTasks());
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getRequestURI().indexOf(GET_FILE_PATH) >= 0) {
-            if (StringUtils.isNotEmpty(req.getParameter(FILE_ID_REQ_PARAMETER))) {
-                try {
-                    File file = ObjectifyService.ofy().load().key(Key.create(File.class, req.getParameter(FILE_ID_REQ_PARAMETER))).get();
-                    InputStream inputStream = getFile(getUser(resp), file);
-                    IOUtils.copy(inputStream, resp.getOutputStream());
-                } catch (Throwable t) {
-                    logger.error("Enable to load file with id '" + req.getParameter(FILE_ID_REQ_PARAMETER));
-                    resp.sendError(500, Throwables.getStackTraceAsString(t));
-                    return;
-                }
-            } else {
-                resp.sendError(404, "Missing required parameter '" + FILE_ID_REQ_PARAMETER + "'");
-                return;
-            }
-            return;
-        }
-
         if (req.getRequestURI().indexOf(GET_LARGE_FILE_PATH) >= 0) {
             if (StringUtils.isNotEmpty(req.getParameter(FILE_ID_REQ_PARAMETER)) && StringUtils.isNotEmpty(req.getParameter(FILE_PART_POSITION_REQ_PARAMETER))) {
                 int filePartPosition = -1;
@@ -106,12 +99,30 @@ public class ServerServlet extends HttpServlet {
                     InputStream inputStream = getLargeFilePart(getUser(resp), file, filePartPosition);
                     IOUtils.copy(inputStream, resp.getOutputStream());
                 } catch (Throwable t) {
-                    logger.error("Enable to load file with id '" + req.getParameter(FILE_ID_REQ_PARAMETER));
+                    logger.error("Enable to load file with id '" + req.getParameter(FILE_ID_REQ_PARAMETER), t);
                     resp.sendError(500, Throwables.getStackTraceAsString(t));
                     return;
                 }
             } else {
                 resp.sendError(404, "Missing required parameter '" + FILE_ID_REQ_PARAMETER + "' or '" + FILE_PART_POSITION_REQ_PARAMETER + "'");
+            }
+            return;
+        }
+
+        if (req.getRequestURI().indexOf(GET_FILE_PATH) >= 0) {
+            if (StringUtils.isNotEmpty(req.getParameter(FILE_ID_REQ_PARAMETER))) {
+                try {
+                    File file = ObjectifyService.ofy().load().key(Key.create(File.class, req.getParameter(FILE_ID_REQ_PARAMETER))).get();
+                    InputStream inputStream = getFile(getUser(resp), file);
+                    IOUtils.copy(inputStream, resp.getOutputStream());
+                } catch (Throwable t) {
+                    logger.error("Enable to load file with id '" + req.getParameter(FILE_ID_REQ_PARAMETER), t);
+                    resp.sendError(500, Throwables.getStackTraceAsString(t));
+                    return;
+                }
+            } else {
+                resp.sendError(404, "Missing required parameter '" + FILE_ID_REQ_PARAMETER + "'");
+                return;
             }
             return;
         }
@@ -142,26 +153,6 @@ public class ServerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getRequestURI().indexOf(PUSH_FILE_PATH) >= 0) {
-            String filePath = StringUtils.remove(req.getRequestURI(), PUSH_FILE_PATH + "/");
-            if (StringUtils.isEmpty(filePath)) {
-                logger.error("No file path provided");
-                resp.sendError(500, "NO FILE PATH PROVIDED");
-            }
-
-            logger.info("Pushing file with path '" + filePath + "'");
-            try {
-                User user = getUser(resp);
-                FileRef fileRef = pushFile(user, filePath, req.getInputStream());
-                resp.getOutputStream().write(JSonUtils.writeJson(fileRef).getBytes());
-            } catch (Throwable t) {
-                logger.error("An error has occured whild pushing file '" + filePath + "'", t);
-                resp.sendError(500, Throwables.getStackTraceAsString(t));
-            }
-
-            return;
-        }
-
         if (req.getRequestURI().indexOf(PUSH_LARGE_FILE_PATH) >= 0) {
             int filePartPosition = -1;
             int filePartCount = -1;
@@ -181,14 +172,15 @@ public class ServerServlet extends HttpServlet {
                     return;
                 }
             }
-            String filePath = StringUtils.remove(req.getRequestURI(), PUSH_FILE_PATH + "/");
+            String filePath = StringUtils.remove(req.getRequestURI(), PUSH_LARGE_FILE_PATH + "/");
             if (StringUtils.isEmpty(filePath)) {
                 logger.error("No file path provided");
                 resp.sendError(500, "NO FILE PATH PROVIDED");
             }
 
             logger.info("Pushing file large with path '" + filePath + "'");
-            if (filePartPosition > 0) {
+            if (filePartPosition >= 0) {
+                logger.info("Pushing large file with position '" + filePartPosition + "'");
                 try {
                     User user = getUser(resp);
                     pushLargeFilePart(user, filePath, filePartPosition, req.getInputStream());
@@ -199,6 +191,7 @@ public class ServerServlet extends HttpServlet {
                     resp.sendError(500, Throwables.getStackTraceAsString(t));
                 }
             } else if (filePartCount > 0) {
+                logger.info("Generating a new large file reference with split length " + filePartCount);
                 try {
                     FileRef fileRef = getLargeFileRef(getUser(resp), filePath, filePartCount);
                     resp.getOutputStream().write(JSonUtils.writeJson(fileRef).getBytes());
@@ -206,6 +199,26 @@ public class ServerServlet extends HttpServlet {
                     logger.error("An error has occured whild pushing file '" + filePath + "'", t);
                     resp.sendError(500, Throwables.getStackTraceAsString(t));
                 }
+            }
+
+            return;
+        }
+
+        if (req.getRequestURI().indexOf(PUSH_FILE_PATH) >= 0) {
+            String filePath = StringUtils.remove(req.getRequestURI(), PUSH_FILE_PATH + "/");
+            if (StringUtils.isEmpty(filePath)) {
+                logger.error("No file path provided");
+                resp.sendError(500, "NO FILE PATH PROVIDED");
+            }
+
+            logger.info("Pushing file with path '" + filePath + "'");
+            try {
+                User user = getUser(resp);
+                FileRef fileRef = pushFile(user, filePath, req.getInputStream());
+                resp.getOutputStream().write(JSonUtils.writeJson(fileRef).getBytes());
+            } catch (Throwable t) {
+                logger.error("An error has occured whild pushing file '" + filePath + "'", t);
+                resp.sendError(500, Throwables.getStackTraceAsString(t));
             }
 
             return;
@@ -296,10 +309,12 @@ public class ServerServlet extends HttpServlet {
 
     private InputStream getLargeFilePart(User user, File file, int partPosition) throws IOException {
         if (file == null) throw new FileNotFoundException("The file does not exist");
-        if (file.isLargeFile()) throw new IOException("Large file, this method is not supported");
+        if (!file.isLargeFile()) throw new IOException("Large file, this method is not supported");
         if (!user.equals(file.getUser())) throw new IOException("You are not the owner of file '" + file.getGsFilePath() + "'");
         GcsService gcsService = GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
-        GcsFilename gcsFilename = new GcsFilename(GCS_BUCKET_NAME, file.getGsFilePath() + "." + partPosition);
+        String filePath = file.getGsFilePath() + "." + partPosition;
+        logger.info("Loading file '" + filePath + "'");
+        GcsFilename gcsFilename = new GcsFilename(GCS_BUCKET_NAME, filePath);
         GcsInputChannel gcsInputChannel = gcsService.openReadChannel(gcsFilename, 0);
         return Channels.newInputStream(gcsInputChannel);
     }
