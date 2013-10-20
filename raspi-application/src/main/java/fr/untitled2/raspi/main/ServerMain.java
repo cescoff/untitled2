@@ -10,6 +10,7 @@ import fr.untitled2.utils.JAXBUtils;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
@@ -40,6 +41,15 @@ public class ServerMain {
 
 
     public static void main(String[] args) {
+
+        File workDir = CommandLineUtils.getWorkDir();
+        if (workDir.exists()) try {
+            FileUtils.deleteDirectory(workDir);
+        } catch (IOException e) {
+            logger.error("An error has occured while deleting work dir", e);
+        }
+        CommandLineUtils.getWorkDir();
+
         File configFile = CommandLineUtils.getConfigFile();
         ServerConfig serverConfig = new ServerConfig();
         if (!configFile.exists()) {

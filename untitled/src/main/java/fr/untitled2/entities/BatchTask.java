@@ -191,4 +191,8 @@ public class BatchTask {
         return success || StringUtils.isNotEmpty(outputJson) || StringUtils.isNotEmpty(log);
     }
 
+    public boolean isError() {
+        return !success && StringUtils.isNotEmpty(log);
+    }
+
 }

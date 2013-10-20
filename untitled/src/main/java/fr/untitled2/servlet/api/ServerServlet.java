@@ -76,11 +76,11 @@ public class ServerServlet extends HttpServlet {
         commands.put("markBatchTaskAsDone", new MarkBatchTaskAsDone());
         commands.put("registerBatchTask", new RegisterBatchTask());
         commands.put("batchletManager", new BatchletManager());
-        commands.put("getPhotoGallery", new GetPhotoGallery());
         commands.put("pushPhotoGallery", new PushPhotoGallery());
         commands.put("addPhotoGallery", new AddPhotoGallery());
         commands.put("getBatchTaskLogs", new GetBatchTaskLogs());
         commands.put("getServerBatchTasks", new GetServerBatchTasks());
+        commands.put("getGalleries", new GetGalleries());
     }
 
     @Override

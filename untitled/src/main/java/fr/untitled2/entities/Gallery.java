@@ -1,11 +1,13 @@
 package fr.untitled2.entities;
 
+import com.beust.jcommander.internal.Lists;
+import com.google.appengine.labs.repackaged.com.google.common.base.Function;
+import com.google.appengine.labs.repackaged.com.google.common.collect.Iterables;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.annotation.Cache;
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
-import com.googlecode.objectify.annotation.Translate;
+import com.googlecode.objectify.annotation.*;
+import fr.untitled2.common.entities.raspi.FileRef;
+import fr.untitled2.utils.CollectionUtils;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -26,12 +28,10 @@ public class Gallery {
     @Translate(LocalDateTimeTranslatorFactory.class)
     private LocalDateTime creationDate;
 
-    private String originalFiles;
+    @Ignore
+    private Iterable<ImageFiles> images = Lists.newArrayList();
 
-    private String thumbnailFiles;
-
-    private String miniFiles;
-
+    @Index
     private Key<User> user;
 
     private boolean done;
@@ -60,28 +60,72 @@ public class Gallery {
         this.creationDate = creationDate;
     }
 
-    public String getOriginalFiles() {
-        return originalFiles;
+    public Iterable<ImageFiles> getImages() {
+        initFiles();
+        return images;
     }
 
-    public void setOriginalFiles(String originalFiles) {
-        this.originalFiles = originalFiles;
+    public Iterable<FileRef> getOriginalFiles() {
+        initFiles();
+        return Iterables.transform(images, new Function<ImageFiles, FileRef>() {
+            @Override
+            public FileRef apply(ImageFiles imageFiles) {
+                File originalFile = imageFiles.getOriginalFile();
+                FileRef fileRef = new FileRef();
+                fileRef.setFilePartCount(originalFile.getFilePartCount());
+                fileRef.setName(originalFile.getGsFilePath());
+                fileRef.setId(originalFile.getId());
+                return fileRef;
+            }
+        });
     }
 
-    public String getThumbnailFiles() {
-        return thumbnailFiles;
+    public Iterable<FileRef> getOptimzedFiles() {
+        initFiles();
+        return Iterables.transform(images, new Function<ImageFiles, FileRef>() {
+            @Override
+            public FileRef apply(ImageFiles imageFiles) {
+                File optimizedFile = imageFiles.getOptimizedFile();
+                FileRef fileRef = new FileRef();
+                fileRef.setFilePartCount(optimizedFile.getFilePartCount());
+                fileRef.setName(optimizedFile.getGsFilePath());
+                fileRef.setId(optimizedFile.getId());
+                return fileRef;
+            }
+        });
     }
 
-    public void setThumbnailFiles(String thumbnailFiles) {
-        this.thumbnailFiles = thumbnailFiles;
+    public Iterable<FileRef> getThumbnailFiles() {
+        initFiles();
+        return Iterables.transform(images, new Function<ImageFiles, FileRef>() {
+            @Override
+            public FileRef apply(ImageFiles imageFiles) {
+                File thumbnailFile = imageFiles.getThumbnailFile();
+                FileRef fileRef = new FileRef();
+                fileRef.setFilePartCount(thumbnailFile.getFilePartCount());
+                fileRef.setName(thumbnailFile.getGsFilePath());
+                fileRef.setId(thumbnailFile.getId());
+                return fileRef;
+            }
+        });
     }
 
-    public String getMiniFiles() {
-        return miniFiles;
+    private void initFiles() {
+        if (CollectionUtils.isEmpty(images)) {
+            images = ObjectifyService.ofy().load().type(ImageFiles.class).filter("gallery", this);
+        }
     }
 
-    public void setMiniFiles(String miniFiles) {
-        this.miniFiles = miniFiles;
+    public boolean isValid() {
+        if (done) return true;
+        initFiles();
+        for (ImageFiles image : images) {
+            if (image == null) return false;
+            if (image.getOptimizedFile() == null || image.getThumbnailFile() == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public User getUser() {

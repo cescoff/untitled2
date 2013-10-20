@@ -12,6 +12,7 @@ import fr.untitled2.common.entities.raspi.PhotoGallery;
 import fr.untitled2.common.entities.raspi.ServerConfig;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
 import fr.untitled2.common.utils.LocalisationUtils;
+import fr.untitled2.raspi.api.BatchContext;
 import fr.untitled2.raspi.api.MasterBatchlet;
 import fr.untitled2.raspi.utils.CommandLineUtils;
 import fr.untitled2.utils.CollectionUtils;
@@ -65,7 +66,7 @@ public class PhotoScanBatchlet extends MasterBatchlet {
         if (SystemUtils.IS_OS_MAC_OSX) {
             removableDevicesDir = new File("/Volumes");
         } else if (SystemUtils.IS_OS_LINUX) {
-            removableDevicesDir = new File("/mnt");
+            removableDevicesDir = new File("/media");
         }
     }
 
@@ -78,6 +79,7 @@ public class PhotoScanBatchlet extends MasterBatchlet {
     public void execute() throws Exception {
         UserPreferences userPreferences = getBatchContext().getUserPreferences();
         Collection<File> images = Lists.newArrayList();
+        Map<File, String> fileDriveNames = Maps.newHashMap();
         if (removableDevicesDir != null) {
             File[] diskNames = removableDevicesDir.listFiles();
             if (diskNames != null) {
@@ -91,7 +93,10 @@ public class PhotoScanBatchlet extends MasterBatchlet {
                                 if (diskRootDir != null) {
                                     if (diskRootDir.getName().equalsIgnoreCase("dcim")) {
                                         logger.info("Found image dir '" + diskRootDir + "'");
-                                        images.addAll(FileUtils.listFiles(diskRootDir, new String[]{"JPG", "jpg", "jpeg", "JPEG", "NEF", "nef"}, true));
+                                        for (File imageFile : FileUtils.listFiles(diskRootDir, new String[]{"JPG", "jpg", "jpeg", "JPEG", "NEF", "nef"}, true)) {
+                                            fileDriveNames.put(imageFile, diskName.getName());
+                                            images.add(imageFile);
+                                        }
                                     }
                                 }
                             }
@@ -106,7 +111,7 @@ public class PhotoScanBatchlet extends MasterBatchlet {
             return;
         }
 
-        Pair<LocalDateTime, LocalDateTime> startEnd = getStartAndEndDates(images, userPreferences);
+        Pair<LocalDateTime, LocalDateTime> startEnd = getStartAndEndDates(images, userPreferences, getBatchContext());
 
         if (startEnd != null)
             logger.info("Min image date '" + startEnd.getValue0() + "', max image date '" + startEnd.getValue1() + "'");
@@ -122,48 +127,88 @@ public class PhotoScanBatchlet extends MasterBatchlet {
             logger.info("No log recording are matching your photos");
         }
 
+        Collection<File> errorFiles = Lists.newArrayList();
+
+        File tempDir = getBatchContext().createTempDir();
+        Collection<File> geolocalizedFiles = Lists.newArrayList();
+
         for (File imageFile : images) {
-            Triplet<Double, Double, String> localisations = LocalisationUtils.getImagePosition(getImageDate(imageFile, userPreferences), logRecordings);
-            if (localisations != null) {
-                logger.info("File " + imageFile.getName() + " is located");
+            try {
+                Triplet<Double, Double, String> localisations = LocalisationUtils.getImagePosition(getImageDate(imageFile, userPreferences), logRecordings);
+                if (localisations != null) {
+                    logger.info("File " + imageFile.getPath() + " is located");
 
-                try {
-                    addGPSInfosToExif(imageFile, localisations.getValue0(), localisations.getValue1());
-                } catch (Throwable t) {
-                    logger.error("An error has occured while updating exif meta data on file '" + imageFile + "'", t);
+                    try {
+                        File driveTempDir = new File(tempDir, fileDriveNames.get(imageFile));
+                        if (!driveTempDir.exists()) driveTempDir.mkdirs();
+                        File geolocalizedFile = new File(driveTempDir, imageFile.getName());
 
+                        FileUtils.copyFile(imageFile, geolocalizedFile);
+
+                        addGPSInfosToExif(geolocalizedFile, localisations.getValue0(), localisations.getValue1());
+                        geolocalizedFiles.add(geolocalizedFile);
+                    } catch (Throwable t) {
+                        logger.error("An error has occured while updating exif meta data on file '" + imageFile + "'", t);
+                        errorFiles.add(imageFile);
+                    }
+                } else {
+                    logger.info("File " + imageFile.getName() + " is not located");
                 }
-            } else {
-                logger.info("File " + imageFile.getName() + " is not located");
+            } catch (Throwable t) {
+                getBatchContext().logError("An unexpected error has occured", t);
+                logger.error("An unexpected error has occured", t);
+                errorFiles.add(imageFile);
             }
-
         }
 
         PhotoGallery photoGallery = new PhotoGallery();
-        photoGallery = getBatchContext().executeRemoteCommand("pushPhotoGallery", photoGallery, PhotoGallery.class);
 
-        for (File image : images) {
+        for (File image : geolocalizedFiles) {
             logger.info("Uploading file '" + image + "'");
             FileRef fileRef = getBatchContext().pushRemoteFile(image);
             photoGallery.getOriginalFiles().add(fileRef);
             logger.info("File '" + image + "' uploaded->'" + fileRef.getId() + "'");
+            try {
+                FileUtils.deleteQuietly(image);
+            } catch (Throwable t) {
+                logger.error("An error has occured while deleting file '" + image + "'");
+            }
+        }
+        photoGallery = getBatchContext().executeRemoteCommand("pushPhotoGallery", photoGallery, PhotoGallery.class);
+
+        for (FileRef fileRef : photoGallery.getOriginalFiles()) {
             ImageTransformationTask imageTransformationTask = new ImageTransformationTask();
             imageTransformationTask.setGalleryId(photoGallery.getId());
             imageTransformationTask.setOriginalFile(fileRef);
             getBatchContext().createNewBatchTask(imageTransformationTask, ImageTransformBatchlet.class);
-            FileUtils.deleteQuietly(image);
         }
-        getBatchContext().executeRemoteCommand("pushPhotoGallery", photoGallery, PhotoGallery.class);
+
+        for (File image : images) {
+            if (!errorFiles.contains(image)) {
+                try {
+                    FileUtils.deleteQuietly(image);
+                } catch (Throwable t) {
+                    logger.error("An error has occured while deleting file '" + image + "'");
+                }
+            } else {
+                logger.info("Skipping error file '" + image + "'");
+            }
+        }
+
     }
 
-    private Pair<LocalDateTime, LocalDateTime> getStartAndEndDates(Collection<File> imageFiles, UserPreferences userPreferences) throws IOException, ImageReadException {
+    private Pair<LocalDateTime, LocalDateTime> getStartAndEndDates(Collection<File> imageFiles, UserPreferences userPreferences, BatchContext batchContext) throws IOException, ImageReadException {
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = null;
         for (File imageFile : imageFiles) {
-            LocalDateTime date = getImageDate(imageFile, userPreferences);
-            if (date != null) {
-                if (date.isBefore(start)) start = date;
-                if (end == null || date.isAfter(end)) end = date;
+            try {
+                LocalDateTime date = getImageDate(imageFile, userPreferences);
+                if (date != null) {
+                    if (date.isBefore(start)) start = date;
+                    if (end == null || date.isAfter(end)) end = date;
+                }
+            } catch (Throwable t) {
+                batchContext.logError("An unexpected error has occured", t);
             }
         }
         return new Pair<LocalDateTime, LocalDateTime>(start, end);

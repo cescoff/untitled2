@@ -11,33 +11,21 @@ import java.util.List;
 /**
  * Created with IntelliJ IDEA.
  * User: corentinescoffier
- * Date: 10/16/13
- * Time: 8:57 PM
+ * Date: 10/20/13
+ * Time: 10:36 PM
  * To change this template use File | Settings | File Templates.
  */
 @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD)
-public class PhotoGallery {
+public class Galleries {
 
     @XmlElement
-    private String id;
+    private List<FullPhotoGallery> galleries = Lists.newArrayList();
 
-    @XmlElement
-    private List<FileRef> originalFiles = Lists.newArrayList();
-
-    public String getId() {
-        return id;
+    public List<FullPhotoGallery> getGalleries() {
+        return galleries;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setGalleries(List<FullPhotoGallery> galleries) {
+        this.galleries = galleries;
     }
-
-    public List<FileRef> getOriginalFiles() {
-        return originalFiles;
-    }
-
-    public void setOriginalFiles(List<FileRef> originalFiles) {
-        this.originalFiles = originalFiles;
-    }
-
 }

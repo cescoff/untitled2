@@ -51,4 +51,6 @@ public interface BatchContext {
 
     public String getLogs();
 
+    public void destroy();
+
 }

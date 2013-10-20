@@ -1,5 +1,7 @@
 package fr.untitled2.utils;
 
+import com.google.common.collect.Iterables;
+
 import java.util.Collection;
 
 /**
@@ -11,6 +13,10 @@ import java.util.Collection;
  */
 public class CollectionUtils {
 
+    public static final <T> boolean isEmpty(Iterable<T> iterable) {
+        return Iterables.isEmpty(iterable);
+    }
+
     public static final <T> boolean isEmpty(Collection<T> collection) {
         if (collection == null || collection.size() == 0) return true;
         if (!collection.iterator().hasNext()) return true;
@@ -18,6 +24,10 @@ public class CollectionUtils {
     }
 
     public static final <T> boolean isNotEmpty(Collection<T> collection) {
+        return !isEmpty(collection);
+    }
+
+    public static final <T> boolean isNotEmpty(Iterable<T> collection) {
         return !isEmpty(collection);
     }
 

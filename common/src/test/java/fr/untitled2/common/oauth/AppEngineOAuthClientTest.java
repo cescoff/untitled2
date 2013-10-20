@@ -3,6 +3,8 @@ package fr.untitled2.common.oauth;
 import fr.untitled2.common.entities.UserPreferences;
 import fr.untitled2.common.entities.raspi.*;
 import fr.untitled2.utils.JAXBUtils;
+import fr.untitled2.utils.JSonUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -42,7 +44,7 @@ public class AppEngineOAuthClientTest {
         FileRef fileRef = appEngineOAuthClient.pushFile(aFile);
         File newFile = new File(aFile.getPath() + ".2");
         FileOutputStream fileOutputStream = new FileOutputStream(newFile);
-        IOUtils.copy(appEngineOAuthClient.getFile(fileRef), fileOutputStream);
+        IOUtils.copy(appEngineOAuthClient.getFile(fileRef, FileUtils.getTempDirectory()), fileOutputStream);
         fileOutputStream.close();
     }
 
@@ -80,6 +82,43 @@ public class AppEngineOAuthClientTest {
 
         SimpleResponse simpleResponse = appEngineOAuthClient.executeCommand(executionResult, SimpleResponse.class, "markBatchTaskAsDone");
         System.out.println(simpleResponse.isState());
+
+    }
+
+    @Test
+    public void testBreak() {
+        for (int index = 0; index < 10; index++) {
+            for (int jndex = 0; jndex < 10; jndex++) {
+                System.out.println("[index, jndex] : [" + index + ", " + jndex + "]");
+                if (jndex == 6) break;
+            }
+        }
+    }
+
+    @Test
+    public void testAddPhotoGallery() throws Exception {
+        String originalFileId = "c9563f87109974e7401fd9f969e2ede9327565c4";
+        String optimizedFileId = "2fc17300304d63ce26a4af92f1b5e2be195f821d";
+        String thumbnailFileId = "fee25cf8420cf3ae9d4e30e426e0273725051a0f";
+
+        ServerConfig serverConfig = JAXBUtils.unmarshal(ServerConfig.class, new File("/Users/corentinescoffier/.myPictureLog/serverConfig.xml"));
+        AppEngineOAuthClient appEngineOAuthClient = new AppEngineOAuthClient(serverConfig.getAccessKey(), serverConfig.getAccessSecret());
+
+        ProcessedImage processedImage = new ProcessedImage();
+        FileRef originalFileRef = new FileRef();
+        originalFileRef.setId(originalFileId);
+
+        FileRef optimizedFileRef = new FileRef();
+        optimizedFileRef.setId(optimizedFileId);
+
+        FileRef thumbnailFileRef = new FileRef();
+        thumbnailFileRef.setId(thumbnailFileId);
+
+        processedImage.setOriginalFile(originalFileRef);
+        processedImage.setOptimizedFile(optimizedFileRef);
+        processedImage.setThumbnailFile(thumbnailFileRef);
+
+        appEngineOAuthClient.executeCommand(processedImage, SimpleResponse.class, "addPhotoGallery");
 
     }
 

@@ -21,12 +21,15 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Collection;
@@ -40,6 +43,8 @@ import java.util.Collections;
  * To change this template use File | Settings | File Templates.
  */
 public class SimpleBatchContext implements BatchContext {
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleBatchContext.class);
 
     private static final DateTimeFormatter LOG_DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -60,7 +65,7 @@ public class SimpleBatchContext implements BatchContext {
     @Override
     public FileRef pushRemoteFile(File aFile) throws IOException {
         try {
-            return appEngineOAuthClient.pushFile(aFile);
+            return appEngineOAuthClient.pushFile(aFile, createTempDir());
         } catch (OAuthCommunicationException e) {
             throw new IOException("A communication error has occured", e);
         } catch (OAuthExpectationFailedException e) {
@@ -74,7 +79,7 @@ public class SimpleBatchContext implements BatchContext {
     public File getRemoteFile(FileRef fileRef) throws IOException {
         InputStream inputStream = null;
         try {
-            inputStream = appEngineOAuthClient.getFile(fileRef);
+            inputStream = appEngineOAuthClient.getFile(fileRef, createTempDir());
         } catch (OAuthCommunicationException e) {
             throw new IOException("A communication error has occured", e);
         } catch (OAuthExpectationFailedException e) {
@@ -92,6 +97,7 @@ public class SimpleBatchContext implements BatchContext {
             File destinationFile = createFile(fileName);
             FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
             IOUtils.copy(inputStream, fileOutputStream);
+            inputStream.close();
             fileOutputStream.close();
             return destinationFile;
         }
@@ -174,26 +180,31 @@ public class SimpleBatchContext implements BatchContext {
     @Override
     public void logTrace(String message) {
         if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.TRACE)) log(LogLevel.TRACE, message, null);
+        logger.trace(message);
     }
 
     @Override
     public void logDebug(String message) {
         if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.DEBUG)) log(LogLevel.DEBUG, message, null);
+        logger.debug(message);
     }
 
     @Override
     public void logInfo(String message) {
         if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.INFO)) log(LogLevel.INFO, message, null);
+        logger.info(message);
     }
 
     @Override
     public void logError(String message) {
         if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.ERROR)) log(LogLevel.ERROR, message, null);
+        logger.error(message);
     }
 
     @Override
     public void logError(String message, Throwable t) {
         if (getSetupLogLevel().isEnabled(getSetupLogLevel(), LogLevel.ERROR)) log(LogLevel.ERROR, message, t);
+        logger.error(message, t);
     }
 
     private LogLevel getSetupLogLevel() {
@@ -222,5 +233,14 @@ public class SimpleBatchContext implements BatchContext {
         File tempDir = new File(workDir, SignUtils.calculateSha1Digest(LocalDateTime.now().toString()));
         if (!tempDir.exists()) tempDir.mkdirs();
         return tempDir;
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            FileUtils.deleteDirectory(workDir);
+        } catch (Throwable t) {
+            logError("An error has occured while destroying context", t);
+        }
     }
 }

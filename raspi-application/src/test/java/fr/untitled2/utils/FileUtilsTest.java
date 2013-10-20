@@ -18,7 +18,7 @@ public class FileUtilsTest {
     public void testSplitFile() throws Exception {
         File sourceFile = new File("/Users/corentinescoffier/Pictures/2013/2013-09-22/DSC_4680.NEF");
         long maxFileSize = 30 * 1024 * 1024;
-        List<File> splitedFiles = FileUtils.splitFile(sourceFile, maxFileSize);
+        List<File> splitedFiles = FileUtils.splitFile(sourceFile, org.apache.commons.io.FileUtils.getTempDirectory(), maxFileSize);
         for (File splitedFile : splitedFiles) {
             System.out.println(splitedFile.getPath());
         }

@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * To change this template use File | Settings | File Templates.
  */
 @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD)
-public class SimpleStringResponse {
+public class SimpleStringMessage {
 
     @XmlElement
     private String message;

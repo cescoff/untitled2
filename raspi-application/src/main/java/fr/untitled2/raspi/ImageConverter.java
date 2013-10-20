@@ -1,12 +1,20 @@
 package fr.untitled2.raspi;
 
+import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Ordering;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
+import org.javatuples.Pair;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,11 +34,47 @@ public class ImageConverter {
         this.outputDir = outputDir;
     }
 
-    public File convertIntoJpg(int maxDimPixels) throws IOException {
+    public Collection<Pair<Integer, File>> convertIntoJpg(Iterable<Integer> maxDimPixelsForEachGeneration) throws IOException {
         if (!inputFile.exists()) throw new IOException("InputFile does not exist");
         if (!outputDir.exists()) throw new IOException("Output dir does not exist");
         if (!outputDir.isDirectory()) throw new IOException("Output dir is not a directory");
-        BufferedImage image = ImageIO.read(inputFile);
+
+        File conversionScript = new File(SystemUtils.USER_HOME + "/.myPictureLog/bin/convert_nef.sh");
+
+        maxDimPixelsForEachGeneration = Ordering.natural().reverse().sortedCopy(maxDimPixelsForEachGeneration);
+
+        Collection<Pair<Integer, File>> result = Lists.newArrayList();
+        if (!conversionScript.exists()) {
+            File previousDimensionFile = inputFile;
+            for (Integer maxDimPixels : maxDimPixelsForEachGeneration) {
+                File outputFile = new File(outputDir, FilenameUtils.getBaseName(inputFile.getName()) + "_" + maxDimPixels + ".jpg");
+                resize(previousDimensionFile, outputFile, maxDimPixels);
+                previousDimensionFile = outputFile;
+                result.add(Pair.with(maxDimPixels, outputFile));
+            }
+        } else {
+            File previousDimensionFile =  new File(outputDir, FilenameUtils.getBaseName(inputFile.getName()) + ".jpg");
+            if (FilenameUtils.getExtension(inputFile.getName()).equalsIgnoreCase("nef")) {
+                CommandLine commandLine = new CommandLine(conversionScript);
+                commandLine.addArgument(inputFile.getPath());
+                commandLine.addArgument(previousDimensionFile.getPath());
+                DefaultExecutor defaultExecutor = new DefaultExecutor();
+                defaultExecutor.execute(commandLine);
+            } else previousDimensionFile = inputFile;
+
+            for (Integer maxDimPixels : maxDimPixelsForEachGeneration) {
+                File outputFile = new File(outputDir, FilenameUtils.getBaseName(inputFile.getName()) + "_" + maxDimPixels + ".jpg");
+                resize(previousDimensionFile, outputFile, maxDimPixels);
+                previousDimensionFile = outputFile;
+                result.add(Pair.with(maxDimPixels, outputFile));
+            }
+
+        }
+        return result;
+    }
+
+    private void resize(File inputImageFile, File outputFile, int maxDimPixels) throws IOException {
+        BufferedImage image = ImageIO.read(inputImageFile);
 
         int currentWidth = image.getWidth();
         int currentHeight = image.getHeight();
@@ -43,10 +87,6 @@ public class ImageConverter {
             newWidth = (maxDimPixels * currentWidth) / currentHeight;
         }
 
-        String newFileName = StringUtils.replaceEach(inputFile.getName(), new String[]{".NEF", ".Nef", ".nef", ".jpg", ".JPG", ".jpeg", ".JPEG"}, new String[]{"", "", "", "", "", "", ""}) + "_" + maxDimPixels + ".jpg";
-
-        File outputFile = new File(outputDir, newFileName);
-
         BufferedImage newDimensionsImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = newDimensionsImage.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
@@ -55,8 +95,6 @@ public class ImageConverter {
         g.dispose();
 
         ImageIO.write(newDimensionsImage, "jpg", outputFile);
-        return outputFile;
     }
-
 
 }

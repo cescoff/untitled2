@@ -2,17 +2,19 @@ package fr.untitled2.servlet.api.command;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import fr.untitled2.common.entities.raspi.FileRefs;
+import fr.untitled2.common.entities.raspi.FileRef;
 import fr.untitled2.common.entities.raspi.PhotoGallery;
+import fr.untitled2.entities.File;
 import fr.untitled2.entities.Gallery;
+import fr.untitled2.entities.ImageFiles;
 import fr.untitled2.entities.User;
 import fr.untitled2.utils.CollectionUtils;
-import fr.untitled2.utils.GzipUtils;
-import fr.untitled2.utils.JSonUtils;
 import fr.untitled2.utils.SignUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,30 +34,39 @@ public class PushPhotoGallery extends Command<PhotoGallery, PhotoGallery, PhotoG
             gallery.setId(input.getId());
             gallery.setName(DateTimeFormat.forPattern(user.getDateFormat() + " HH:mm:ss").print(LocalDateTime.now()));
             gallery.setCreationDate(LocalDateTime.now());
-        } else gallery = ObjectifyService.ofy().load().key(Key.create(Gallery.class, input.getId())).get();
+            gallery.setUser(user);
+            ObjectifyService.ofy().save().entity(gallery).now();
+        } else {
+            gallery = ObjectifyService.ofy().load().key(Key.create(Gallery.class, input.getId())).get();
+        }
 
         if (CollectionUtils.isNotEmpty(input.getOriginalFiles())) {
-            FileRefs fileRefs = new FileRefs();
-            fileRefs.getFileRefs().addAll(input.getOriginalFiles());
-            gallery.setOriginalFiles(GzipUtils.zipString(JSonUtils.writeJson(fileRefs)));
+            for (FileRef fileRef : input.getOriginalFiles()) {
+                ImageFiles imageFiles = getImageFile(fileRef, user, gallery);
+                ObjectifyService.ofy().save().entity(imageFiles);
+            }
         }
 
-        if (CollectionUtils.isNotEmpty(input.getMiniFiles())) {
-            FileRefs fileRefs = new FileRefs();
-            fileRefs.getFileRefs().addAll(input.getMiniFiles());
-            gallery.setMiniFiles(GzipUtils.zipString(JSonUtils.writeJson(fileRefs)));
+        if (gallery.isValid() && !gallery.isDone()) {
+            gallery.setDone(true);
+            ObjectifyService.ofy().save().entity(gallery);
         }
 
-        if (CollectionUtils.isNotEmpty(input.getFullResolutionFiles())) {
-            FileRefs fileRefs = new FileRefs();
-            fileRefs.getFileRefs().addAll(input.getFullResolutionFiles());
-            gallery.setThumbnailFiles(GzipUtils.zipString(JSonUtils.writeJson(fileRefs)));
-        }
-
-        gallery.setUser(user);
-
-        ObjectifyService.ofy().save().entity(gallery);
         return input;
+    }
+
+    private ImageFiles getImageFile(FileRef fileRef, User user, Gallery gallery) throws IOException {
+        String id = SignUtils.calculateSha1Digest(fileRef.getId() + user.getUserId());
+        ImageFiles imageFiles = ObjectifyService.ofy().load().key(Key.create(ImageFiles.class, id)).get();
+
+        if (imageFiles == null) {
+            imageFiles = new ImageFiles();
+            imageFiles.setId(id);
+            imageFiles.setGallery(gallery);
+            imageFiles.setOriginalFile(ObjectifyService.ofy().load().key(Key.create(File.class, fileRef.getId())).get());
+            imageFiles.setUser(user);
+        }
+        return imageFiles;
     }
 
     @Override

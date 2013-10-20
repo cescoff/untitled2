@@ -48,7 +48,6 @@ public class BatchletThreadWrapper implements Runnable {
 
     @Override
     public void run() {
-        logger.info("Starting Batchlet '" + batchletClass + "'");
         try {
             Batchlet batchlet = null;
             try {
@@ -64,6 +63,7 @@ public class BatchletThreadWrapper implements Runnable {
             }
 
             if (batchlet instanceof MasterBatchlet) {
+                logger.info("Starting Batchlet '" + batchletClass + "'");
                 MasterBatchlet masterBatchlet = (MasterBatchlet) batchlet;
                 BatchTaskPayload batchTaskPayload = new BatchTaskPayload();
                 batchTaskPayload.setLogLevel(LogLevel.INFO);
@@ -127,6 +127,7 @@ public class BatchletThreadWrapper implements Runnable {
                     runningBatchlets.remove(batchletClass);
                     return;
                 }
+                logger.info("Starting Batchlet '" + batchletClass + "'->" + batchTaskPayload.getBatchTaskId());
 
                 BatchContext batchContext = null;
                 try {
@@ -167,6 +168,7 @@ public class BatchletThreadWrapper implements Runnable {
                 } catch (OAuthMessageSignerException e) {
                     logger.error("An error has occured while marking task '" + batchTaskPayload.getBatchTaskId() + "' as done", e);
                 }
+                batchContext.destroy();
             }
         } catch (Throwable t) {
             logger.error("An unexpected error has occured while executing Batchlet '"  + batchletClass + "'", t);

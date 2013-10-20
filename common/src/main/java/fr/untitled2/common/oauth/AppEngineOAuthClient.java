@@ -20,6 +20,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
@@ -265,11 +266,15 @@ public class AppEngineOAuthClient {
         } else throw new IOException("Registration failed");
     }
 
-    public FileRef pushFile(File aFile) throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
+    public FileRef pushFile(File aFile) throws OAuthExpectationFailedException, OAuthCommunicationException, OAuthMessageSignerException, IOException {
+        return pushFile(aFile, FileUtils.getTempDirectory());
+    }
+
+    public FileRef pushFile(File aFile, File tempDir) throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         long fileSize = FileUtils.sizeOf(aFile);
 
         if (fileSize > max_upload_file_size) {
-            List<File> splitedFiles = fr.untitled2.utils.FileUtils.splitFile(aFile, max_upload_file_size);
+            List<File> splitedFiles = fr.untitled2.utils.FileUtils.splitFile(aFile, tempDir, max_upload_file_size);
 
             HttpClient httpClient = getClient();
 
@@ -316,29 +321,36 @@ public class AppEngineOAuthClient {
 
     }
 
-    public InputStream getFile(FileRef fileRef) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException {
+    public InputStream getFile(FileRef fileRef, File tempDir) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException {
         if (fileRef.isLargeFile())  {
+            int maxRetry = 5;
+
             List<File> splitedFiles = Lists.newArrayList();
-            File tempDir = FileUtils.getTempDirectory();
+
             if (!tempDir.exists()) tempDir.mkdirs();
             for (int index = 0; index < fileRef.getFilePartCount(); index++) {
-                File tempFile = new File(tempDir, fileRef.getName() + "." + index);
-                HttpGet httpGet = new HttpGet(appUrl + "/api/server/files/getLarge?fileId=" + fileRef.getId() + "&" + FILE_PART_POSITION_REQ_PARAMETER + "=" + index);
+                for (int retry = 0; retry < maxRetry; retry++) {
+                    File tempFile = new File(tempDir, fileRef.getName() + "." + index);
+                    HttpGet httpGet = new HttpGet(appUrl + "/api/server/files/getLarge?fileId=" + fileRef.getId() + "&" + FILE_PART_POSITION_REQ_PARAMETER + "=" + index);
 
-                consumer.sign(httpGet);
-                HttpClient httpClient = getClient();
-                HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpGet);
-                if (httpResponse.getStatusLine().getStatusCode() == 200) {
-                    FileOutputStream splitFileOutputStream = new FileOutputStream(tempFile);
-                    IOUtils.copy(httpResponse.getEntity().getContent(), splitFileOutputStream);
-                    splitedFiles.add(tempFile);
-                } else {
-                    FileUtils.deleteQuietly(tempFile);
-                    FileUtils.deleteQuietly(tempDir);
-                    throw new IOException("An error has occured while downloading a file part");
+                    consumer.sign(httpGet);
+                    HttpClient httpClient = getClient();
+                    HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpGet);
+                    if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                        FileOutputStream splitFileOutputStream = new FileOutputStream(tempFile);
+                        IOUtils.copy(httpResponse.getEntity().getContent(), splitFileOutputStream);
+                        splitedFiles.add(tempFile);
+                        break;
+                    } else {
+                        FileUtils.deleteQuietly(tempFile);
+                        if (retry == maxRetry - 1) {
+                            FileUtils.deleteQuietly(tempDir);
+                            throw new IOException("An error has occured while downloading a file part");
+                        }
+                    }
                 }
             }
-            File rebuiltFile = File.createTempFile("tempRebuilt", "mpl");
+            File rebuiltFile = new File(tempDir, FilenameUtils.getBaseName(fileRef.getName()) + ".rebuilt");
             fr.untitled2.utils.FileUtils.rebuildSplitedFile(splitedFiles, rebuiltFile);
             return new TempFileInputStream(rebuiltFile);
         } else {

@@ -2,14 +2,10 @@ package fr.untitled2.servlet.api.command;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import fr.untitled2.common.entities.raspi.FileRefs;
-import fr.untitled2.common.entities.raspi.PhotoGallery;
-import fr.untitled2.entities.Gallery;
-import fr.untitled2.entities.User;
-import fr.untitled2.utils.CollectionUtils;
-import fr.untitled2.utils.GzipUtils;
-import fr.untitled2.utils.JSonUtils;
-import org.apache.commons.lang.StringUtils;
+import fr.untitled2.common.entities.raspi.*;
+import fr.untitled2.entities.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,60 +14,43 @@ import org.apache.commons.lang.StringUtils;
  * Time: 10:46 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AddPhotoGallery extends Command<PhotoGallery, PhotoGallery, PhotoGallery> {
+public class AddPhotoGallery extends Command<ProcessedImage, SimpleResponse, SimpleResponse> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AddPhotoGallery.class);
 
     @Override
-    protected PhotoGallery execute(PhotoGallery input, User user, String fromIpAddress) throws Exception {
-        Gallery gallery = ObjectifyService.ofy().load().key(Key.create(Gallery.class, input.getId())).get();
-        if (!gallery.getUser().equals(user)) throw new Exception("This gallery does not belong to you");
-        int originalCount = 0;
-        int thumbnailCount = 0;
-        if (CollectionUtils.isNotEmpty(input.getFullResolutionFiles())) {
-            FileRefs fileRefs = new FileRefs();
-            if (StringUtils.isNotEmpty(gallery.getThumbnailFiles())) {
-                fileRefs = JSonUtils.readJson(FileRefs.class, GzipUtils.unzipString(gallery.getThumbnailFiles()));
-            }
-            fileRefs.getFileRefs().addAll(input.getFullResolutionFiles());
-            gallery.setThumbnailFiles(GzipUtils.zipString(JSonUtils.writeJson(fileRefs)));
-            thumbnailCount = fileRefs.getFileRefs().size();
+    protected SimpleResponse execute(ProcessedImage input, User user, String fromIpAddress) throws Exception {
+        logger.info("User->" + user);
+        Iterable<ImageFiles> imageFiles = ObjectifyService.ofy().load().type(ImageFiles.class);
+
+        for (ImageFiles imageFile : imageFiles) {
+            if (imageFile != null) {
+                File originalFile = imageFile.getOriginalFile();
+                if (originalFile.getId().equals(input.getOriginalFile().getId())) {
+                    logger.info("Found originalFile '" + originalFile.getId() + "'");
+                    File optimizedFile = ObjectifyService.ofy().load().key(Key.create(File.class, input.getOptimizedFile().getId())).get();
+                    if (optimizedFile == null) logger.info("File '" + input.getOptimizedFile().getId() + "' is not found");
+                    imageFile.setOptimizedFile(optimizedFile);
+
+                    File thumbnailFile = ObjectifyService.ofy().load().key(Key.create(File.class, input.getThumbnailFile().getId())).get();
+                    imageFile.setThumbnailFile(thumbnailFile);
+                    ObjectifyService.ofy().save().entity(imageFile);
+                    return new SimpleResponse(true);
+                }
+            } else logger.error("Image file is null '" + imageFile + "'");
         }
-
-        if (CollectionUtils.isNotEmpty(input.getMiniFiles())) {
-            FileRefs fileRefs = new FileRefs();
-            if (StringUtils.isNotEmpty(gallery.getMiniFiles())) {
-                fileRefs = JSonUtils.readJson(FileRefs.class, GzipUtils.unzipString(gallery.getMiniFiles()));
-            }
-            fileRefs.getFileRefs().addAll(input.getMiniFiles());
-            gallery.setMiniFiles(GzipUtils.zipString(JSonUtils.writeJson(fileRefs)));
-        }
-
-        if (CollectionUtils.isNotEmpty(input.getOriginalFiles())) {
-            FileRefs fileRefs = new FileRefs();
-            if (StringUtils.isNotEmpty(gallery.getOriginalFiles())) {
-                fileRefs = JSonUtils.readJson(FileRefs.class, GzipUtils.unzipString(gallery.getOriginalFiles()));
-            }
-            fileRefs.getFileRefs().addAll(input.getOriginalFiles());
-            gallery.setOriginalFiles(GzipUtils.zipString(JSonUtils.writeJson(fileRefs)));
-            originalCount = fileRefs.getFileRefs().size();
-        }
-
-        if (originalCount == thumbnailCount) {
-            gallery.setDone(true);
-        }
-
-        ObjectifyService.ofy().save().entity(gallery).now();
-
-        return input;
+        logger.error("No file found with id '" + input.getOriginalFile().getId() + "'");
+        return new SimpleResponse(false);
     }
 
     @Override
-    protected Class<PhotoGallery> getInputObjectType() {
-        return PhotoGallery.class;
+    protected Class<ProcessedImage> getInputObjectType() {
+        return ProcessedImage.class;
     }
 
     @Override
-    protected Class<PhotoGallery> getOutputObjectType() {
-        return PhotoGallery.class;
+    protected Class<SimpleResponse> getOutputObjectType() {
+        return SimpleResponse.class;
     }
 
     @Override

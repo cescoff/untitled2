@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class FileUtils {
 
-    public static List<File> splitFile(File sourceFile, long maxFileSize) throws IOException {
+    public static List<File> splitFile(File sourceFile, File tempDir, long maxFileSize) throws IOException {
         List<File> result = Lists.newArrayList();
         long fileSize = org.apache.commons.io.FileUtils.sizeOf(sourceFile);
         if (fileSize < maxFileSize) return Lists.newArrayList(sourceFile);
@@ -31,7 +31,7 @@ public class FileUtils {
         int readLength = fileInputStream.read(buffer);
         if (readLength > 0) {
             for (int index = 0; index < fileCount; index++) {
-                File splitedFile = new File(sourceFile.getPath() + "." + index);
+                File splitedFile = new File(tempDir, sourceFile.getName() + "." + index);
                 FileOutputStream splitFileOutputStream = new FileOutputStream(splitedFile);
                 long totalReadLength = readLength;
                 while (readLength > 0 && totalReadLength <= maxFileSize) {
@@ -59,6 +59,7 @@ public class FileUtils {
                 readLength = fileInputStream.read(buffer);
             }
             fileInputStream.close();
+            org.apache.commons.io.FileUtils.deleteQuietly(split);
         }
         fileOutputStream.close();
 
