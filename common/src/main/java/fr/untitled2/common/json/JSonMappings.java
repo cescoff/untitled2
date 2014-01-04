@@ -1,7 +1,11 @@
 package fr.untitled2.common.json;
 
+import com.beust.jcommander.internal.Maps;
 import com.google.common.collect.Lists;
 import fr.untitled2.common.entities.*;
+import fr.untitled2.common.utils.introscpection.ClassDescriptor;
+import fr.untitled2.common.utils.introscpection.ClassIntrospector;
+import fr.untitled2.common.utils.introscpection.FieldDescriptor;
 import fr.untitled2.utils.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -9,9 +13,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,6 +57,8 @@ public class JSonMappings {
     private static final String remoteerror_classname = "className";
     private static final String remoteerror_message = "message";
     private static final String remoteerror_stacktrace = "stackTrace";
+
+    private static Map<Class<?>, ClassDescriptor> descriptors = Maps.newHashMap();
 
     public static UserInfos getUserInfos(String json) {
         JSONObject jsonObject = (JSONObject) JSONValue.parse(json);
@@ -321,6 +332,143 @@ public class JSonMappings {
         jsonObject.put(remoteerror_message, remoteError.getMessage());
         jsonObject.put(remoteerror_stacktrace, remoteError.getStackTrace());
         return jsonObject.toJSONString();
+    }
+
+    public static <T> String toJson(T object) throws Exception {
+        return toJsonObject(object).toJSONString();
+    }
+
+    public static <T> T readJson(Class<T> aClass, String json) throws Exception {
+        return readJsonObject(aClass, (JSONObject) JSONValue.parse(json));
+    }
+
+    private static <T> T readJsonObject(Class<T> objectClass, JSONObject jsonObject) throws Exception {
+        ClassDescriptor classDescriptor = getClassDescriptor(objectClass);
+
+        Object result = classDescriptor.getNoArgConstructor().newInstance(null);
+
+        for (FieldDescriptor fieldDescriptor : classDescriptor.getFields().values()) {
+            if (fieldDescriptor.getSetter() != null) {
+                if (Collection.class.equals(fieldDescriptor.getType())) {
+                    JSONArray jsonArray = (JSONArray) jsonObject.get(getFieldJsonArrayName(fieldDescriptor));
+                    if (jsonArray != null) {
+                        Collection collection = (Collection) fieldDescriptor.getGetter().invoke(result, null);
+                        for (Object arrayValue : jsonArray) {
+                            if (arrayValue instanceof String && fieldDescriptor.getSubType().get().getType().equals(String.class)) {
+                                collection.add(arrayValue);
+                            } else {
+                                collection.add(readJsonObject(fieldDescriptor.getSubType().get().getType(), (JSONObject) arrayValue));
+                            }
+                        }
+                    }
+                } else if (!fieldDescriptor.isPrimitive() && !isJavaLangNumberObject(fieldDescriptor) && !isStringType(fieldDescriptor) && !fieldDescriptor.getContructorFromString().isPresent()) {
+                    JSONObject son = (JSONObject) jsonObject.get(getFieldJsonArrayName(fieldDescriptor));
+                    fieldDescriptor.getSetter().invoke(result, readJsonObject(fieldDescriptor.getType(), son));
+                } else {
+                    Object value = jsonObject.get(getFieldJsonName(fieldDescriptor));
+                    if (value != null) {
+                        if (fieldDescriptor.isPrimitive() || isStringType(fieldDescriptor) || isJavaLangNumberObject(fieldDescriptor)) {
+                            fieldDescriptor.getSetter().invoke(result, value);
+                        } else if (fieldDescriptor.getContructorFromString().isPresent()) {
+                            Object valueFromString = fieldDescriptor.getContructorFromString().get().newInstance(value.toString());
+                            fieldDescriptor.getSetter().invoke(result, valueFromString);
+                        }
+                    }
+                }
+            }
+        }
+        return (T) result;
+    }
+
+    private static <T> JSONObject toJsonObject(T object) throws Exception {
+        ClassDescriptor classDescriptor = getClassDescriptor(object);
+        JSONObject jsonObject = new JSONObject();
+
+        for (FieldDescriptor fieldDescriptor : classDescriptor.getFields().values()) {
+            if (fieldDescriptor.getGetter() != null) {
+                if (!fieldDescriptor.getType().equals(Collection.class)) {
+                    if (isJavaLangNumberObject(fieldDescriptor) || isStringType(fieldDescriptor) || fieldDescriptor.isPrimitive()) {
+                        Object value = fieldDescriptor.getGetter().invoke(object, null);
+                        if (value != null) {
+                            jsonObject.put(getFieldJsonName(fieldDescriptor), fieldDescriptor.getGetter().invoke(object, null));
+                        }
+                    } else if (fieldDescriptor.getContructorFromString().isPresent()) {
+                        Object value = fieldDescriptor.getGetter().invoke(object, null);
+                        if (value != null) {
+                            jsonObject.put(getFieldJsonName(fieldDescriptor), value.toString());
+                        }
+                    }
+                } else {
+                    JSONArray jsonArray = new JSONArray();
+                    Collection values = (Collection) fieldDescriptor.getGetter().invoke(object, null);
+                    for (Object value : values) {
+                        jsonArray.add(toJson(value));
+                    }
+                    jsonObject.put(getFieldJsonArrayName(fieldDescriptor), jsonArray);
+                }
+            }
+        }
+        return jsonObject;
+    }
+
+    private static <T> ClassDescriptor getClassDescriptor(T object) throws Exception {
+        return getClassDescriptor(object.getClass());
+    }
+
+    private static <T> ClassDescriptor getClassDescriptor(Class<T> objectClass) throws Exception {
+        if (!descriptors.containsKey(objectClass)) descriptors.put(objectClass, ClassIntrospector.getClassDescriptor(objectClass));
+        return descriptors.get(objectClass);
+    }
+
+    private static String getFieldJsonName(FieldDescriptor fieldDescriptor) {
+        for (Annotation annotation : fieldDescriptor.getAnnotations()) {
+            if (annotation.annotationType().equals(XmlAttribute.class)) {
+                String name = ((XmlAttribute) annotation).name();
+                if (StringUtils.isNotEmpty(name) && !"##default".equals(name)) return ((XmlAttribute) annotation).name();
+            } else if (annotation.annotationType().equals(XmlElement.class)) {
+                String name = ((XmlElement) annotation).name();
+                if (StringUtils.isNotEmpty(name) && !"##default".equals(name)) return ((XmlElement) annotation).name();
+            }
+        }
+        return fieldDescriptor.getName();
+    }
+
+    private static String getFieldJsonArrayName(FieldDescriptor fieldDescriptor) {
+        for (Annotation annotation : fieldDescriptor.getAnnotations()) {
+            if (annotation.annotationType().equals(XmlElementWrapper.class)) {
+                String name = ((XmlElementWrapper) annotation).name();
+                if (StringUtils.isNotEmpty(name) && !"##default".equals(name)) return name;
+                else return fieldDescriptor.getName();
+            } else if (annotation.annotationType().equals(XmlElement.class)) {
+                String name = ((XmlElement) annotation).name();
+                if (StringUtils.isNotEmpty(name) && !"##default".equals(name)) return name;
+                else return fieldDescriptor.getName();
+            }
+
+        }
+        return fieldDescriptor.getName();
+    }
+
+    private static boolean isJAXBAnnotatedField(FieldDescriptor fieldDescriptor) {
+        for (Annotation annotation : fieldDescriptor.getAnnotations()) {
+            if (isJAXBFieldAnnotation(annotation)) return true;
+        }
+        return false;
+    }
+
+    private static boolean isJAXBFieldAnnotation(Annotation annotation) {
+        return annotation.annotationType().equals(XmlElement.class) || annotation.annotationType().equals(XmlAttribute.class) || annotation.annotationType().equals(XmlElementWrapper.class);
+    }
+
+    private static boolean isStringType(FieldDescriptor fieldDescriptor) {
+        return fieldDescriptor.getType().equals(String.class);
+    }
+
+    private static boolean isJavaLangNumberObject(FieldDescriptor fieldDescriptor) {
+        return fieldDescriptor.getType().equals(Integer.class) ||
+                fieldDescriptor.getType().equals(Long.class) ||
+                fieldDescriptor.getType().equals(Double.class) ||
+                fieldDescriptor.getType().equals(Float.class);
     }
 
 }

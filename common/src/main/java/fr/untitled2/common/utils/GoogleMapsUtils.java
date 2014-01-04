@@ -13,6 +13,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 */
+import fr.untitled2.common.json.JSonMappings;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
 import fr.untitled2.common.utils.bindings.ElevationResponse;
 import fr.untitled2.common.utils.bindings.GeocodeResponse;
@@ -158,7 +159,7 @@ public class GoogleMapsUtils {
         try {
             HttpHost httpHost = new HttpHost("maps.google.com", 80);
 
-            HttpGet get = new HttpGet("/maps/api/geocode/xml?address=" + URLEncoder.encode(address, "UTF-8") + "&sensor=false");
+            HttpGet get = new HttpGet("/maps/api/geocode/json?address=" + URLEncoder.encode(address, "UTF-8") + "&sensor=false");
 
             HttpClient httpClient = new DefaultHttpClient();
 
@@ -170,14 +171,17 @@ public class GoogleMapsUtils {
                 throw new IllegalStateException("Google Goecoding return HTTP status code '" + statusCode);
             }
             String xml = IOUtils.toString(response.getEntity().getContent());
-            GeocodeResponse geocodeResponse = JAXBUtils.unmarshal(GeocodeResponse.class, xml);
+            GeocodeResponse geocodeResponse = JSonMappings.readJson(GeocodeResponse.class, xml);
             if (!"ok".equalsIgnoreCase(geocodeResponse.getStatus())) {
                 throw  new IllegalStateException("Google Geocoding returned status '" + geocodeResponse.getStatus() + "'");
             }
-            return Pair.with(geocodeResponse.getResult().getGeometry().getLocation().getLatitude(), geocodeResponse.getResult().getGeometry().getLocation().getLongitude());
+            for (GeocodeResponse.Result result : geocodeResponse.getResults()) {
+                return Pair.with(result.getGeometry().getLocation().getLatitude(), result.getGeometry().getLocation().getLongitude());
+            }
         } catch (Throwable t) {
             throw new IllegalStateException("Erro occured while getting latitude and longitude of an address", t);
         }
+        return null;
     }
 
 }

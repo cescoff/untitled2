@@ -348,7 +348,7 @@ public class SchedulingService extends Service {
         AlarmManager alarmManager = (AlarmManager)(this.getSystemService( Context.ALARM_SERVICE ));
 
         for (Scheduling scheduling : Scheduling.values()) {
-            PendingIntent pendingIntent = PendingIntent.getBroadcast( this, 1000002, scheduling.getIntent(), PendingIntent.FLAG_UPDATE_CURRENT );
+            PendingIntent pendingIntent = PendingIntent.getBroadcast( this, 1000002, scheduling.getIntent(), 0 );
             if (scheduling == Scheduling.SHORT) {
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), scheduling.getFrequencyInMillis(), pendingIntent);
             }

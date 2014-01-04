@@ -1,6 +1,7 @@
 package fr.untitled2.common.utils.bindings;
 
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -24,8 +25,8 @@ public class GeocodeResponse {
 	@XmlElement
 	private String status;
 
-	@XmlElement
-	private Result result;
+	@XmlElement(name = "results")
+	private Collection<Result> results = Lists.newArrayList();
 	
 	public String getStatus() {
 		return status;
@@ -35,15 +36,15 @@ public class GeocodeResponse {
 		this.status = status;
 	}
 
-	public Result getResult() {
-		return result;
-	}
+    public Collection<Result> getResults() {
+        return results;
+    }
 
-	public void setResult(Result result) {
-		this.result = result;
-	}
+    public void setResults(Collection<Result> results) {
+        this.results = results;
+    }
 
-	@XmlAccessorType(XmlAccessType.FIELD)
+    @XmlAccessorType(XmlAccessType.FIELD)
 	public static class Result {
 
 		@XmlElement
@@ -52,7 +53,7 @@ public class GeocodeResponse {
 		@XmlElement(name = "formatted_address")
 		private String formatedAddress;
 		
-		@XmlElement(name = "address_component")
+		@XmlElement(name = "address_components")
 		private List<AdressComponent> adressComponents = Lists.newArrayList();
 		
 		@XmlElement(name = "partial_match")
@@ -103,12 +104,14 @@ public class GeocodeResponse {
 
 		@XmlAccessorType(XmlAccessType.FIELD)
 		public static class AdressComponent {
-			
+
+            @XmlElement(name = "long_name")
 			private String longName;
-			
+
+            @XmlElement(name = "short_name")
 			private String shortName;
 			
-			private String type;
+			private List<String> types = Lists.newArrayList();
 
 			public String getLongName() {
 				return longName;
@@ -126,12 +129,12 @@ public class GeocodeResponse {
 				this.shortName = shortName;
 			}
 
-			public String getType() {
-				return type;
+			public List<String> getTypes() {
+				return types;
 			}
 
-			public void setType(String type) {
-				this.type = type;
+			public void setTypes(List<String> types) {
+				this.types = types;
 			}
 			
 		}

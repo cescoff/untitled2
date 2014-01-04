@@ -83,7 +83,7 @@ public class WifiManager extends ITask {
                 } else {
                     WifiDetectionHolder wifiDetectionHolder = wifiDetectionHolderOptional.get();
                     LocalDateTime now = DateTimeUtils.getCurrentDateTimeInUTC();
-                    if (wifiDetectionHolder.getWifiDetection().getDetectionDate().isBefore(now.minusMinutes(5))) {
+                    if (wifiDetectionHolder.getWifiDetection().getDetectionDate().isBefore(now.minusMinutes(2))) {
                         wifiDetectionHolder.setStable(true);
                         dbHelper.updateDetectedWifi(wifiDetectionHolder);
                         updateMainView();

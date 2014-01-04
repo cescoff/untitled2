@@ -142,6 +142,7 @@ public class Main extends MenuActivity {
         return new AsyncTask<Long, Integer, Integer>() {
             @Override
             protected Integer doInBackground(Long... params) {
+                Looper.prepare();
                 String wifiSSID = getWifiSSID();
                 if (StringUtils.isNotEmpty(wifiSSID)) {
                     if (isKnownWIFI(wifiSSID)) {
@@ -149,6 +150,7 @@ public class Main extends MenuActivity {
                     } else {
                         Optional<WifiDetectionHolder> wifiDetectionHolderOptional = dbHelper.getDetectedWifiBySSID(wifiSSID);
                         if (wifiDetectionHolderOptional.isPresent() && wifiDetectionHolderOptional.get().isStable()) {
+                            Looper.loop();
                             return 1;
                         }
                     }
@@ -157,6 +159,7 @@ public class Main extends MenuActivity {
                         startLogService();
                     }
                 }
+                Looper.loop();
                 return 0;
             }
 
@@ -167,7 +170,6 @@ public class Main extends MenuActivity {
             @Override
             protected void onPostExecute(Integer integer) {
                 if (integer == 1) {
-                    Looper.prepare();
                     markCurrentWifi(getWifiSSID());
                 }
             }
