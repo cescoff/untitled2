@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.google.common.base.Optional;
@@ -17,10 +18,15 @@ import com.google.common.base.Throwables;
 import fr.untitled2.android.i18n.I18nConstants;
 import fr.untitled2.android.settings.Preferences;
 import fr.untitled2.android.sqlilite.DbHelper;
+import fr.untitled2.android.sqlilite.KnownLocationWithDatetime;
 import fr.untitled2.android.utils.PreferencesUtils;
+import fr.untitled2.common.entities.KnownLocation;
 import fr.untitled2.common.entities.LogRecording;
-import fr.untitled2.utils.DistanceUtils;
+import fr.untitled2.common.utils.DateTimeUtils;
+import fr.untitled2.utils.CollectionUtils;
+import fr.untitled2.common.utils.DistanceUtils;
 import org.javatuples.Pair;
+import org.javatuples.Triplet;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -54,44 +60,12 @@ public class LogRecorder extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        this.preferences = PreferencesUtils.getPreferences(this);
         LogRecording logRecording = new LogRecording();
         logRecording.setDateTimeZone(TimeZone.getDefault().getID());
-        logRecording.setName(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").print(DateTime.now()));
-        this.preferences = PreferencesUtils.getPreferences(this);
+        logRecording.setName(preferences.getDateTimeFormatter().print(DateTime.now()));
         dbHelper = new DbHelper(getApplicationContext(), preferences);
-    }
 
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopLocationListener();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        startLocationListener();
-
-        return START_STICKY;
-    }
-
-
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Binder binder = new Binder();
-        startLocationListener();
-        return binder;
-    }
-
-    @Override
-    public void unbindService(ServiceConnection conn) {
-        super.unbindService(conn);
-        stopLocationListener();
-    }
-
-    private void startLocationListener() {
         if (!dbHelper.hasCurrentLog()) return;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsLocationListener = GetGPSListener();
@@ -101,10 +75,32 @@ public class LogRecorder extends Service {
         Toast.makeText(this, preferences.getTranslation(I18nConstants.log_started), Toast.LENGTH_SHORT).show();
     }
 
-    public void stopLocationListener() {
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.removeUpdates(gpsLocationListener);
         Toast.makeText(this, preferences.getTranslation(I18nConstants.log_stopped), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
+
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        Binder binder = new Binder();
+        return binder;
+    }
+
+    @Override
+    public void unbindService(ServiceConnection conn) {
+        super.unbindService(conn);
     }
 
     @Override
@@ -119,22 +115,42 @@ public class LogRecorder extends Service {
             @Override
             public void onLocationChanged(Location location) {
                 try {
-                    LocalDateTime currentDate = DateTime.now().toDateTime(DateTimeZone.UTC).toLocalDateTime();
+                    LocalDateTime currentDate = DateTimeUtils.getCurrentDateTimeInUTC();
                     Optional<LogRecording> currentLogRecordingOptional = dbHelper.getCurrentLog();
                     if (!currentLogRecordingOptional.isPresent()) return;
 
                     LogRecording currentLogRecording = currentLogRecordingOptional.get();
 
+                    Optional<KnownLocation> knownLocation = getPointKnownLocation(location.getLatitude(), location.getLongitude(), location.getAltitude(), getPreferences());
+
+                    if (knownLocation.isPresent()) {
+                        Optional<KnownLocationWithDatetime> lastKnownLocationOptional = dbHelper.getLastKnownLocation();
+                        if (lastKnownLocationOptional.isPresent() && lastKnownLocationOptional.get().equals(knownLocation.get())) {
+                            KnownLocationWithDatetime knownLocationWithDatetime = lastKnownLocationOptional.get();
+                            knownLocationWithDatetime.setPointDate(DateTimeUtils.getCurrentDateTimeInUTC());
+                            dbHelper.updateKnownLocation(knownLocationWithDatetime);
+                        }
+                    }
 
                     double distance = preferences.getMinDistance() * 2;
-                    if (currentLogRecording.getLastLogRecord() != null) DistanceUtils.getDistance(new Pair<Double, Double>(currentLogRecording.getLastLogRecord().getLatitude(), currentLogRecording.getLastLogRecord().getLongitude()), new Pair<Double, Double>(location.getLatitude(), location.getLongitude()));
                     if (currentLogRecording.getLastLogRecord() == null || new Period(currentLogRecording.getLastLogRecord().getDateTime(), currentDate).toStandardDuration().getMillis() >= 10 * preferences.getFrequency() && new Double(distance).floatValue() > preferences.getMinDistance()) {
                         LogRecording.LogRecord logRecord = new LogRecording.LogRecord();
                         logRecord.setDateTime(currentDate);
                         logRecord.setLatitude(location.getLatitude());
                         logRecord.setLongitude(location.getLongitude());
-                        dbHelper.addRecordToCurrentLog(logRecord);
+                        logRecord.setAltitude(location.getAltitude());
+
+                        if (knownLocation.isPresent()) {
+                            dbHelper.addKnownLocation(currentDate, knownLocation.get());
+                        }
+
+                        if (knownLocation.isPresent()) logRecord.setKnownLocation(knownLocation.get());
+                        dbHelper.addRecordToCurrentLog(logRecord, knownLocation);
+
                     }
+                    updateMainView();
+
+
                 } catch (Throwable t) {
                     Log.e(getClass().getName(), Throwables.getStackTraceAsString(t));
                 }
@@ -162,12 +178,32 @@ public class LogRecorder extends Service {
             @Override
             public void onLocationChanged(Location location) {
                 try {
-                    LocalDateTime currentDate = DateTime.now().toDateTime(DateTimeZone.UTC).toLocalDateTime();
+                    Optional<KnownLocation> knownLocation = getPointKnownLocation(location.getLatitude(), location.getLongitude(), location.getAltitude(), getPreferences());
+
+                    if (knownLocation.isPresent()) {
+                        Optional<KnownLocationWithDatetime> lastKnownLocationOptional = dbHelper.getLastKnownLocation();
+                        if (lastKnownLocationOptional.isPresent() && lastKnownLocationOptional.get().equals(knownLocation.get())) {
+                            KnownLocationWithDatetime knownLocationWithDatetime = lastKnownLocationOptional.get();
+                            knownLocationWithDatetime.setPointDate(DateTimeUtils.getCurrentDateTimeInUTC());
+                            dbHelper.updateKnownLocation(knownLocationWithDatetime);
+                        }
+                    }
+
+                    LocalDateTime currentDate = DateTimeUtils.getCurrentDateTimeInUTC();
                     LogRecording.LogRecord logRecord = new LogRecording.LogRecord();
                     logRecord.setDateTime(currentDate);
                     logRecord.setLatitude(location.getLatitude());
                     logRecord.setLongitude(location.getLongitude());
-                    dbHelper.addRecordToCurrentLog(logRecord);
+                    logRecord.setAltitude(location.getAltitude());
+
+                    if (knownLocation.isPresent()) {
+                        dbHelper.addKnownLocation(currentDate, knownLocation.get());
+                    }
+                    if (knownLocation.isPresent()) {
+                        logRecord.setKnownLocation(knownLocation.get());
+                    }
+                    dbHelper.addRecordToCurrentLog(logRecord, knownLocation);
+                    updateMainView();
                 } catch (Throwable t) {
                     Log.e(getClass().getName(), Throwables.getStackTraceAsString(t));
                 }
@@ -186,6 +222,20 @@ public class LogRecorder extends Service {
             }
         };
 
+    }
+
+    private void updateMainView() {
+        Intent intent = new Intent("fr.untitled2.MainViewUpdater");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private Optional<KnownLocation> getPointKnownLocation(double latitude, double longitude, double altitude, Preferences preferences) {
+        if (CollectionUtils.isEmpty(preferences.getKnownLocations())) return Optional.absent();
+        return DistanceUtils.getKnownLocation(Triplet.with(latitude, longitude, altitude), preferences.getKnownLocations());
+    }
+
+    private Preferences getPreferences() {
+        return PreferencesUtils.getPreferences(this);
     }
 
 }

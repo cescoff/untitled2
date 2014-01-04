@@ -13,7 +13,7 @@ import org.joda.time.LocalDateTime;
  * To change this template use File | Settings | File Templates.
  */
 @Entity @Cache
-public class ImageFiles {
+public class OriginalToThumbnails {
 
     @Id
     private String id;
@@ -27,10 +27,8 @@ public class ImageFiles {
     @Translate(LocalDateTimeTranslatorFactory.class)
     private LocalDateTime creationDate = LocalDateTime.now();
 
-    @Index
     private Key<Gallery> gallery;
 
-    @Index
     private Key<User> user;
 
     public String getId() {
@@ -42,7 +40,8 @@ public class ImageFiles {
     }
 
     public File getOriginalFile() {
-        return ObjectifyService.ofy().load().key(originalFile).get();
+        if (originalFile != null) return ObjectifyService.ofy().load().key(originalFile).get();
+        else return null;
     }
 
     public void setOriginalFile(File originalFile) {
@@ -50,7 +49,8 @@ public class ImageFiles {
     }
 
     public File getOptimizedFile() {
-        return ObjectifyService.ofy().load().key(optimizedFile).get();
+        if (optimizedFile != null) return ObjectifyService.ofy().load().key(optimizedFile).get();
+        return null;
     }
 
     public void setOptimizedFile(File optimizedFile) {
@@ -58,7 +58,8 @@ public class ImageFiles {
     }
 
     public File getThumbnailFile() {
-        return ObjectifyService.ofy().load().key(thumbnailFile).get();
+        if (thumbnailFile != null) return ObjectifyService.ofy().load().key(thumbnailFile).get();
+        else return null;
     }
 
     public void setThumbnailFile(File thumbnailFile) {
@@ -95,4 +96,35 @@ public class ImageFiles {
         thumbnail
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OriginalToThumbnails that = (OriginalToThumbnails) o;
+
+        if (creationDate != null ? !creationDate.equals(that.creationDate) : that.creationDate != null) return false;
+        if (gallery != null ? !gallery.equals(that.gallery) : that.gallery != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (optimizedFile != null ? !optimizedFile.equals(that.optimizedFile) : that.optimizedFile != null)
+            return false;
+        if (originalFile != null ? !originalFile.equals(that.originalFile) : that.originalFile != null) return false;
+        if (thumbnailFile != null ? !thumbnailFile.equals(that.thumbnailFile) : that.thumbnailFile != null)
+            return false;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (originalFile != null ? originalFile.hashCode() : 0);
+        result = 31 * result + (optimizedFile != null ? optimizedFile.hashCode() : 0);
+        result = 31 * result + (thumbnailFile != null ? thumbnailFile.hashCode() : 0);
+        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+        result = 31 * result + (gallery != null ? gallery.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        return result;
+    }
 }

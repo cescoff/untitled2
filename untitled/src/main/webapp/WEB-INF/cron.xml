@@ -5,4 +5,12 @@
         <description>Manages cache</description>
         <schedule>every 60 minutes</schedule>
     </cron>
+
+    <cron>
+        <url>/journeyCalculation</url>
+        <description>Calculates journeys</description>
+        <schedule>every 10 minutes</schedule>
+    </cron>
+
+
 </cronentries>

@@ -87,7 +87,7 @@ public class BatchletThreadWrapper implements Runnable {
                     runningBatchlets.remove(batchletClass);
                     return;
                 }
-
+                batchContext.destroy();
             } else if (batchlet instanceof SlaveBatchlet) {
                 SlaveBatchlet slaveBatchlet = (SlaveBatchlet) batchlet;
                 ServerConfig serverConfig = null;

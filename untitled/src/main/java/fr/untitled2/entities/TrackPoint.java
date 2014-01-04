@@ -1,7 +1,10 @@
 package fr.untitled2.entities;
 
+import fr.untitled2.common.entities.KnownLocation;
 import fr.untitled2.common.entities.jaxb.DateTimeAdapter;
 import fr.untitled2.common.entities.jaxb.LocalDateTimeAdapter;
+import org.javatuples.Pair;
+import org.javatuples.Triplet;
 import org.joda.time.LocalDateTime;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -26,7 +29,10 @@ public class TrackPoint {
     private Double longitude;
 
     @XmlElement
-    private Double altitude;
+    private Double altitude = -1.0;
+
+    @XmlElement
+    private KnownLocation knownLocation;
 
     @XmlElement @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime pointDate;
@@ -63,6 +69,18 @@ public class TrackPoint {
         this.pointDate = pointDate;
     }
 
+    public KnownLocation getKnownLocation() {
+        return knownLocation;
+    }
+
+    public void setKnownLocation(KnownLocation knownLocation) {
+        this.knownLocation = knownLocation;
+    }
+
+    public Triplet<Double, Double, Double> getLatitudeAndLongitude() {
+        return Triplet.with(latitude, longitude, altitude);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,6 +89,8 @@ public class TrackPoint {
         TrackPoint that = (TrackPoint) o;
 
         if (altitude != null ? !altitude.equals(that.altitude) : that.altitude != null) return false;
+        if (knownLocation != null ? !knownLocation.equals(that.knownLocation) : that.knownLocation != null)
+            return false;
         if (latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) return false;
         if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
         if (pointDate != null ? !pointDate.equals(that.pointDate) : that.pointDate != null) return false;
@@ -83,6 +103,7 @@ public class TrackPoint {
         int result = latitude != null ? latitude.hashCode() : 0;
         result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (altitude != null ? altitude.hashCode() : 0);
+        result = 31 * result + (knownLocation != null ? knownLocation.hashCode() : 0);
         result = 31 * result + (pointDate != null ? pointDate.hashCode() : 0);
         return result;
     }

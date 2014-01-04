@@ -71,6 +71,10 @@ public class LogUploadServlet extends HttpServlet {
         String json = IOUtils.toString(req.getInputStream());
         LogRecording logRecording = JSonUtils.readJson(LogRecording.class, json);
 
+        for (LogRecording.LogRecord logRecord : logRecording.getRecords()) {
+            logger.info(logRecord.getDateTime() + " : " + logRecord.getAltitude());
+        }
+
         try {
             LogPersistenceJob logPersistenceJob = new LogPersistenceJob();
             logPersistenceJob.setKey(SignUtils.calculateSha1Digest(user.getEmail() + logRecording.getName() + LocalDateTime.now()));

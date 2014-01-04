@@ -6,7 +6,7 @@ import fr.untitled2.common.entities.raspi.FileRef;
 import fr.untitled2.common.entities.raspi.PhotoGallery;
 import fr.untitled2.entities.File;
 import fr.untitled2.entities.Gallery;
-import fr.untitled2.entities.ImageFiles;
+import fr.untitled2.entities.OriginalToThumbnails;
 import fr.untitled2.entities.User;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.SignUtils;
@@ -42,8 +42,8 @@ public class PushPhotoGallery extends Command<PhotoGallery, PhotoGallery, PhotoG
 
         if (CollectionUtils.isNotEmpty(input.getOriginalFiles())) {
             for (FileRef fileRef : input.getOriginalFiles()) {
-                ImageFiles imageFiles = getImageFile(fileRef, user, gallery);
-                ObjectifyService.ofy().save().entity(imageFiles);
+                OriginalToThumbnails originalToThumbnails = getImageFile(fileRef, user, gallery);
+                ObjectifyService.ofy().save().entity(originalToThumbnails);
             }
         }
 
@@ -55,18 +55,18 @@ public class PushPhotoGallery extends Command<PhotoGallery, PhotoGallery, PhotoG
         return input;
     }
 
-    private ImageFiles getImageFile(FileRef fileRef, User user, Gallery gallery) throws IOException {
+    private OriginalToThumbnails getImageFile(FileRef fileRef, User user, Gallery gallery) throws IOException {
         String id = SignUtils.calculateSha1Digest(fileRef.getId() + user.getUserId());
-        ImageFiles imageFiles = ObjectifyService.ofy().load().key(Key.create(ImageFiles.class, id)).get();
+        OriginalToThumbnails originalToThumbnails = ObjectifyService.ofy().load().key(Key.create(OriginalToThumbnails.class, id)).get();
 
-        if (imageFiles == null) {
-            imageFiles = new ImageFiles();
-            imageFiles.setId(id);
-            imageFiles.setGallery(gallery);
-            imageFiles.setOriginalFile(ObjectifyService.ofy().load().key(Key.create(File.class, fileRef.getId())).get());
-            imageFiles.setUser(user);
+        if (originalToThumbnails == null) {
+            originalToThumbnails = new OriginalToThumbnails();
+            originalToThumbnails.setId(id);
+            originalToThumbnails.setGallery(gallery);
+            originalToThumbnails.setOriginalFile(ObjectifyService.ofy().load().key(Key.create(File.class, fileRef.getId())).get());
+            originalToThumbnails.setUser(user);
         }
-        return imageFiles;
+        return originalToThumbnails;
     }
 
     @Override

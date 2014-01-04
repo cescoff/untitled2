@@ -13,6 +13,9 @@ if (UserUtils.isConnected()) {
         <a href="/ihm/logs"><img src="/images/icons/black/logs.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.template.topMenu" key="logs" defaultValue="Logs"/>"/></a>
     </div>
     <div class="menuItem">
+        <a href="/ihm/journeys/list"><img src="/images/icons/black/logs.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.template.topMenu" key="logs" defaultValue="Logs"/>"/></a>
+    </div>
+    <div class="menuItem">
         <a href="/ihm/images"><img src="/images/icons/black/photos.png" width="25" title="<messages:message packageName="fr.untitled2.bundle.template.topMenu" key="images" defaultValue="Images"/>"/></a>
     </div>
     <div class="menuItem">

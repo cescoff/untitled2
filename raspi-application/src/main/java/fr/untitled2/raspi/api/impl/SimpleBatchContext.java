@@ -22,6 +22,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -89,11 +90,7 @@ public class SimpleBatchContext implements BatchContext {
         }
 
         if (inputStream != null) {
-            String fileName = fileRef.getName();
-            int fileSlashIndex = StringUtils.indexOf(fileName, "/");
-            if (fileSlashIndex >= 0) {
-                fileName = StringUtils.substring(fileName, fileSlashIndex);
-            }
+            String fileName = FilenameUtils.getName(fileRef.getName());
             File destinationFile = createFile(fileName);
             FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
             IOUtils.copy(inputStream, fileOutputStream);

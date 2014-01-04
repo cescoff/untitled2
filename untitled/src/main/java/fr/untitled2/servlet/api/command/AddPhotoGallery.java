@@ -1,9 +1,12 @@
 package fr.untitled2.servlet.api.command;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import fr.untitled2.common.entities.raspi.*;
 import fr.untitled2.entities.*;
+import fr.untitled2.utils.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +24,13 @@ public class AddPhotoGallery extends Command<ProcessedImage, SimpleResponse, Sim
     @Override
     protected SimpleResponse execute(ProcessedImage input, User user, String fromIpAddress) throws Exception {
         logger.info("User->" + user);
-        Iterable<ImageFiles> imageFiles = ObjectifyService.ofy().load().type(ImageFiles.class);
 
-        for (ImageFiles imageFile : imageFiles) {
+
+        Iterable<OriginalToThumbnails> imageFiles = getFiles(user);
+
+        if (CollectionUtils.isEmpty(imageFiles)) logger.error("No image files");
+
+        for (OriginalToThumbnails imageFile : imageFiles) {
             if (imageFile != null) {
                 File originalFile = imageFile.getOriginalFile();
                 if (originalFile.getId().equals(input.getOriginalFile().getId())) {
@@ -41,6 +48,15 @@ public class AddPhotoGallery extends Command<ProcessedImage, SimpleResponse, Sim
         }
         logger.error("No file found with id '" + input.getOriginalFile().getId() + "'");
         return new SimpleResponse(false);
+    }
+
+    private Iterable<OriginalToThumbnails> getFiles(final User user) {
+        return Iterables.filter(ObjectifyService.ofy().load().type(OriginalToThumbnails.class), new Predicate<OriginalToThumbnails>() {
+            @Override
+            public boolean apply(OriginalToThumbnails originalToThumbnails) {
+                return originalToThumbnails.getUser().equals(user);
+            }
+        });
     }
 
     @Override

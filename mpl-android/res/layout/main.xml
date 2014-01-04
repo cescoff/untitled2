@@ -5,47 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
         >
-<TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/Welcome"
-    android:id="@+id/Welcome"
-    android:textSize="25dp"
-        />
-
-    <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_marginBottom="0px"
-            android:layout_height="100dp">
-
-        <ImageButton
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:text="@string/ButtonLogList"
-                android:id="@+id/ButtonLogList"
-                android:src="@drawable/database"
-                android:background="#000000"
-                />
-
-        <ImageButton
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:text="@string/ButtonSettings"
-                android:id="@+id/ButtonSettings"
-                android:src="@drawable/resume"
-                android:background="#000000"
-                />
-
-        <ImageButton
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/video"
-                android:id="@+id/ButtonFilmTools"
-                android:background="#000000"/>
-
-    </LinearLayout>
-
+    <Space android:layout_width="1dp" android:layout_height="10dp"/>
     <TableLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
@@ -139,6 +99,23 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/LastAltitudeLabel"
+                    android:id="@+id/LastAltitudeLabel"
+                    android:layout_column="0"
+                    android:textSize="20dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LastAltitude"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/LastPointDateLabel"
                     android:id="@+id/LastPointDateLabel"
                     android:layout_column="0"
@@ -169,6 +146,37 @@
                     android:textSize="20dp" />
         </TableRow>
 
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/LastKnownLocationName"
+                    android:id="@+id/LastKnownLocationName"
+                    android:layout_column="0"
+                    android:textSize="20dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LastKnownLocationDate"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LastKnownLocationNameForDistance"
+                    android:layout_column="0"
+                    android:textSize="20dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LastKnownLocationDistance"
+                    android:layout_column="1"
+                    android:textSize="20dp" />
+        </TableRow>
     </TableLayout>
 
     <LinearLayout

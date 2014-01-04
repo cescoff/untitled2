@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import fr.untitled2.common.entities.LogRecording;
 import fr.untitled2.common.entities.UserPreferences;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
-import fr.untitled2.common.utils.LocalisationUtils;
+import fr.untitled2.common.utils.GeoLocalisationUtils;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.JAXBUtils;
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -129,7 +129,7 @@ public class MainCommand {
         Collection<File> imageFiles = imageDates.keySet();
 
         for (File imageFile : imageFiles) {
-            Triplet<Double, Double, String> localisations = LocalisationUtils.getImagePosition(imageDates.get(imageFile), logRecordings);
+            Triplet<Double, Double, String> localisations = GeoLocalisationUtils.getImagePosition(imageDates.get(imageFile), logRecordings);
             if (localisations != null) {
                 System.out.println("File '" + imageFile + "' with date " + imageDates.get(imageFile) + " is located at (" + localisations.getValue0() + ", " + localisations.getValue1() + ", " + localisations.getValue2() + ")");
                 try {

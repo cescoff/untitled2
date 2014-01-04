@@ -42,7 +42,7 @@ import java.io.StringReader;
  * Time: 6:06 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Connect extends Activity {
+public class Connect extends MenuActivity {
 
     public static final String token_validation_url = "tokenValidationUrl";
 
@@ -70,6 +70,17 @@ public class Connect extends Activity {
 
         preferences = PreferencesUtils.getPreferences(this);
     }
+
+    @Override
+    protected String getPageTitle(Preferences preferences) {
+        return preferences.getTranslation(I18nConstants.connect_title);
+    }
+
+    @Override
+    protected boolean displayMenuBar() {
+        return false;
+    }
+
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -127,7 +138,7 @@ public class Connect extends Activity {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     super.onPageFinished(view, url);
-                    if (url.equals("https://accounts.google.com/OAuthAuthorizeToken")) {
+                    if (StringUtils.startsWith(url, "https://accounts.google.com/o/oauth1/approval")) {
                         view.loadUrl("javascript:window.HTMLOUT.showHTML('<html>'+document.getElementsByTagName('body')[0].innerHTML+'</html>');");
                     }
 
@@ -168,6 +179,8 @@ public class Connect extends Activity {
                 String line = lineIterator.nextLine();
                 if (StringUtils.contains(line, "code: <b>")) {
                     verificationCode = StringUtils.substring(line, StringUtils.indexOf(line, "code: <b>") + "code: <b>".length(), StringUtils.indexOf(line, "</b>"));
+                } else if (StringUtils.contains(line, "<span id=\"verification_code\">")) {
+                    verificationCode = StringUtils.substring(line, StringUtils.indexOf(line, "<span id=\"verification_code\">") + "<span id=\"verification_code\">".length(), StringUtils.indexOf(line, "</span>", StringUtils.indexOf(line, "<span id=\"verification_code\">")));
                 }
             }
             if (StringUtils.isNotEmpty(verificationCode)) {

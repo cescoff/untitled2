@@ -32,7 +32,9 @@ public class InitServlet extends HttpServlet {
         ObjectifyService.register(BatchTask.class);
         ObjectifyService.register(Batchlet.class);
         ObjectifyService.register(Gallery.class);
-        ObjectifyService.register(ImageFiles.class);
+        ObjectifyService.register(OriginalToThumbnails.class);
+        ObjectifyService.register(JourneyEntity.class);
+        ObjectifyService.register(JourneyCalculationJob.class);
     }
 
 }

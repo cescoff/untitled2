@@ -1,7 +1,6 @@
 package fr.untitled2.raspi.batchlet;
 
 import com.beust.jcommander.internal.Lists;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import fr.untitled2.common.entities.LogRecording;
@@ -11,7 +10,7 @@ import fr.untitled2.common.entities.raspi.ImageTransformationTask;
 import fr.untitled2.common.entities.raspi.PhotoGallery;
 import fr.untitled2.common.entities.raspi.ServerConfig;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
-import fr.untitled2.common.utils.LocalisationUtils;
+import fr.untitled2.common.utils.GeoLocalisationUtils;
 import fr.untitled2.raspi.api.BatchContext;
 import fr.untitled2.raspi.api.MasterBatchlet;
 import fr.untitled2.raspi.utils.CommandLineUtils;
@@ -134,7 +133,7 @@ public class PhotoScanBatchlet extends MasterBatchlet {
 
         for (File imageFile : images) {
             try {
-                Triplet<Double, Double, String> localisations = LocalisationUtils.getImagePosition(getImageDate(imageFile, userPreferences), logRecordings);
+                Triplet<Double, Double, String> localisations = GeoLocalisationUtils.getImagePosition(getImageDate(imageFile, userPreferences), logRecordings);
                 if (localisations != null) {
                     logger.info("File " + imageFile.getPath() + " is located");
 

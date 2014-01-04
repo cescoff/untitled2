@@ -1,17 +1,20 @@
 package fr.untitled2.common.entities;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import fr.untitled2.common.entities.jaxb.LocalDateTimeAdapter;
+import fr.untitled2.common.utils.GeoLocalisationUtils;
+import fr.untitled2.common.utils.GoogleMapsUtils;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.SignUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
+import org.javatuples.Quartet;
+import org.javatuples.Triplet;
 import org.joda.time.LocalDateTime;
 
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.*;
 import java.util.List;
 
@@ -32,6 +35,9 @@ public class LogRecording implements Serializable {
             return logRecord.getDateTime();
         }
     });
+
+    @XmlElement
+    private boolean elevationCalculated = false;
 
     @XmlTransient
     private long id;
@@ -156,6 +162,36 @@ public class LogRecording implements Serializable {
         this.distance = distance;
     }
 
+    public boolean isElevationCalculated() {
+        return elevationCalculated;
+    }
+
+    public void setElevationCalculated(boolean elevationCalculated) {
+        this.elevationCalculated = elevationCalculated;
+    }
+
+    public void addElevations() {
+        Iterable<Triplet<LocalDateTime, Double, Double>> recordsToBeLocated = Iterables.transform(getRecords(), new Function<LogRecording.LogRecord, Triplet<LocalDateTime, Double, Double>>() {
+            @Override
+            public Triplet<LocalDateTime, Double, Double> apply(LogRecording.LogRecord logRecord) {
+                return Triplet.with(logRecord.getDateTime(), logRecord.getLatitude(), logRecord.getLongitude());
+            }
+        });
+
+        List<Quartet<LocalDateTime, Double, Double, Double>> elevatedLogRecord = GoogleMapsUtils.getAltitudes(Lists.newArrayList(recordsToBeLocated));
+        setRecords(Lists.newArrayList(Iterables.transform(elevatedLogRecord, new Function<Quartet<LocalDateTime, Double, Double, Double>, LogRecord>() {
+            @Override
+            public LogRecord apply(Quartet<LocalDateTime, Double, Double, Double> objects) {
+                LogRecord logRecord = new LogRecord();
+                logRecord.setDateTime(objects.getValue0());
+                logRecord.setLatitude(objects.getValue1());
+                logRecord.setLongitude(objects.getValue2());
+                logRecord.setAltitude(objects.getValue3());
+                return logRecord;
+            }
+        })));
+    }
+
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class LogRecord implements Serializable {
 
@@ -170,6 +206,12 @@ public class LogRecording implements Serializable {
 
         @XmlElement
         private double longitude;
+
+        @XmlElement
+        private double altitude = -1.0;
+
+        @XmlTransient
+        private KnownLocation knownLocation;
 
         public LogRecord() {
         }
@@ -206,23 +248,55 @@ public class LogRecording implements Serializable {
             this.longitude = longitude;
         }
 
+        public double getAltitude() {
+            return altitude;
+        }
+
+        public void setAltitude(double altitude) {
+            this.altitude = altitude;
+        }
+
+        public KnownLocation getKnownLocation() {
+            return knownLocation;
+        }
+
+        public void setKnownLocation(KnownLocation knownLocation) {
+            this.knownLocation = knownLocation;
+        }
+
         public String toLineString() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(dateTime.toString()).append("|").append(latitude).append("|").append(longitude).append("\n");
+            stringBuilder.append(dateTime.toString()).append("|").append(latitude).append("|").append(longitude).append("|").append(altitude).append("\n");
             return stringBuilder.toString();
         }
 
         public static LogRecord fromLine(String line) {
             String[] elements = StringUtils.split(line, "|");
-            if (elements.length != 3) return null;
+            if (elements.length != 3 && elements.length != 4) return null;
             LogRecord result = new LogRecord();
             result.setDateTime(new LocalDateTime(elements[0]));
             result.setLatitude(Double.parseDouble(elements[1]));
             result.setLongitude(Double.parseDouble(elements[2]));
-
+            if (elements.length == 4) {
+                result.setAltitude(Double.parseDouble(elements[3]));
+            }
             return result;
         }
 
+        public Triplet<Double, Double, Double> getLatitudeAndLongitude() {
+            if (knownLocation != null) return Triplet.with(knownLocation.getLatitude(), knownLocation.getLongitude(), knownLocation.getAltitude());
+            return Triplet.with(latitude, longitude, altitude);
+        }
+
+        @Override
+        public String toString() {
+            return "LogRecord{" +
+                    "dateTime=" + dateTime +
+                    ", latitude=" + latitude +
+                    ", longitude=" + longitude +
+                    ", altitude=" + altitude +
+                    '}';
+        }
     }
 
 }

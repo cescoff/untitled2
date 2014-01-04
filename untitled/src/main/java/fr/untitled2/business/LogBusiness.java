@@ -4,13 +4,12 @@ import com.google.appengine.labs.repackaged.com.google.common.collect.Iterables;
 import com.google.appengine.labs.repackaged.com.google.common.collect.Lists;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import fr.untitled2.business.beans.LogList;
 import fr.untitled2.entities.*;
 import fr.untitled2.utils.CollectionUtils;
-import fr.untitled2.utils.DistanceUtils;
+import fr.untitled2.common.utils.DistanceUtils;
 import org.apache.commons.lang.StringUtils;
 import org.javatuples.Pair;
 import org.joda.time.DateTimeZone;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -138,7 +136,7 @@ public class LogBusiness {
         ObjectifyService.ofy().delete().entity(logStatistics).now();
     }
 
-    private LogStatistics getLogStatistics(Log log) {
+    public LogStatistics getLogStatistics(Log log) {
 
         LogStatistics logStatistics = ObjectifyService.ofy().load().key(Key.create(LogStatistics.class, log.getInternalId())).get();
         if (logStatistics == null) logStatistics = new LogStatistics();
@@ -159,7 +157,7 @@ public class LogBusiness {
             LocalDateTime start = trackStart.getPointDate();
             LocalDateTime end = trackStart.getPointDate();
             for (int index = 1; index < sortedTrackPoints.size(); index++) {
-                distance += DistanceUtils.getDistance(Pair.with(trackStart.getLatitude(), trackStart.getLongitude()), Pair.with(sortedTrackPoints.get(index).getLatitude(), sortedTrackPoints.get(index).getLongitude()));
+                distance += DistanceUtils.getDistance(trackStart.getLatitudeAndLongitude(), sortedTrackPoints.get(index).getLatitudeAndLongitude());
                 trackStart = sortedTrackPoints.get(index);
                 end = trackStart.getPointDate();
             }

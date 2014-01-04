@@ -1,9 +1,12 @@
 package fr.untitled2.common.entities;
 
+import com.beust.jcommander.internal.Lists;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,6 +27,9 @@ public class UserPreferences {
 
     @XmlElement
     private String cameraDateTimeZone;
+
+    @XmlElement
+    private Collection<KnownLocation> knownLocations = Lists.newArrayList();
 
     public UserPreferences() {
     }
@@ -56,5 +62,13 @@ public class UserPreferences {
 
     public void setCameraDateTimeZone(String cameraDateTimeZone) {
         this.cameraDateTimeZone = cameraDateTimeZone;
+    }
+
+    public Collection<KnownLocation> getKnownLocations() {
+        return knownLocations;
+    }
+
+    public void setKnownLocations(Collection<KnownLocation> knownLocations) {
+        this.knownLocations = knownLocations;
     }
 }

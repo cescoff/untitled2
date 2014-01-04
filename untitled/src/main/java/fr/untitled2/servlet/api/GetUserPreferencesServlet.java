@@ -60,8 +60,9 @@ public class GetUserPreferencesServlet extends HttpServlet {
             userPreferences.setCameraDateTimeZone(applicationUser.getTimeZoneId());
             userPreferences.setDateFormat(applicationUser.getDateFormat());
             userPreferences.setPreferedLocale(applicationUser.getLocale());
-
+            userPreferences.setKnownLocations(applicationUser.getKnownLocations());
             JSonUtils.writeJson(userPreferences, resp.getOutputStream());
+            return;
         }
 
         resp.sendError(404, "No matching user");

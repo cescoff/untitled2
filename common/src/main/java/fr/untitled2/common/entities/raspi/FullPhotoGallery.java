@@ -1,5 +1,7 @@
 package fr.untitled2.common.entities.raspi;
 
+import com.beust.jcommander.internal.Lists;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -23,7 +25,7 @@ public class FullPhotoGallery {
     private String galleryName;
 
     @XmlElement
-    private List<PhotoGalleryItem> items;
+    private List<PhotoGalleryItem> items = Lists.newArrayList();
 
     public String getGalleryId() {
         return galleryId;

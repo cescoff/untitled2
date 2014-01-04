@@ -35,6 +35,12 @@ public abstract class MVCConstants {
 
     public static String registration_form_mode_attribute = "registration";
 
+    public static String registration_known_location_name = "knownLocationName";
+
+    public static String registration_known_location_latitude = "knownLocationLatitude";
+
+    public static String registration_known_location_longitude = "knownLocationLongitude";
+
     /**  Images views **/
 
     public static String image_list_attribute = "imageList";
@@ -63,6 +69,9 @@ public abstract class MVCConstants {
     public static String server_connect_view = "serverConnect";
 
     public static String server_details_view = "serverDetails";
+
+    /** Journeys **/
+    public static String journeys_list_view = "journeysList";
 
     /** Map views **/
 

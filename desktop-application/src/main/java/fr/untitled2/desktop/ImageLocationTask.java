@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 import fr.untitled2.common.entities.LogRecording;
 import fr.untitled2.common.entities.UserPreferences;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
-import fr.untitled2.common.utils.LocalisationUtils;
+import fr.untitled2.common.utils.GeoLocalisationUtils;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.JAXBUtils;
 import javafx.concurrent.Task;
@@ -117,24 +117,35 @@ public class ImageLocationTask extends Task<Double> {
 
         double progressForImage = (maxProgress - progress) / imageFiles.size();
         for (File imageFile : imageFiles) {
-            Triplet<Double, Double, String> localisations = LocalisationUtils.getImagePosition(imageDates.get(imageFile), logRecordings);
-            if (localisations != null) {
-                updateMessage("File " + imageFile.getName() + " is located");
+            try {
+                System.out.println("File:" + imageFile);
+                Triplet<Double, Double, String> localisations = GeoLocalisationUtils.getImagePosition(imageDates.get(imageFile), logRecordings);
+                if (localisations != null) {
+                    updateMessage("File " + imageFile.getName() + " is located");
 
-                try {
-                    addGPSInfosToExif(imageFile, localisations.getValue0(), localisations.getValue1());
-                } catch (Throwable t) {
-                    updateMessage("An error has occured while updating exif meta data on file '" + imageFile + "'");
-                    updateMessage(Throwables.getStackTraceAsString(t));
+                    try {
+                        addGPSInfosToExif(imageFile, localisations.getValue0(), localisations.getValue1());
+                    } catch (Throwable t) {
+                        updateMessage("An error has occured while updating exif meta data on file '" + imageFile + "'");
+                        updateMessage(Throwables.getStackTraceAsString(t));
+                        t.printStackTrace();
+                    }
+                } else {
+                    updateMessage("File " + imageFile.getName() + " is not located");
                 }
-            } else {
-                updateMessage("File " + imageFile.getName() + " is not located");
+            } catch (Throwable t) {
+                updateMessage("An error has occured while updating exif meta data on file '" + imageFile + "'");
+                updateMessage(Throwables.getStackTraceAsString(t));
+                t.printStackTrace();
             }
             progress+=progressForImage;
 
             updateProgress(progress / maxProgress, maxProgress);
-            if (maxProgress <= 1.0) updateMessage("Finished !!");
+            if (maxProgress <= 1.0) {
+                updateMessage("Finished !!");
+            }
         }
+        System.out.println("The end");
     }
 
     private Pair<LocalDateTime, LocalDateTime> getStartAndEndDates(File imageDir, UserPreferences userPreferences) throws IOException, ImageReadException {

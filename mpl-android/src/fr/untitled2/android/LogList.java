@@ -31,6 +31,7 @@ import fr.untitled2.android.utils.NetUtils;
 import fr.untitled2.android.utils.PreferencesUtils;
 import fr.untitled2.common.entities.LogRecording;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
+import fr.untitled2.common.utils.NumberFormattingUtils;
 import fr.untitled2.utils.CollectionUtils;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -42,7 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-public class LogList extends Activity {
+public class LogList extends MenuActivity {
 
     private static final String current_view = "currentView";
     private static final String log_to_delete = "currentLogToDelete";
@@ -60,12 +61,8 @@ public class LogList extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_PROGRESS);
-        getWindow().setFeatureInt( Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
 
         try {
-            super.onCreate(savedInstanceState);
-
             this.preferences = getPreferences();
             this.dbHelper = new DbHelper(getApplicationContext(), preferences);
         } catch (Throwable t) {
@@ -73,20 +70,21 @@ public class LogList extends Activity {
         }
     }
 
+    @Override
+    protected String getPageTitle(Preferences preferences) {
+        return preferences.getTranslation(I18nConstants.loglist_title);
+    }
+
+    @Override
+    protected boolean displayMenuBar() {
+        return true;
+    }
+
     private void initListView() {
         try {
             setContentView(R.layout.loglist);
             ListView logListView = (ListView) findViewById(R.id.LogListView);
             logListView.setAdapter(Statuses(getLogRecordings()));
-            ImageButton homeButton = (ImageButton) findViewById(R.id.ButtonHome);
-            homeButton.setOnClickListener(OnClickChangeToHome());
-
-            ImageButton settingsButton = (ImageButton) findViewById(R.id.ButtonSettings);
-            settingsButton.setOnClickListener(OnClickChangeToSettings());
-
-            ImageButton filmToolButton = (ImageButton) findViewById(R.id.ButtonFilmTools);
-            if (!preferences.isFilmToolEnabled()) filmToolButton.setVisibility(View.GONE);
-            else filmToolButton.setOnClickListener(OnClickToFilmTool());
         } catch (Throwable t) {
             Log.e(getLocalClassName(), Throwables.getStackTraceAsString(t));
         }
@@ -120,17 +118,28 @@ public class LogList extends Activity {
                 LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View rowView = inflater.inflate(R.layout.loglistrow, parent, false);
                 TextView textView = (TextView) rowView.findViewById(R.id.LogListLabel);
+                TextView statistics = (TextView) rowView.findViewById(R.id.LogListStatistics);
+
                 ImageView uploadButton = (ImageView) rowView.findViewById(R.id.LogListIcon);
 
                 String name = recordings[position].getLogRecording().getName();
-                if (recordings[position].getLogRecording().getPointCount() != null)  name += " (" + recordings[position].getLogRecording().getPointCount() + ")";
+                textView.setText(name);
+                textView.setOnClickListener(OnClickViewJourneys(recordings[position].getLogRecording().getId()));
+                String stats = "";
+                if (recordings[position].getLogRecording().getPointCount() != null)  {
+                    if (recordings[position].getLogRecording().getPointCount() == 1) {
+                        stats += "" + recordings[position].getLogRecording().getPointCount() + " pt ";
+                    } else if (recordings[position].getLogRecording().getPointCount() > 0) {
+                        stats += "" + recordings[position].getLogRecording().getPointCount() + " pts ";
+                    }
+                }
                 if (recordings[position].getLogRecording().getDistance() != null) {
                     double distance = recordings[position].getLogRecording().getDistance();
-                    if (distance > 1000) name += " " + new Double(distance / 1000) + "km";
-                    else name += " " + new Double(distance).intValue() + "m";
-                }
-                textView.setText(name);
+                    stats += NumberFormattingUtils.toDistance(distance, NumberFormattingUtils.DistanceUnit.metric);
 
+                }
+                statistics.setText(stats);
+                statistics.setOnClickListener(OnClickViewJourneys(recordings[position].getLogRecording().getId()));
                 // Change the icon for Windows and iPhone
                 if (recordings[position].getStatus() == DbHelper.LogStatus.to_be_sent_to_cloud) {
                     uploadButton.setImageResource(R.drawable.up_arrow);
@@ -178,7 +187,7 @@ public class LogList extends Activity {
                     initListView();
                 } catch (Throwable t) {
                     Log.e(getLocalClassName(), Throwables.getStackTraceAsString(t));
-                    displayErrorDialog();
+                    displayErrorDialog(t.getMessage());
                 }
             }
         });
@@ -291,6 +300,16 @@ public class LogList extends Activity {
         if (currentViewId == R.layout.loglist) initListView();
     }
 
+    View.OnClickListener OnClickViewJourneys(final long logRecordingId) {
+        return new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), JourneyList.class);
+                intent.putExtra("logRecordingId", logRecordingId);
+                startActivity(intent);
+            }
+        };
+    }
+
     View.OnClickListener OnClickChangeToHome()
     {
         return new View.OnClickListener() {
@@ -331,14 +350,13 @@ public class LogList extends Activity {
                 try {
                     Looper.prepare();
                     if (!isConnected()) {
-                        setProgress(10000);
+                        publishProgress(10000);
                         getNotConnectedAlert().show();
                         return 0;
                     }
                     long logRecordingId = params[0];
                     if (logStatus != DbHelper.LogStatus.log_in_progress) dbHelper.markLogRecordingAsUploadInProgress(logRecordingId);
                     publishProgress(1000);
-                    initListView();
                     if (!preferences.isConnected()) {
                         publishProgress(10000);
                         Intent intent = new Intent(getApplicationContext(), Connect.class);
@@ -349,20 +367,23 @@ public class LogList extends Activity {
                         AppEngineOAuthClient appEngineOAuthClient = new AppEngineOAuthClient(preferences.getOauth2Key(), preferences.getOauthSecret());
                         publishProgress(4000);
                         try {
-                            appEngineOAuthClient.pushLogRecording(dbHelper.getLogRecordingFromId(logRecordingId));
+                            LogRecording logRecording = dbHelper.getLogRecordingFromId(logRecordingId);
+//                            logRecording.addElevations();
+                            appEngineOAuthClient.pushLogRecording(logRecording);
                             publishProgress(8000);
                             if (logStatus != DbHelper.LogStatus.log_in_progress) dbHelper.markLogRecordingAsSynchronizedWithCloud(logRecordingId);
                             publishProgress(10000);
                         } catch (Throwable throwable) {
                             publishProgress(10000);
-                            dbHelper.markLogasToBeSent(logRecordingId);
+                            if (logStatus != DbHelper.LogStatus.log_in_progress) dbHelper.markLogasToBeSent(logRecordingId);
                             Log.e(getLocalClassName(), Throwables.getStackTraceAsString(throwable));
                             return -1;
                         }
                     }
                     return 0;
                 } catch (Throwable t) {
-                    Log.e(getLocalClassName(), Throwables.getStackTraceAsString(t));
+                    String stackTrace = Throwables.getStackTraceAsString(t);
+                    Log.e(getLocalClassName(), stackTrace);
                     return -1;
                 }
             }
@@ -375,7 +396,7 @@ public class LogList extends Activity {
             @Override
             protected void onPostExecute(Integer integer) {
                 if (integer < 0) {
-                    displayErrorDialog();
+                    displayErrorDialog(" unknown");
                 } else {
                     getUploadOkAlertDialog().show();
                 }
@@ -383,10 +404,10 @@ public class LogList extends Activity {
         };
     }
 
-    private void displayErrorDialog() {
+    private void displayErrorDialog(String message) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle(preferences.getTranslation(I18nConstants.loglist_erroralerttitle));
+        alertDialogBuilder.setTitle(preferences.getTranslation(I18nConstants.loglist_erroralerttitle) + " : " + message);
         alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

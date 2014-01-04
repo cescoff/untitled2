@@ -29,7 +29,7 @@ public class Gallery {
     private LocalDateTime creationDate;
 
     @Ignore
-    private Iterable<ImageFiles> images = Lists.newArrayList();
+    private Iterable<OriginalToThumbnails> images = Lists.newArrayList();
 
     @Index
     private Key<User> user;
@@ -60,17 +60,17 @@ public class Gallery {
         this.creationDate = creationDate;
     }
 
-    public Iterable<ImageFiles> getImages() {
+    public Iterable<OriginalToThumbnails> getImages() {
         initFiles();
         return images;
     }
 
     public Iterable<FileRef> getOriginalFiles() {
         initFiles();
-        return Iterables.transform(images, new Function<ImageFiles, FileRef>() {
+        return Iterables.transform(images, new Function<OriginalToThumbnails, FileRef>() {
             @Override
-            public FileRef apply(ImageFiles imageFiles) {
-                File originalFile = imageFiles.getOriginalFile();
+            public FileRef apply(OriginalToThumbnails originalToThumbnails) {
+                File originalFile = originalToThumbnails.getOriginalFile();
                 FileRef fileRef = new FileRef();
                 fileRef.setFilePartCount(originalFile.getFilePartCount());
                 fileRef.setName(originalFile.getGsFilePath());
@@ -82,10 +82,10 @@ public class Gallery {
 
     public Iterable<FileRef> getOptimzedFiles() {
         initFiles();
-        return Iterables.transform(images, new Function<ImageFiles, FileRef>() {
+        return Iterables.transform(images, new Function<OriginalToThumbnails, FileRef>() {
             @Override
-            public FileRef apply(ImageFiles imageFiles) {
-                File optimizedFile = imageFiles.getOptimizedFile();
+            public FileRef apply(OriginalToThumbnails originalToThumbnails) {
+                File optimizedFile = originalToThumbnails.getOptimizedFile();
                 FileRef fileRef = new FileRef();
                 fileRef.setFilePartCount(optimizedFile.getFilePartCount());
                 fileRef.setName(optimizedFile.getGsFilePath());
@@ -97,10 +97,10 @@ public class Gallery {
 
     public Iterable<FileRef> getThumbnailFiles() {
         initFiles();
-        return Iterables.transform(images, new Function<ImageFiles, FileRef>() {
+        return Iterables.transform(images, new Function<OriginalToThumbnails, FileRef>() {
             @Override
-            public FileRef apply(ImageFiles imageFiles) {
-                File thumbnailFile = imageFiles.getThumbnailFile();
+            public FileRef apply(OriginalToThumbnails originalToThumbnails) {
+                File thumbnailFile = originalToThumbnails.getThumbnailFile();
                 FileRef fileRef = new FileRef();
                 fileRef.setFilePartCount(thumbnailFile.getFilePartCount());
                 fileRef.setName(thumbnailFile.getGsFilePath());
@@ -112,14 +112,14 @@ public class Gallery {
 
     private void initFiles() {
         if (CollectionUtils.isEmpty(images)) {
-            images = ObjectifyService.ofy().load().type(ImageFiles.class).filter("gallery", this);
+            images = ObjectifyService.ofy().load().type(OriginalToThumbnails.class).filter("gallery", this);
         }
     }
 
     public boolean isValid() {
         if (done) return true;
         initFiles();
-        for (ImageFiles image : images) {
+        for (OriginalToThumbnails image : images) {
             if (image == null) return false;
             if (image.getOptimizedFile() == null || image.getThumbnailFile() == null) {
                 return false;
@@ -142,5 +142,34 @@ public class Gallery {
 
     public void setDone(boolean done) {
         this.done = done;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Gallery gallery = (Gallery) o;
+
+        if (done != gallery.done) return false;
+        if (creationDate != null ? !creationDate.equals(gallery.creationDate) : gallery.creationDate != null)
+            return false;
+        if (id != null ? !id.equals(gallery.id) : gallery.id != null) return false;
+        if (images != null ? !images.equals(gallery.images) : gallery.images != null) return false;
+        if (name != null ? !name.equals(gallery.name) : gallery.name != null) return false;
+        if (user != null ? !user.equals(gallery.user) : gallery.user != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+        result = 31 * result + (images != null ? images.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (done ? 1 : 0);
+        return result;
     }
 }

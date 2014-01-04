@@ -81,6 +81,8 @@ public class ServerServlet extends HttpServlet {
         commands.put("getBatchTaskLogs", new GetBatchTaskLogs());
         commands.put("getServerBatchTasks", new GetServerBatchTasks());
         commands.put("getGalleries", new GetGalleries());
+        commands.put("getJourneysStatistics", new GetJourneyStatistics());
+        commands.put("logError", new LogError());
     }
 
     @Override

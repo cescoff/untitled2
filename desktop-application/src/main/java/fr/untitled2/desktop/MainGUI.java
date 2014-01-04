@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 import fr.untitled2.common.entities.LogRecording;
 import fr.untitled2.common.entities.UserPreferences;
 import fr.untitled2.common.oauth.AppEngineOAuthClient;
-import fr.untitled2.common.utils.LocalisationUtils;
+import fr.untitled2.common.utils.GeoLocalisationUtils;
 import fr.untitled2.utils.CollectionUtils;
 import fr.untitled2.utils.JAXBUtils;
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -25,7 +25,6 @@ import org.apache.sanselan.common.IImageMetadata;
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
 import org.apache.sanselan.formats.jpeg.exifRewrite.ExifRewriter;
 import org.apache.sanselan.formats.tiff.TiffImageMetadata;
-import org.apache.sanselan.formats.tiff.write.TiffImageWriterLossy;
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
@@ -252,7 +251,7 @@ public class MainGUI extends JPanel implements ActionListener {
         Collection<File> imageFiles = imageDates.keySet();
 
         for (File imageFile : imageFiles) {
-            Triplet<Double, Double, String> localisations = LocalisationUtils.getImagePosition(imageDates.get(imageFile), logRecordings);
+            Triplet<Double, Double, String> localisations = GeoLocalisationUtils.getImagePosition(imageDates.get(imageFile), logRecordings);
             if (localisations != null) {
                 logMessage("File '" + imageFile + "' with date " + imageDates.get(imageFile) + " is located at (" + localisations.getValue0() + ", " + localisations.getValue1() + ", " + localisations.getValue2() + ")");
                 try {

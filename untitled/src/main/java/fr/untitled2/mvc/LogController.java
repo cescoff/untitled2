@@ -129,7 +129,11 @@ public class LogController extends AuthenticatedController implements Serializab
 
         MapMarkers mapMarkers = new MapMarkers();
         for (TrackPoint trackPoint: StatisticsUtils.TRACK_POINT_SORT.sortedCopy(log.getTrackPoints())) {
-            mapMarkers.getMarkers().add(new Marker(trackPoint.getLatitude() + "", trackPoint.getLongitude() + ""));
+            if (trackPoint.getKnownLocation() != null) {
+                mapMarkers.getMarkers().add(new Marker(trackPoint.getKnownLocation().getLatitude() + "", trackPoint.getKnownLocation().getLongitude() + ""));
+            } else {
+                mapMarkers.getMarkers().add(new Marker(trackPoint.getLatitude() + "", trackPoint.getLongitude() + ""));
+            }
         }
         response.getOutputStream().write(JSonUtils.writeJson(mapMarkers).getBytes());
     }

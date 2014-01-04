@@ -22,6 +22,8 @@
     <string id="ConnectedAccountLabel" name="ConnectedAccountButton">Connect account</string>
     <string id="AutoModeSyncHourOfDayText" name="AutoModeSyncHourOfDayText">Sync hour of day : </string>
     <string id="FilmToolText" name="FilmToolText">Use film tool : </string>
+    <string id="KnwonLocationsText" name="KnwonLocationsText">Known Locations : </string>
+    <string id="KnwonLocationsValues" name="KnwonLocationsValues">N/A</string>
 
     <string id="ButtonHome" name="ButtonHome">Home</string>
 
@@ -36,12 +38,16 @@
     <string id="LastLatitude" name="LastLatitude"/>
     <string id="LastLongitudeLabel" name="LastLongitudeLabel">Last Longitude : </string>
     <string id="LastLongitude" name="LastLongitude"/>
+    <string id="LastAltitudeLabel" name="LastAltitudeLabel">Las Altitude : </string>
+    <string id="LastAltitude" name="LastAltitude"/>
+
     <string id="LastPointDateLabel" name="LastPointDateLabel">Last Point Date : </string>
     <string id="DistanceLabel" name="DistanceLabel">Distance : </string>
     <string id="LastPointDate" name="LastPointDate"/>
     <string id="LogHomeButton" name="LogHomeButton">Home</string>
     <string id="LogStartNewLog" name="LogStartNewLog">Start new log</string>
     <string id="ImageButtonLogStopStart" name="ImageButtonLogStopStart">Start / Stop</string>
+    <string id="LastKnownLocationName" name="LastKnownLocationName">unknown</string>
 
     <!-- Delete -->
     <string id="DeleteQuestion" name="DeleteQuestion">Are you sure you want to delete this log ?</string>

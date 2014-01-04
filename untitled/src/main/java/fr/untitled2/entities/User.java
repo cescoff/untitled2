@@ -1,13 +1,27 @@
 package fr.untitled2.entities;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.Sets;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
+import fr.untitled2.common.entities.KnownLocation;
 import fr.untitled2.mvc.AppRole;
+import fr.untitled2.utils.CollectionUtils;
+import fr.untitled2.utils.JSonUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -21,7 +35,9 @@ import java.util.TimeZone;
 @Entity @Cache
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final Logger log = LoggerFactory.getLogger(User.class);
+
+    private static final long serialVersionUID = 2L;
 
     @Id
     private String userId;
@@ -43,6 +59,11 @@ public class User implements Serializable {
     private AuthMode authMode;
 
     private Collection<String> knwonUserIds = Sets.newHashSet();
+
+    private String knownLocationsJson;
+
+    @Ignore
+    private Collection<KnownLocation> knownLocations = Lists.newArrayList();
 
     public User() {
     }
@@ -132,6 +153,86 @@ public class User implements Serializable {
         this.knwonUserIds = knwonUserIds;
     }
 
+    public String getKnownLocationsJson() {
+        return knownLocationsJson;
+    }
+
+    public void setKnownLocationsJson(String knownLocationsJson) {
+        this.knownLocationsJson = knownLocationsJson;
+    }
+
+    public Collection<KnownLocation> getKnownLocations() {
+        if (CollectionUtils.isNotEmpty(knownLocations)) {
+            log.info("Known locations are not empty");
+            return knownLocations;
+        }
+        if (StringUtils.isEmpty(getKnownLocationsJson())) {
+            log.info("Known locations json is empty (" + knownLocationsJson + ")");
+            return Lists.newArrayList();
+        }
+        KnownLocationsHolder knownLocationsHolder = null;
+        try {
+            knownLocationsHolder = JSonUtils.readJson(KnownLocationsHolder.class, knownLocationsJson);
+        } catch (IOException e) {
+            log.error("An error has occured while loading json '" + knownLocationsJson + "'", e);
+            return Lists.newArrayList();
+        }
+        return knownLocationsHolder.getKnownLocations();
+    }
+
+    public void setKnownLocations(Collection<KnownLocation> knownLocations) {
+        if (CollectionUtils.isNotEmpty(knownLocations)) {
+            KnownLocationsHolder knownLocationsHolder = new KnownLocationsHolder();
+            knownLocationsHolder.getKnownLocations().addAll(knownLocations);
+            try {
+                knownLocationsJson = JSonUtils.writeJson(knownLocationsHolder);
+            } catch (IOException e) {
+                log.error("An error has occured while storing json", e);
+            }
+        } else knownLocationsJson = null;
+        this.knownLocations = knownLocations;
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (enabled != user.enabled) return false;
+        if (authMode != user.authMode) return false;
+        if (dateFormat != null ? !dateFormat.equals(user.dateFormat) : user.dateFormat != null) return false;
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
+        if (knownLocationsJson != null ? !knownLocationsJson.equals(user.knownLocationsJson) : user.knownLocationsJson != null)
+            return false;
+        if (knwonUserIds != null ? !knwonUserIds.equals(user.knwonUserIds) : user.knwonUserIds != null) return false;
+        if (locale != null ? !locale.equals(user.locale) : user.locale != null) return false;
+        if (nickName != null ? !nickName.equals(user.nickName) : user.nickName != null) return false;
+        if (roles != null ? !roles.equals(user.roles) : user.roles != null) return false;
+        if (timeZoneId != null ? !timeZoneId.equals(user.timeZoneId) : user.timeZoneId != null) return false;
+        if (userId != null ? !userId.equals(user.userId) : user.userId != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userId != null ? userId.hashCode() : 0;
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (nickName != null ? nickName.hashCode() : 0);
+        result = 31 * result + (enabled ? 1 : 0);
+        result = 31 * result + (timeZoneId != null ? timeZoneId.hashCode() : 0);
+        result = 31 * result + (dateFormat != null ? dateFormat.hashCode() : 0);
+        result = 31 * result + (locale != null ? locale.hashCode() : 0);
+        result = 31 * result + (roles != null ? roles.hashCode() : 0);
+        result = 31 * result + (authMode != null ? authMode.hashCode() : 0);
+        result = 31 * result + (knwonUserIds != null ? knwonUserIds.hashCode() : 0);
+        result = 31 * result + (knownLocationsJson != null ? knownLocationsJson.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -142,6 +243,21 @@ public class User implements Serializable {
     public enum AuthMode {
         SOCIAL,
         GOOGLE
+    }
+
+    @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD)
+    public static class KnownLocationsHolder {
+
+        @XmlElement
+        private List<KnownLocation> knownLocations = Lists.newArrayList();
+
+        public List<KnownLocation> getKnownLocations() {
+            return knownLocations;
+        }
+
+        public void setKnownLocations(List<KnownLocation> knownLocations) {
+            this.knownLocations = knownLocations;
+        }
     }
 
 }

@@ -1,11 +1,14 @@
 package fr.untitled2.servlet.api.command;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.googlecode.objectify.ObjectifyService;
 import fr.untitled2.common.entities.raspi.*;
 import fr.untitled2.entities.File;
 import fr.untitled2.entities.Gallery;
-import fr.untitled2.entities.ImageFiles;
+import fr.untitled2.entities.OriginalToThumbnails;
 import fr.untitled2.entities.User;
+import fr.untitled2.utils.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +41,9 @@ public class GetGalleries extends Command<SimpleStringMessage, Galleries, Galler
                 FullPhotoGallery fullPhotoGallery = new FullPhotoGallery();
                 fullPhotoGallery.setGalleryId(gallery.getId());
                 fullPhotoGallery.setGalleryName(gallery.getName());
-                Iterable<ImageFiles> images = ObjectifyService.ofy().load().type(ImageFiles.class).filter("gallery", gallery);
-                for (ImageFiles image : images) {
+                Iterable<OriginalToThumbnails> images = getFiles(gallery);
+                if (CollectionUtils.isEmpty(images)) logger.error("No files for gallery '" + gallery.getId() + "'");
+                for (OriginalToThumbnails image : images) {
                     if (image != null) {
                         PhotoGalleryItem photoGalleryItem = new PhotoGalleryItem();
 
@@ -54,6 +58,18 @@ public class GetGalleries extends Command<SimpleStringMessage, Galleries, Galler
             } else logger.error("Gallery is null");
         }
         return result;
+    }
+
+    private Iterable<OriginalToThumbnails> getFiles(final Gallery gallery) {
+        return Iterables.filter(ObjectifyService.ofy().load().type(OriginalToThumbnails.class), new Predicate<OriginalToThumbnails>() {
+            @Override
+            public boolean apply(OriginalToThumbnails originalToThumbnails) {
+                if (originalToThumbnails == null) return false;
+                Gallery sourceGallery = originalToThumbnails.getGallery();
+                if (sourceGallery == null) return false;
+                return sourceGallery.equals(gallery);
+            }
+        });
     }
 
     private FileRef toFileRef(File file) {

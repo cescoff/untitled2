@@ -4,11 +4,22 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.google.common.collect.Lists;
 import fr.untitled2.android.settings.Preferences;
+import fr.untitled2.common.entities.KnownLocation;
+import fr.untitled2.common.json.JSonMappings;
+import fr.untitled2.utils.CollectionUtils;
+import fr.untitled2.utils.JSonUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -47,6 +58,8 @@ public class PreferencesUtils {
 
     private static final String user_id = "fr.untitled2.UserId";
 
+    private static final String known_locations = "fr.untitled2.KnownLocations";
+
     public static Preferences getPreferences(Service service) {
         SharedPreferences sharedPreferences = service.getSharedPreferences(preferences_name, Context.MODE_PRIVATE);
         return getPreferences(sharedPreferences);
@@ -82,6 +95,11 @@ public class PreferencesUtils {
         if (preferences.getTokenDate() != null) editor.putString(account_token_date, preferences.getTokenDate().toString());
         if (StringUtils.isNotEmpty(preferences.getUserId())) editor.putString(user_id, preferences.getUserId());
 
+        if (CollectionUtils.isNotEmpty(preferences.getKnownLocations())) {
+            String json = JSonMappings.getJSONKnownLocation(preferences.getKnownLocations());
+            editor.putString(known_locations, json);
+        }
+
         editor.commit();
     }
 
@@ -103,6 +121,12 @@ public class PreferencesUtils {
         if (!tokenDate.equals(Preferences.default_token_date)) tokenDateTime = new LocalDateTime(tokenDate);
         Integer autoModeSyncHourOfDay = sharedPreferences.getInt(auto_mode_sync_hour_of_day_key, Preferences.default_auto_mode_sync_hour_of_day);
         boolean filmToolEnabled = sharedPreferences.getBoolean(film_tool_enabled, false);
+        String knownLocationsJson = sharedPreferences.getString(known_locations, "");
+
+        List<KnownLocation> knownLocations = Lists.newArrayList();
+        if (StringUtils.isNotEmpty(knownLocationsJson)) {
+            knownLocations = JSonMappings.getKnownLocations(knownLocationsJson);
+        }
 
         Preferences.ApplicationSettingsMode applicationSettingsMode = Preferences.default_settings_modes;
 
@@ -110,8 +134,26 @@ public class PreferencesUtils {
             if (settingsMode.getFrequency() == frequency && settingsMode.getMinDistance() == minDistance) applicationSettingsMode = settingsMode;
         }
 
-        return new Preferences(locale, dateFormat, cameraDateTimeZone, auto, applicationSettingsMode, oauth2Key,oauthSecret, tokenDateTime, userId, autoModeSyncHourOfDay, filmToolEnabled);
 
+
+        return new Preferences(locale, dateFormat, cameraDateTimeZone, auto, applicationSettingsMode, oauth2Key,oauthSecret, tokenDateTime, userId, autoModeSyncHourOfDay, filmToolEnabled, knownLocations);
+
+    }
+
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class KnownLocationsHolder {
+
+        @XmlElement
+        private List<KnownLocation> knownLocations = Lists.newArrayList();
+
+        public List<KnownLocation> getKnownLocations() {
+            return knownLocations;
+        }
+
+        public void setKnownLocations(List<KnownLocation> knownLocations) {
+            this.knownLocations = knownLocations;
+        }
     }
 
 }

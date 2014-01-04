@@ -63,4 +63,27 @@ public class File {
         return filePartCount > 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        File file = (File) o;
+
+        if (filePartCount != file.filePartCount) return false;
+        if (gsFilePath != null ? !gsFilePath.equals(file.gsFilePath) : file.gsFilePath != null) return false;
+        if (id != null ? !id.equals(file.id) : file.id != null) return false;
+        if (user != null ? !user.equals(file.user) : file.user != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (gsFilePath != null ? gsFilePath.hashCode() : 0);
+        result = 31 * result + filePartCount;
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        return result;
+    }
 }

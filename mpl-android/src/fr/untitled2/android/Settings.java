@@ -6,21 +6,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import fr.untitled2.android.i18n.I18nConstants;
-import fr.untitled2.android.service.LogRecorder;
-import fr.untitled2.android.service.LogSynchronizer;
-import fr.untitled2.android.service.LogUploader;
+import fr.untitled2.android.service.SchedulingService;
 import fr.untitled2.android.settings.Preferences;
 import fr.untitled2.android.sqlilite.DbHelper;
 import fr.untitled2.android.utils.PreferencesUtils;
-import org.apache.commons.lang.StringUtils;
+import fr.untitled2.common.entities.KnownLocation;
+import fr.untitled2.utils.CollectionUtils;
 import org.joda.time.DateTimeZone;
 
-import java.util.Locale;
 import java.util.TimeZone;
 
-public class Settings extends Activity {
+public class Settings extends MenuActivity {
 
     private static final String selected_region = "selectedRegion";
 
@@ -28,13 +29,10 @@ public class Settings extends Activity {
 
     private String selectedTimeZoneRegion;
 
-    private DbHelper dbHelper;
-
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.dbHelper = new DbHelper(getApplicationContext(), preferences);
         if (savedInstanceState != null && savedInstanceState.containsKey(selected_region)) selectedTimeZoneRegion = savedInstanceState.getString(selected_region);
         try {
             super.onCreate(savedInstanceState);
@@ -45,7 +43,15 @@ public class Settings extends Activity {
         }
     }
 
+    @Override
+    protected String getPageTitle(Preferences preferences) {
+        return preferences.getTranslation(I18nConstants.settings_title);
+    }
 
+    @Override
+    protected boolean displayMenuBar() {
+        return true;
+    }
 
     private Preferences getPreferences() {
         return PreferencesUtils.getPreferences(this);
@@ -164,9 +170,20 @@ public class Settings extends Activity {
             ImageButton logList = (ImageButton) findViewById(R.id.ButtonLogList);
             logList.setOnClickListener(OnClickChangeToLogList());
 
-            ImageButton filmToolButton = (ImageButton) findViewById(R.id.ButtonFilmTools);
-            if (!preferences.isFilmToolEnabled()) filmToolButton.setVisibility(View.GONE);
-            else filmToolButton.setOnClickListener(OnClickToFilmTool());
+            TextView knownLocationsText = (TextView) findViewById(R.id.KnwonLocationsText);
+            knownLocationsText.setText(preferences.getTranslation(I18nConstants.settings_knwonlocations));
+
+            TextView knownLocationsValues = (TextView) findViewById(R.id.KnwonLocationsValues);
+            knownLocationsValues.setText(preferences.getTranslation(I18nConstants.settings_knwonlocationsna));
+
+            if (CollectionUtils.isNotEmpty(preferences.getKnownLocations())) {
+                knownLocationsValues.setText(Joiner.on(", ").join(Lists.transform(preferences.getKnownLocations(), new Function<KnownLocation, String>() {
+                    @Override
+                    public String apply(KnownLocation knownLocation) {
+                        return knownLocation.getName();
+                    }
+                })));
+            }
 
         } catch (Throwable t) {
             Log.e(getClass().getName(), Throwables.getStackTraceAsString(t));
@@ -273,13 +290,16 @@ public class Settings extends Activity {
 
                 preferences.setAuto(isChecked);
                 savePreferences();
-                
-                LogUploader logUploader = LogUploader.getInstance(dbHelper, preferences);
-                logUploader.stop();
-                logUploader.start(activity);
             }
         };
 
+    }
+
+    private void restartScheduler() {
+        Intent serviceIntent = new Intent(getApplicationContext(), SchedulingService.class);
+        stopService(serviceIntent);
+        serviceIntent = new Intent(getApplicationContext(), SchedulingService.class);
+        startService(serviceIntent);
     }
 
     View.OnClickListener OnClickToFilmTool() {
@@ -301,7 +321,6 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 preferences.setFilmToolEnabled(isChecked);
                 savePreferences();
-                if (isChecked) findViewById(R.id.ButtonFilmTools).setVisibility(View.VISIBLE);
             }
         };
 
@@ -313,8 +332,6 @@ public class Settings extends Activity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 preferences.setAutoModeSyncHourOfDay(position);
                 savePreferences();
-                LogUploader.getInstance(dbHelper, preferences).stop();
-                LogUploader.getInstance(dbHelper, preferences).start(activity);
             }
 
             @Override

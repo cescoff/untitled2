@@ -1,10 +1,8 @@
 package fr.untitled2.common.json;
 
 import com.google.common.collect.Lists;
-import fr.untitled2.common.entities.FilmCounter;
-import fr.untitled2.common.entities.LogRecording;
-import fr.untitled2.common.entities.UserInfos;
-import fr.untitled2.common.entities.UserPreferences;
+import fr.untitled2.common.entities.*;
+import fr.untitled2.utils.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.json.simple.JSONArray;
@@ -12,6 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,6 +30,7 @@ public class JSonMappings {
     private static final String log_recording_records = "records";
     private static final String log_recording_record_latitude = "latitude";
     private static final String log_recording_record_longitude = "longitude";
+    private static final String log_recording_record_altitude = "altitude";
     private static final String log_recording_record_date_time = "dateTime";
     private static final String user_preferences_date_format = "dateFormat";
     private static final String user_preferences_locale = "preferedLocale";
@@ -38,6 +39,15 @@ public class JSonMappings {
     private static final String film_counter_pauses = "pauses";
     private static final String film_counter_pause_position = "position";
     private static final String film_counter_pause_date_time = "pauseDateTime";
+    private static final String knownlocations = "knownLocations";
+    private static final String knownlocation_name = "name";
+    private static final String knownlocation_latitude = "latitude";
+    private static final String knownlocation_longitude = "longitude";
+    private static final String knownlocation_altitude = "altitude";
+    private static final String knownlocation_wifissid = "wifiSSIDs";
+    private static final String remoteerror_classname = "className";
+    private static final String remoteerror_message = "message";
+    private static final String remoteerror_stacktrace = "stackTrace";
 
     public static UserInfos getUserInfos(String json) {
         JSONObject jsonObject = (JSONObject) JSONValue.parse(json);
@@ -64,6 +74,7 @@ public class JSonMappings {
             recordObject.put(log_recording_record_date_time, logRecord.getDateTime().toString());
             recordObject.put(log_recording_record_latitude, logRecord.getLatitude());
             recordObject.put(log_recording_record_longitude, logRecord.getLongitude());
+            recordObject.put(log_recording_record_altitude, logRecord.getAltitude());
             jsonArray.add(recordObject);
         }
         jsonObject.put(log_recording_records, jsonArray);
@@ -95,6 +106,28 @@ public class JSonMappings {
         result.setDateFormat((String) jsonObject.get(user_preferences_date_format));
         result.setCameraDateTimeZone((String) jsonObject.get(user_preferences_camera_time_zone));
 
+        JSONArray jsonArray = (JSONArray) jsonObject.get(knownlocations);
+
+        for (Object knownLocationObject : jsonArray) {
+            JSONObject knownlocationJsonObject = (JSONObject) knownLocationObject;
+
+            KnownLocation knownLocation = new KnownLocation();
+            knownLocation.setName((String) knownlocationJsonObject.get(knownlocation_name));
+            if (knownlocationJsonObject.get(knownlocation_latitude) != null) knownLocation.setLatitude(Double.parseDouble(knownlocationJsonObject.get(knownlocation_latitude).toString()));
+            if (knownlocationJsonObject.get(knownlocation_longitude) != null) knownLocation.setLongitude(Double.parseDouble(knownlocationJsonObject.get(knownlocation_longitude).toString()));
+            if (knownlocationJsonObject.get(knownlocation_altitude) != null) knownLocation.setAltitude(Double.parseDouble(knownlocationJsonObject.get(knownlocation_altitude).toString()));
+            if (knownlocationJsonObject.containsKey(knownlocation_wifissid)) {
+                JSONArray wifiSSIDArray = (JSONArray) knownlocationJsonObject.get(knownlocation_wifissid);
+                List<String> ssids = Lists.newArrayList();
+
+                for (int index = 0; index < wifiSSIDArray.size(); index++) {
+                    ssids.add((String) wifiSSIDArray.get(index));
+                }
+                knownLocation.getWifiSSIDs().addAll(ssids);
+            }
+            result.getKnownLocations().add(knownLocation);
+        }
+
         return result;
     }
 
@@ -125,6 +158,7 @@ public class JSonMappings {
 
             logRecord.setLatitude(Double.parseDouble(record.get(log_recording_record_latitude).toString()));
             logRecord.setLongitude(Double.parseDouble(record.get(log_recording_record_longitude).toString()));
+            logRecord.setAltitude(Double.parseDouble(record.get(log_recording_record_altitude).toString()));
             result.getRecords().add(logRecord);
         }
         return result;
@@ -208,6 +242,7 @@ public class JSonMappings {
 
             logRecord.setLatitude(Double.parseDouble(record.get(log_recording_record_latitude).toString()));
             logRecord.setLongitude(Double.parseDouble(record.get(log_recording_record_longitude).toString()));
+            logRecord.setAltitude(Double.parseDouble(record.get(log_recording_record_altitude).toString()));
             result.add(logRecord);
         }
         return result;
@@ -221,12 +256,71 @@ public class JSonMappings {
             recordObject.put(log_recording_record_date_time, logRecord.getDateTime().toString());
             recordObject.put(log_recording_record_latitude, logRecord.getLatitude());
             recordObject.put(log_recording_record_longitude, logRecord.getLongitude());
+            recordObject.put(log_recording_record_altitude, logRecord.getAltitude());
             jsonArray.add(recordObject);
         }
         jsonObject.put(log_recording_records, jsonArray);
         return jsonObject.toJSONString();
     }
 
+    public static List<KnownLocation> getKnownLocations(String json) {
+        if (StringUtils.isEmpty(json)) return Collections.EMPTY_LIST;
+        List<KnownLocation> result = Lists.newArrayList();
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(json);
+        JSONArray jsonArray = (JSONArray) jsonObject.get(knownlocations);
 
+        for (Object object : jsonArray) {
+            JSONObject knownLocationObject = (JSONObject) object;
+            KnownLocation knownLocation = new KnownLocation();
+            knownLocation.setName((String) knownLocationObject.get(knownlocation_name));
+            if (knownLocationObject.get(knownlocation_latitude) != null) knownLocation.setLatitude(Double.parseDouble(knownLocationObject.get(knownlocation_latitude).toString()));
+            if (knownLocationObject.get(knownlocation_longitude) != null) knownLocation.setLongitude(Double.parseDouble(knownLocationObject.get(knownlocation_longitude).toString()));
+            if (knownLocationObject.get(knownlocation_altitude) != null) knownLocation.setAltitude(Double.parseDouble(knownLocationObject.get(knownlocation_altitude).toString()));
+            if (knownLocationObject.containsKey(knownlocation_wifissid)) {
+                JSONArray wifiSSIDArray = (JSONArray) knownLocationObject.get(knownlocation_wifissid);
+                List<String> ssids = Lists.newArrayList();
+
+                for (int index = 0; index < wifiSSIDArray.size(); index++) {
+                    ssids.add((String) wifiSSIDArray.get(index));
+                }
+                knownLocation.getWifiSSIDs().addAll(ssids);
+            }
+
+            result.add(knownLocation);
+        }
+        return result;
+    }
+
+    public static String getJSONKnownLocation(Collection<KnownLocation> knownLocations) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        for (KnownLocation knownLocation : knownLocations) {
+            JSONObject knownLocationObject = new JSONObject();
+            knownLocationObject.put(knownlocation_name, knownLocation.getName());
+            knownLocationObject.put(knownlocation_latitude, knownLocation.getLatitude());
+            knownLocationObject.put(knownlocation_longitude, knownLocation.getLongitude());
+            knownLocationObject.put(knownlocation_altitude, knownLocation.getAltitude());
+
+            if (CollectionUtils.isNotEmpty(knownLocation.getWifiSSIDs())) {
+                JSONArray wifiSSIDArray = new JSONArray();
+                for (String ssid : knownLocation.getWifiSSIDs()) {
+                    wifiSSIDArray.add(ssid);
+                }
+                knownLocationObject.put(knownlocation_wifissid, wifiSSIDArray);
+            }
+
+            jsonArray.add(knownLocationObject);
+        }
+        jsonObject.put(knownlocations, jsonArray);
+        return jsonObject.toJSONString();
+    }
+
+    public static String getJSONRemoteError(RemoteError remoteError) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(remoteerror_classname, remoteError.getClassName());
+        jsonObject.put(remoteerror_message, remoteError.getMessage());
+        jsonObject.put(remoteerror_stacktrace, remoteError.getStackTrace());
+        return jsonObject.toJSONString();
+    }
 
 }

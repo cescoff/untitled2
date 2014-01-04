@@ -40,7 +40,7 @@ import java.util.List;
  * Time: 11:28 AM
  * To change this template use File | Settings | File Templates.
  */
-public class FilmTool extends Activity {
+public class FilmTool extends MenuActivity {
 
     private boolean logStarted;
 
@@ -66,6 +66,16 @@ public class FilmTool extends Activity {
             Log.e(getLocalClassName(), Throwables.getStackTraceAsString(t));
         }
 
+    }
+
+    @Override
+    protected String getPageTitle(Preferences preferences) {
+        return preferences.getTranslation(I18nConstants.knownlocationlist_title);
+    }
+
+    @Override
+    protected boolean displayMenuBar() {
+        return true;
     }
 
     @Override

@@ -8,12 +8,17 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import fr.untitled2.android.i18n.I18nConstants;
 import fr.untitled2.android.i18n.I18nResourceKey;
+import fr.untitled2.common.entities.KnownLocation;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 
 /**
@@ -79,7 +84,9 @@ public class Preferences {
 
     private boolean filmToolEnabled;
 
-    public Preferences(Locale userLocale, String dateFormat, DateTimeZone cameraTimeZone, boolean auto, ApplicationSettingsMode applicationSettingsModes, String oauth2Key, String oauthSecret, LocalDateTime tokenDate, String userId, Integer autoModeSyncHourOfDay, boolean filmToolEnabled) {
+    private List<KnownLocation> knownLocations = Lists.newArrayList();
+
+    public Preferences(Locale userLocale, String dateFormat, DateTimeZone cameraTimeZone, boolean auto, ApplicationSettingsMode applicationSettingsModes, String oauth2Key, String oauthSecret, LocalDateTime tokenDate, String userId, Integer autoModeSyncHourOfDay, boolean filmToolEnabled, List<KnownLocation> knownLocations) {
         this.userLocale = userLocale;
         this.dateFormat = dateFormat;
         this.cameraTimeZone = cameraTimeZone;
@@ -92,6 +99,23 @@ public class Preferences {
         this.userId = userId;
         this.autoModeSyncHourOfDay = autoModeSyncHourOfDay;
         this.filmToolEnabled = filmToolEnabled;
+        this.knownLocations = knownLocations;
+    }
+
+    private Preferences(Preferences preferences) {
+        this.userLocale = preferences.userLocale;
+        this.dateFormat = preferences.dateFormat;
+        this.cameraTimeZone = preferences.cameraTimeZone;
+        this.auto = preferences.auto;
+        this.frequency = preferences.frequency;
+        this.minDistance = preferences.minDistance;
+        this.oauth2Key = preferences.oauth2Key;
+        this.oauthSecret = preferences.oauthSecret;
+        this.tokenDate = preferences.tokenDate;
+        this.userId = preferences.userId;
+        this.autoModeSyncHourOfDay = preferences.autoModeSyncHourOfDay;
+        this.filmToolEnabled = preferences.filmToolEnabled;
+        this.knownLocations = preferences.knownLocations;
     }
 
     public Locale getUserLocale() {
@@ -198,6 +222,14 @@ public class Preferences {
         this.filmToolEnabled = filmToolEnabled;
     }
 
+    public List<KnownLocation> getKnownLocations() {
+        return knownLocations;
+    }
+
+    public void setKnownLocations(List<KnownLocation> knownLocations) {
+        this.knownLocations = knownLocations;
+    }
+
     public int getApplicationSettingsModePosition() {
         for (int index = 0; index < sorted_application_modes.length; index++) {
             if (frequency == sorted_application_modes[index].getFrequency() && minDistance == sorted_application_modes[index].getMinDistance()) {
@@ -275,6 +307,19 @@ public class Preferences {
         }
     }
 
+    public String getTranslation(I18nResourceKey i18nResourceKey, String[] values) {
+        try {
+            ResourceBundle resourceBundle = ResourceBundle.getBundle("fr.untitled2.android.i18n." + i18nResourceKey.getBundleName(), userLocale);
+            String rawMessage = resourceBundle.getString(i18nResourceKey.getKey());
+            for (int index = 0; index < values.length; index++) {
+                rawMessage = StringUtils.replace(rawMessage, "{" + index + "}", values[index]);
+            }
+            return rawMessage;
+        } catch (Throwable t) {
+            return i18nResourceKey.getDefaultValue();
+        }
+    }
+
     public enum ApplicationSettingsMode {
 
         very_high(1000L, 10f),
@@ -314,6 +359,10 @@ public class Preferences {
             return StringUtils.split(timeZoneID, "/")[0];
         }
         return "";
+    }
+
+    public Preferences clone() {
+        return new Preferences(this);
     }
 
     public static String[] getSortedTimeZoneRegions() {

@@ -223,16 +223,20 @@ public class AppEngineOAuthClient {
     }
 
     public <F, T> T executeCommand(F input, Class<T> outputClass, String command) throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
+        return JSonUtils.readJson(outputClass, executeCommand(JSonUtils.writeJson(input), command));
+    }
+
+    public String executeCommand(String input, String command) throws IOException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException {
         HttpPost httpPost = new HttpPost(appUrl + "/api/server/" + command);
 
         consumer.sign(httpPost);
-        httpPost.setEntity(new ByteArrayEntity(JSonUtils.writeJson(input).getBytes()));
+        httpPost.setEntity(new ByteArrayEntity(input.getBytes()));
         HttpClient httpClient = getClient();
         HttpResponse httpResponse = httpClient.execute(commonsAppHost, httpPost);
         if (httpResponse.getStatusLine().getStatusCode() == 200) {
             String json = IOUtils.toString(httpResponse.getEntity().getContent());
             if (json == null) throw new IOException("No json returned");
-            return JSonUtils.readJson(outputClass, json);
+            return json;
         } else throw new IOException("Command has not been executed status " + httpResponse.getStatusLine().getStatusCode());
     }
 
@@ -383,7 +387,7 @@ public class AppEngineOAuthClient {
         this.tokenSecret = tokenSecret;
     }
 
-    private HttpClient getClient() {
+    public static HttpClient getClient() {
         String proxyHost = System.getProperty("http.proxyHost");
         String proxyPort = System.getProperty("http.proxyPort");
 
